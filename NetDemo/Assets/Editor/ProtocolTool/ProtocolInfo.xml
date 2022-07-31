@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages>
+  <!--枚举配置规则-->
+  <!--房间状态枚举-->
+  <enum name="E_ROOM_STATUS" namespace="GameServer">
+    <field name="PREPARE">1</field>
+    <field name="FIGHT">2</field>
+  </enum>
+  <!--玩家类型枚举-->
+  <enum name="E_PLAYER_TYPE" namespace="GamePlayer">
+    <field name="M"/>
+    <field name="W"/>
+    <field name="B"/>
+    <field name="R"/>
+  </enum>
+  <!--玩家阵营枚举-->
+  <enum name="E_PLAYER_CAMP" namespace="GamePlayer">
+    <field name="A"/>
+    <field name="B"/>
+    <field name="Other"/>
+  </enum>
+  <!--玩家状态枚举-->
+  <enum name="E_PLAYER_STATUS" namespace="GamePlayer">
+    <field name="Walk"/>
+    <field name="Jump"/>
+    <field name="Fire"/>
+    <field name="Idle"/>
+    <field name="Crouch"/>
+    <field name="Reload"/>
+    <field name="Die"/>
+  </enum>
+  <enum name="E_MONSTER_TYPE" namespace="GameMonster">
+    <field name="NORMAL">1</field>
+    <field name="BOSS"/>
+  </enum>
+
+
+  <!--数据结构类配置规则-->
+  <!--玩家信息-->
+  <data name="PlayerData" namespace="GamePlayer">
+    <field type="int" name="id"/>
+    <field type="string" name="name"/>
+    <field type="enum" data="E_PLAYER_CAMP" name="playerCamp"/>
+  </data>
+  <!--玩家位置（玩家坐标、朝向）-->
+  <data name="PlayerPos" namespace="GamePlayer">
+    <field type="int" name="id"/>
+    <field type="float" name="posX"/>
+    <field type="float" name="posY"/>
+    <field type="float" name="posZ"/>
+    <field type="float" name="rotX"/>
+    <field type="float" name="rotY"/>
+    <field type="float" name="rotZ"/>
+    <field type="float" name="cmRotX"/>
+    <field type="float" name="cmRotY"/>
+    <field type="float" name="cmRotZ"/>
+  </data>
+  <!--玩家状态（枚举状态类型、血量）-->
+  <data name="PlayerStatus" namespace="GamePlayer">
+    <field type="int" name="id"/>
+    <field type="enum" data="E_PLAYER_STATUS" name="playerStatus"/>
+    <field type="int" name="hp"/>
+  </data>
+  <!--房间信息（房间状态、房间人数）-->
+  <data name="RoomData" namespace="GameServer">
+    <field type="int" name="roomPlayersNum"/>
+    <field type="enum" data="E_ROOM_STATUS" name="roomStatus"/>
+  </data>
+
+  <!--消息类类配置规则-->
+  <!--客户端ID消息-->
+  <message id="0000" name="ConnIDMsg" namespace="GameSystem">
+    <field type="int" name="id"/>
+  </message>
+  <!--玩家信息消息-->
+  <message id="1001" name="PlayerInfoMsg" namespace="GamePlayer">
+    <field type="int" name="playerID"/>
+    <field type="PlayerData" name="data"/>
+  </message>
+  <!--玩家移动消息-->
+  <message id="2000" name="MoveMsg" namespace="GamePlayer">
+    <field type="PlayerPos" name="playerPos"/>
+  </message>
+  <!--玩家状态信息-->
+  <message id="2001" name="StatusMsg" namespace="GamePlayer">
+    <field type="PlayerStatus" name="playerStatus"/>
+  </message>
+
+  <!--房间-->
+  <!--获取房间列表消息-->
+  <message id="2010" name="GetRoomListMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+  </message>
+  <!--创建房间消息-->
+  <message id="2011" name="CteateRoomMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+  </message>
+  <!--加入房间消息-->
+  <message id="2012" name="EnterRoomMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+    <field type="int" name="index"/>
+  </message>
+  <!--房间信息消息-->
+  <message id="2013" name="GetRoomInfoMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+  </message>
+  <!--离开房间消息-->
+  <message id="2014" name="LeaveRoomMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+  </message>
+  <!--切换阵营消息-->
+  <message id="2015" name="ChangeCampMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+    <field type="enum" data="E_PLAYER_CAMP" name="CAMP"/>
+  </message>
+  <!--请求开始战斗消息-->
+  <message id="2016" name="RequestFightMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+  </message>
+
+
+  <!--心跳消息-->
+  <message id="1002" name="HeartMsg" namespace="GameSystem"/>
+  <!--退出消息-->
+  <message id="1003" name="QuitMsg" namespace="GameSystem">
+    <field type="int" name="id"/>
+  </message>
+
+  <!--玩家列表消息-->
+  <message id="3000" name="GetListMsg" namespace="GameServer">
+    <field type="list" T="PlayerData" name="list"/>
+  </message>
+  <!--更新玩家行为消息-->
+  <message id="3001" name="UpdatePosInfoMsg" namespace="GameServer">
+    <field type="list" T="PlayerPos" name="posInfoList"/>
+  </message>
+  <!--更新玩家状态消息-->
+  <message id="3002" name="UpdateStatusInfoMsg" namespace="GameServer">
+    <field type="list" T="PlayerStatus" name="statusInfoList"/>
+  </message>
+  <!--房间信息消息-->
+  <message id="3003" name="RoomInfoMsg" namespace="GameServer">
+    <field type="int" name="Oner"/>
+    <field type="list" T="PlayerData" name="roomPlayersList"/>
+  </message>
+  <!--房间列表消息-->
+  <message id="3004" name="RoomListMsg" namespace="GameServer">
+    <field type="list" T="RoomData" name="roomList"/>
+  </message>
+  <!--回应请求战斗消息-->
+  <message id="3005" name="ResponseFightMsg" namespace="GameServer">
+    <field type="int" name="responseFight"/>
+  </message>
+</messages>
