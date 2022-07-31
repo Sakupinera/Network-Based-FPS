@@ -1,0 +1,14 @@
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.csproj.AssemblyReference.cache
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.GeneratedMSBuildEditorConfig.editorconfig
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.AssemblyInfoInputs.cache
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.AssemblyInfo.cs
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.csproj.CoreCompileInputs.cache
+E:\Projects\TheGameServer\bin\Debug\netcoreapp3.1\TheGameServer.exe
+E:\Projects\TheGameServer\bin\Debug\netcoreapp3.1\TheGameServer.deps.json
+E:\Projects\TheGameServer\bin\Debug\netcoreapp3.1\TheGameServer.runtimeconfig.json
+E:\Projects\TheGameServer\bin\Debug\netcoreapp3.1\TheGameServer.runtimeconfig.dev.json
+E:\Projects\TheGameServer\bin\Debug\netcoreapp3.1\TheGameServer.dll
+E:\Projects\TheGameServer\bin\Debug\netcoreapp3.1\TheGameServer.pdb
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.dll
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.pdb
+E:\Projects\TheGameServer\obj\Debug\netcoreapp3.1\TheGameServer.genruntimeconfig.cache
