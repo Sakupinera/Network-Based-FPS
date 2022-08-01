@@ -334,7 +334,7 @@ TerrainCollider:
   m_GameObject: {fileID: 785454248}
   m_Material: {fileID: 0}
   m_Enabled: 1
-  m_TerrainData: {fileID: 15600000, guid: 073b1b2e50a59364ca65376e12a72dc0, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: fe9fc693471da8c49b4bf2480f4344df, type: 2}
   m_EnableTreeColliders: 1
 --- !u!218 &785454250
 Terrain:
@@ -345,7 +345,7 @@ Terrain:
   m_GameObject: {fileID: 785454248}
   m_Enabled: 1
   serializedVersion: 6
-  m_TerrainData: {fileID: 15600000, guid: 073b1b2e50a59364ca65376e12a72dc0, type: 2}
+  m_TerrainData: {fileID: 15600000, guid: fe9fc693471da8c49b4bf2480f4344df, type: 2}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
@@ -459,10 +459,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7071842134938345105, guid: 1e0f6b9f1e541d84daef38274054589d, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
+    - target: {fileID: 410404188330391262, guid: 1e0f6b9f1e541d84daef38274054589d, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 98d966a23fbbcff4da5cf39fba06f2ba, type: 2}
     - target: {fileID: 7071842136234613846, guid: 1e0f6b9f1e541d84daef38274054589d, type: 3}
       propertyPath: m_Name
       value: YBot
