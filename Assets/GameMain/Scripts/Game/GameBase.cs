@@ -24,11 +24,21 @@ namespace NetworkBasedFPS
             protected set;
         }
 
+        private Player m_Player = null;
+
         public virtual void Initialize()
         {
             GameEntry.Event.Subscribe(ShowEntitySuccessEventArgs.EventId, OnShowEntitySuccess);
             GameEntry.Event.Subscribe(ShowEntityFailureEventArgs.EventId, OnShowEntityFailure);
 
+            GameEntry.Entity.ShowPlayer(new PlayerData(GameEntry.Entity.GenerateSerialId(), 11001)
+            {
+                Name = "Sakupinera",
+                Position = new Vector3(50f, 0, 50f)
+            });
+
+            GameOver = false;
+            m_Player = null;
         }
 
         public virtual void Shutdown()
@@ -45,7 +55,12 @@ namespace NetworkBasedFPS
 
         protected virtual void OnShowEntitySuccess(object sender, GameEventArgs e)
         {
-
+            ShowEntitySuccessEventArgs ne = (ShowEntitySuccessEventArgs)e;
+            if(ne.EntityLogicType == typeof(Player))
+            {
+                m_Player = (Player)ne.Entity.Logic;
+            }
+            
         }
 
         protected virtual void OnShowEntityFailure(object sender, GameEventArgs e)

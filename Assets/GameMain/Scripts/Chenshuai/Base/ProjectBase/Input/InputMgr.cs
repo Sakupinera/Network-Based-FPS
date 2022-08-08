@@ -69,8 +69,6 @@ public class InputMgr : BaseManager<InputMgr>
     private void CheckBodyAxis(string []axis)
     {
         EventCenter.GetInstance().EventTrigger<float[]>("水平移动", new float[2] { Input.GetAxis(axis[0]), Input.GetAxis(axis[1])});
-        TestPlayerAnimationContorller.PlayerAnimator.SetFloat("VelocityX", Input.GetAxis(axis[0]));
-        TestPlayerAnimationContorller.PlayerAnimator.SetFloat("VelocityZ", Input.GetAxis(axis[1]));
     }
 
     /// <summary>
@@ -92,7 +90,6 @@ public class InputMgr : BaseManager<InputMgr>
         if (Input.GetButtonDown(button))
         {
             EventCenter.GetInstance().EventTrigger<string>("垂直移动", button);
-            TestPlayerAnimationContorller.PlayerAnimator.SetTrigger("Jump");
         }
         
     }

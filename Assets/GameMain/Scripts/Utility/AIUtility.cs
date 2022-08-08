@@ -23,32 +23,9 @@ namespace NetworkBasedFPS
 
         static AIUtility()
         {
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player, CampType.Player), RelationType.Friendly);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player, CampType.Enemy), RelationType.Hostile);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player, CampType.Neutral), RelationType.Neutral);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player, CampType.Player2), RelationType.Hostile);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player, CampType.Enemy2), RelationType.Hostile);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player, CampType.Neutral2), RelationType.Neutral);
-
-            //s_CampPairToRelation.Add(new CampPair(CampType.Enemy, CampType.Enemy), RelationType.Friendly);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Enemy, CampType.Neutral), RelationType.Neutral);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Enemy, CampType.Player2), RelationType.Hostile);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Enemy, CampType.Enemy2), RelationType.Hostile);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Enemy, CampType.Neutral2), RelationType.Neutral);
-
-            //s_CampPairToRelation.Add(new CampPair(CampType.Neutral, CampType.Neutral), RelationType.Neutral);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Neutral, CampType.Player2), RelationType.Neutral);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Neutral, CampType.Enemy2), RelationType.Neutral);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Neutral, CampType.Neutral2), RelationType.Hostile);
-
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player2, CampType.Player2), RelationType.Friendly);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player2, CampType.Enemy2), RelationType.Hostile);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Player2, CampType.Neutral2), RelationType.Neutral);
-
-            //s_CampPairToRelation.Add(new CampPair(CampType.Enemy2, CampType.Enemy2), RelationType.Friendly);
-            //s_CampPairToRelation.Add(new CampPair(CampType.Enemy2, CampType.Neutral2), RelationType.Neutral);
-
-            //s_CampPairToRelation.Add(new CampPair(CampType.Neutral2, CampType.Neutral2), RelationType.Neutral);
+            s_CampPairToRelation.Add(new CampPair(CampType.BlueCamp, CampType.BlueCamp), RelationType.Friendly);
+            s_CampPairToRelation.Add(new CampPair(CampType.BlueCamp, CampType.RedCamp), RelationType.Hostile);
+            s_CampPairToRelation.Add(new CampPair(CampType.RedCamp, CampType.RedCamp), RelationType.Friendly);
         }
 
         /// <summary>
@@ -125,31 +102,6 @@ namespace NetworkBasedFPS
         {
             if (entity == null || other == null)
             {
-                return;
-            }
-
-            TargetableObject target = other as TargetableObject;
-            if (target != null)
-            {
-                ImpactData entityImpactData = entity.GetImpactData();
-                ImpactData targetImpactData = target.GetImpactData();
-                if (GetRelation(entityImpactData.Camp, targetImpactData.Camp) == RelationType.Friendly)
-                {
-                    return;
-                }
-
-                int entityDamageHP = CalcDamageHP(targetImpactData.Attack, entityImpactData.Defense);
-                int targetDamageHP = CalcDamageHP(entityImpactData.Attack, targetImpactData.Defense);
-
-                int delta = Mathf.Min(entityImpactData.HP - entityDamageHP, targetImpactData.HP - targetDamageHP);
-                if (delta > 0)
-                {
-                    entityDamageHP += delta;
-                    targetDamageHP += delta;
-                }
-
-                entity.ApplyDamage(target, entityDamageHP);
-                target.ApplyDamage(entity, targetDamageHP);
                 return;
             }
 

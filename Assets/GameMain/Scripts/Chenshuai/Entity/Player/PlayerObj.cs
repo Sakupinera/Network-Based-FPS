@@ -197,12 +197,12 @@ public class PlayerObj : PlayerBaseObj
                 playerBody.Rotate(Vector3.up * vector.y);
                 weapon.excusions.Enqueue(vector);
             }
-        }//鼠标抬起将累计时间清零
+        }
+        //鼠标抬起将累计时间清零
         if (Input.GetMouseButtonUp(0))
         {
             cFireTime = 0f;
         }
-
     }
 
     /// <summary>

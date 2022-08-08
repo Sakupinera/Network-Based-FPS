@@ -117,6 +117,7 @@ namespace UnityGameFramework.Runtime
         /// </summary>
         protected internal virtual void OnRecycle()
         {
+
         }
 
         /// <summary>

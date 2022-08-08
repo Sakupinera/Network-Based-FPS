@@ -45,10 +45,6 @@ public abstract class PlayerBaseObj : MonoBehaviour
     //角色状态
     public PlayerStats playerStats;
 
-    //玩家主视角摄像机
-    public Camera PlayerCamera;
-    //渲染武器的摄像机
-    public Camera WeaponCamera;
     #endregion
 
     /// <summary>

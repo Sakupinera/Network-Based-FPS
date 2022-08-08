@@ -13,7 +13,12 @@ namespace NetworkBasedFPS
         public static readonly string[] DataTableNames = new string[]
         {
             "Scene",
-            "Hero",
+            "Entity",
+            "Character",
+            "Gun",
+            "UIForm",
+            "UISound",
+            "Sound"
         };
 
         private Dictionary<string, bool> m_LoadedFlag = new Dictionary<string, bool>();

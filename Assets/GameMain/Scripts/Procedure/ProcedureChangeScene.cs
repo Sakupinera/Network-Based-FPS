@@ -71,7 +71,7 @@ namespace NetworkBasedFPS
 
             if (m_ChangeToMenu)
             {
-                ChangeState<ProcedureMenu>(procedureOwner);
+                ChangeState<ProcedureMainMenu>(procedureOwner);
             }
             else
             {

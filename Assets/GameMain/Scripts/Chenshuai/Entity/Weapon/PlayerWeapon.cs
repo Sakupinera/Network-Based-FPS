@@ -83,7 +83,7 @@ public class PlayerWeapon : MonoBehaviour
 
     private void Start()
     {
-        //shootPoint = transform.Find("BulletStartPoint");
+        shootPoint = transform.Find("BulletStartPoint");
         currentBullects = bulletMag;
         reloadTimer = reloadRate;
         fireAudioSource = gameObject.GetComponent<AudioSource>();
@@ -124,7 +124,7 @@ public class PlayerWeapon : MonoBehaviour
         //控制武器射击速度，两者的差值就是枪械的设计间隔
         if (fireTimer < fireRate || currentBullects <= 0 || reloadTimer<reloadRate)
         {
-            TestArmAnimationController.ArmAnimator.SetTrigger("Fire");
+            //TestArmAnimationController.ArmAnimator.SetTrigger("Fire");
             return;
         }
         
@@ -139,8 +139,8 @@ public class PlayerWeapon : MonoBehaviour
 
         //依据发射方向创建子弹预设体
         GameObject obj = Instantiate(bullet, shootPoint.position, Quaternion.LookRotation(shootDirection));
-        obj.GetComponent<Bullet>().ShootDirction = Quaternion.LookRotation(shootDirection);
-        obj.GetComponent<Bullet>().SetFather(fatherObj);
+        obj.GetComponent<Bullet_tmp>().ShootDirction = Quaternion.LookRotation(shootDirection);
+        obj.GetComponent<Bullet_tmp>().SetFather(fatherObj);
 
         //创建并且播放特效
         ParticleSystem eff = Instantiate<ParticleSystem>(muzzleFlash, shootPoint.position, shootPoint.rotation);
@@ -150,7 +150,7 @@ public class PlayerWeapon : MonoBehaviour
         fireAudioSource.Play();
 
         //控制子弹做什么
-        Bullet bulletObj = obj.GetComponent<Bullet>();
+        Bullet_tmp bulletObj = obj.GetComponent<Bullet_tmp>();
         bulletObj.SetFather(fatherObj);
 
         //当前子弹减少
@@ -183,7 +183,7 @@ public class PlayerWeapon : MonoBehaviour
             }
             reloadTimer = 0;
 
-            TestArmAnimationController.ArmAnimator.SetTrigger("Reload");
+            //TestArmAnimationController.ArmAnimator.SetTrigger("Reload");
         }
         else
         {

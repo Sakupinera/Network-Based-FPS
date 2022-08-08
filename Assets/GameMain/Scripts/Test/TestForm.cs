@@ -9,20 +9,20 @@ namespace NetworkBasedFPS {
         //[SerializeField]
         //private GameObject m_QuitButton = null;
 
-        private ProcedureMenu m_ProcedureMenu = null;
+        private ProcedureMainMenu m_ProcedureMainMenu = null;
 
         public void OnStartButtonClick()
         {
             Debug.Log("按钮被点击！");
-            m_ProcedureMenu.StartGame();
+            m_ProcedureMainMenu.StartGame();
         }
 
         protected override void OnOpen(object userData)
         {
             base.OnOpen(userData);
 
-            m_ProcedureMenu = (ProcedureMenu)userData;
-            if (m_ProcedureMenu == null)
+            m_ProcedureMainMenu = (ProcedureMainMenu)userData;
+            if (m_ProcedureMainMenu == null)
             {
                 Log.Warning("ProcedureMenu is invalid when open MenuForm.");
                 return;
@@ -33,7 +33,7 @@ namespace NetworkBasedFPS {
 
         protected override void OnClose(bool isShutdown, object userData)
         {
-            m_ProcedureMenu = null;
+            m_ProcedureMainMenu = null;
 
             base.OnClose(isShutdown, userData);
         }
