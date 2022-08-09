@@ -12,7 +12,7 @@ namespace NetworkBasedFPS
 
         public void OnStartButtonClick()
         {
-            m_ProcedureMainMenu.StartGame();
+            //m_ProcedureMainMenu.StartGame();
         }
 
         public void OnSettingButtonClick()
