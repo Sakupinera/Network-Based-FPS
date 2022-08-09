@@ -5,7 +5,7 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 // 此文件由工具自动生成，请勿直接修改。
-// 生成时间：2022-08-07 20:58:51.129
+// 生成时间：2022-08-09 17:52:15.439
 //------------------------------------------------------------
 
 using GameFramework;
@@ -121,7 +121,6 @@ namespace NetworkBasedFPS
                 {
                     m_Id = binaryReader.Read7BitEncodedInt32();
                     MaxHP = binaryReader.Read7BitEncodedInt32();
-                    MoveSpeed = binaryReader.ReadSingle();
                     DeadEffectId = binaryReader.Read7BitEncodedInt32();
                     DeadSoundId = binaryReader.Read7BitEncodedInt32();
                     FootStepSoundId = binaryReader.Read7BitEncodedInt32();

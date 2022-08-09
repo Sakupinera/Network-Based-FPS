@@ -5,7 +5,7 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 // 此文件由工具自动生成，请勿直接修改。
-// 生成时间：2022-08-07 20:58:51.133
+// 生成时间：2022-08-09 17:52:15.443
 //------------------------------------------------------------
 
 using GameFramework;
@@ -126,6 +126,15 @@ namespace NetworkBasedFPS
             private set;
         }
 
+        /// <summary>
+        /// 获取弹道偏移列表。
+        /// </summary>
+        public List<Vector3> Trajectory
+        {
+            get;
+            private set;
+        }
+
         public override bool ParseDataRow(string dataRowString, object userData)
         {
             string[] columnStrings = dataRowString.Split(DataTableExtension.DataSplitSeparators);
@@ -148,6 +157,7 @@ namespace NetworkBasedFPS
             FireSoundId = int.Parse(columnStrings[index++]);
             MuzzleSparkId = int.Parse(columnStrings[index++]);
             BulletHoleId = int.Parse(columnStrings[index++]);
+            Trajectory = DataTableExtension.ParseListVector3(columnStrings[index++]);
 
             GeneratePropertyArray();
             return true;
@@ -161,15 +171,13 @@ namespace NetworkBasedFPS
                 {
                     m_Id = binaryReader.Read7BitEncodedInt32();
                     Attack = binaryReader.Read7BitEncodedInt32();
-                    AttackInterval = binaryReader.ReadSingle();
                     MagazineSize = binaryReader.Read7BitEncodedInt32();
-                    ReloadTime = binaryReader.ReadSingle();
                     BulletId = binaryReader.Read7BitEncodedInt32();
-                    BulletSpeed = binaryReader.ReadSingle();
                     BulletMaxSize = binaryReader.Read7BitEncodedInt32();
                     FireSoundId = binaryReader.Read7BitEncodedInt32();
                     MuzzleSparkId = binaryReader.Read7BitEncodedInt32();
                     BulletHoleId = binaryReader.Read7BitEncodedInt32();
+                    Trajectory = binaryReader.ReadListVector3();
                 }
             }
 

@@ -168,7 +168,15 @@ namespace NetworkBasedFPS.Editor.DataTableTools
                 }
                 else
                 {
-                    stringBuilder.AppendFormat("            {0} = DataTableExtension.Parse{1}(columnStrings[index++]);", dataTableProcessor.GetName(i), dataTableProcessor.GetType(i).Name).AppendLine();
+                    // 添加自定义的数据类型
+                    if (dataTableProcessor.GetLanguageKeyword(i) == "List<Vector3>")
+                    {
+                        stringBuilder.AppendFormat("            {0} = DataTableExtension.Parse{1}(columnStrings[index++]);", dataTableProcessor.GetName(i), "ListVector3").AppendLine();
+                    }
+                    else
+                    {
+                        stringBuilder.AppendFormat("            {0} = DataTableExtension.Parse{1}(columnStrings[index++]);", dataTableProcessor.GetName(i), dataTableProcessor.GetType(i).Name).AppendLine();
+                    }
                 }
             }
 
@@ -206,7 +214,15 @@ namespace NetworkBasedFPS.Editor.DataTableTools
                 }
                 else
                 {
-                    stringBuilder.AppendFormat("                    {0} = binaryReader.Read{1}();", dataTableProcessor.GetName(i), dataTableProcessor.GetType(i).Name).AppendLine();
+                    //  添加自定义的数据类型
+                    if (dataTableProcessor.GetLanguageKeyword(i) == "List<Vector3>")
+                    {
+                        stringBuilder.AppendFormat("                    {0} = binaryReader.Read{1}();", dataTableProcessor.GetName(i), "ListVector3").AppendLine();
+                    }
+                    else
+                    {
+                        //stringBuilder.AppendFormat("                    {0} = binaryReader.Read{1}();", dataTableProcessor.GetName(i), dataTableProcessor.GetType(i).Name).AppendLine();
+                    }
                 }
             }
 

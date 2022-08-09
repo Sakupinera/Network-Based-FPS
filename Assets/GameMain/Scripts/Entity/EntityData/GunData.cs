@@ -1,5 +1,6 @@
 ﻿using GameFramework.DataTable;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NetworkBasedFPS
@@ -37,6 +38,9 @@ namespace NetworkBasedFPS
         [SerializeField]
         private int m_BulletHoleId = 0;
 
+        [SerializeField]
+        private List<Vector3> m_Trajectory = null;
+
         public GunData(int entityId, int typeId, int ownerId, CampType ownerCamp)
             : base(entityId, typeId, ownerId, ownerCamp)
         {
@@ -57,6 +61,13 @@ namespace NetworkBasedFPS
             m_BulletSoundId = drGun.FireSoundId;
             m_MuzzleSparkId = drGun.MuzzleSparkId;
             m_BulletHoleId = drGun.BulletHoleId;
+
+            for(int i = 0; i < drGun.Trajectory.Count; i++)
+            {
+                Debug.Log(drGun.Trajectory[i]);
+            }
+
+            m_Trajectory = drGun.Trajectory;
         }
 
         /// <summary>
@@ -147,6 +158,11 @@ namespace NetworkBasedFPS
         public int BulletHoleId
         {
             get => m_BulletHoleId;
+        }
+
+        public List<Vector3> Trajectory
+        {
+            get => m_Trajectory;
         }
     }
 }

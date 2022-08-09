@@ -6,6 +6,7 @@
 //------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -51,6 +52,18 @@ namespace NetworkBasedFPS
         public static Vector4 ReadVector4(this BinaryReader binaryReader)
         {
             return new Vector4(binaryReader.ReadSingle(), binaryReader.ReadSingle(), binaryReader.ReadSingle(), binaryReader.ReadSingle());
+        }
+
+        public static List<Vector3> ReadListVector3(this BinaryReader binaryReader)
+        {
+            List<Vector3> tmp = new List<Vector3>();
+
+            float count = binaryReader.ReadSingle();
+            for(int i = 0; i < count; i++)
+            {
+                tmp.Add(new Vector3(binaryReader.ReadSingle(), binaryReader.ReadSingle(), binaryReader.ReadSingle()));
+            }
+            return tmp;
         }
     }
 }

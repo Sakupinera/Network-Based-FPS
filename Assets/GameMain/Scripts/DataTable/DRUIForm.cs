@@ -5,7 +5,7 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 // 此文件由工具自动生成，请勿直接修改。
-// 生成时间：2022-08-07 20:58:51.138
+// 生成时间：2022-08-09 17:52:15.448
 //------------------------------------------------------------
 
 using GameFramework;
@@ -100,10 +100,6 @@ namespace NetworkBasedFPS
                 using (BinaryReader binaryReader = new BinaryReader(memoryStream, Encoding.UTF8))
                 {
                     m_Id = binaryReader.Read7BitEncodedInt32();
-                    AssetName = binaryReader.ReadString();
-                    UIGroupName = binaryReader.ReadString();
-                    AllowMultiInstance = binaryReader.ReadBoolean();
-                    PauseCoveredUIForm = binaryReader.ReadBoolean();
                 }
             }
 

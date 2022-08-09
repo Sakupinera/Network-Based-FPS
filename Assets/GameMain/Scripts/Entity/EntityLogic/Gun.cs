@@ -39,31 +39,8 @@ namespace NetworkBasedFPS
 
         public float ReloadRate => m_GunData.ReloadTime;
 
-        //弹道偏移值
-        public Queue<Vector3> excusions = new Queue<Vector3>();
-        protected Vector3[] vectors = new Vector3[] {new Vector3(-1f,0f,0),
-                                              new Vector3(-1f,0f,0),
-                                              new Vector3(-1f,0f,0),
-                                              new Vector3(-2f,0f,0),
-                                              new Vector3(-3f,0f,0),
-                                              new Vector3(-3f,0f,0),
-                                              new Vector3(0f,1f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,-1f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),                                              new Vector3(0f,-1f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0)};
+        //弹道偏移队列
+        public Queue<Vector3> excursion = new Queue<Vector3>();
 
         [SerializeField]
         private Animator m_FirstPersonAnimator;
@@ -79,11 +56,6 @@ namespace NetworkBasedFPS
 
             shootPoint = transform.Find("Armature/Weapon/ShootPoint");
 
-            for (int i = 0; i < vectors.Length; i++)
-            {
-                excusions.Enqueue(vectors[i]);
-            }
-
         }
 
         protected override void OnShow(object userData)
@@ -97,6 +69,10 @@ namespace NetworkBasedFPS
                 return;
             }
             currentBullects = m_GunData.MagazineSize;
+            for (int i = 0; i < m_GunData.Trajectory.Count; i++)
+            {
+                excursion.Enqueue(m_GunData.Trajectory[i]);
+            }
 
             m_FirstPersonAnimator = GetComponent<Animator>();
             GetComponent<EquipmentAnimation>().AssignAnimations(m_FirstPersonAnimator);

@@ -249,14 +249,14 @@ namespace NetworkBasedFPS {
                     if (cFireTime >= m_CurrentGun.cFireMaxTime)
                     {
                         cFireTime = 0;
-                        Vector3 vector = m_CurrentGun.excusions.Dequeue();
+                        Vector3 vector = m_CurrentGun.excursion.Dequeue();
                         Debug.Log(vector);
                         xRotation += vector.x;
                         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
                         playerCame.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
                         playerBody.Rotate(Vector3.up * vector.y);
-                        m_CurrentGun.excusions.Enqueue(vector);
+                        m_CurrentGun.excursion.Enqueue(vector);
                     }
                 }
             }
