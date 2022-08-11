@@ -19,10 +19,13 @@ namespace NetworkBasedFPS
         /// </summary>
         DialogForm = 1,
 
+
+        PopForm = 99,
+
         /// <summary>
         /// 主菜单。
         /// </summary>
-        MainMenuForm = 100,
+        MenuForm = 100,
 
         /// <summary>
         /// 设置。
@@ -33,5 +36,15 @@ namespace NetworkBasedFPS
         /// 关于。
         /// </summary>
         AboutForm = 102,
+
+        /// <summary>
+        /// 房间列表
+        /// </summary>
+        RoomListForm = 103,
+
+        /// <summary>
+        /// 房间面板
+        /// </summary>
+        RoomForm = 104,
     }
 }

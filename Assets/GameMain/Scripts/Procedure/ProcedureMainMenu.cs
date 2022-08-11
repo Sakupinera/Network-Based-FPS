@@ -1,5 +1,6 @@
 ﻿using GameFramework.DataTable;
 using GameFramework.Event;
+using GameServer;
 using System;
 using UnityGameFramework.Runtime;
 using ProcedureOwner = GameFramework.Fsm.IFsm<GameFramework.Procedure.IProcedureManager>;
@@ -9,7 +10,6 @@ namespace NetworkBasedFPS
     public class ProcedureMainMenu : ProcedureBase
     {
         private bool m_StartGame = false;
-        private MainMenuForm m_MenuForm = null;
 
         public override bool UseNativeDialog
         {
@@ -19,8 +19,9 @@ namespace NetworkBasedFPS
             }
         }
 
-        public void StartGame()
+        private void StartGame(object sender, GameEventArgs e)
         {
+            GameEntry.UI.CloseAllLoadedUIForms();
             m_StartGame = true;
         }
 
@@ -29,52 +30,33 @@ namespace NetworkBasedFPS
             base.OnEnter(procedureOwner);
             Log.Debug("进入菜单流程，可以在这里加载菜单UI");
 
-            // 订阅UI加载成功事件
-            GameEntry.Event.Subscribe(OpenUIFormSuccessEventArgs.EventId, OnOpenUIFormSuccess);
+            GameEntry.Event.Subscribe(MsgEventArgs<ResponseFightMsg>.EventId, StartGame);
 
             m_StartGame = false;
 
             // 加载主菜单UIForm
-            GameEntry.UI.OpenUIForm(UIFormId.MainMenuForm, this);
+            GameEntry.UI.OpenUIForm(UIFormId.MenuForm);
+
         }
 
         protected override void OnLeave(ProcedureOwner procedureOwner, bool isShutdown)
         {
             base.OnLeave(procedureOwner, isShutdown);
 
-            GameEntry.Event.Unsubscribe(OpenUIFormSuccessEventArgs.EventId, OnOpenUIFormSuccess);
 
-            if (m_MenuForm != null)
-            {
-                m_MenuForm.Close(isShutdown);
-                m_MenuForm = null;
-            }
+            GameEntry.Event.Unsubscribe(MsgEventArgs<ResponseFightMsg>.EventId, StartGame);
         }
 
         protected override void OnUpdate(ProcedureOwner procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
-            if(m_StartGame == true)
+            if (m_StartGame == true)
             {
                 procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Battle"));
                 procedureOwner.SetData<VarByte>("GameMode", (byte)GameMode.Team);
                 ChangeState<ProcedureChangeScene>(procedureOwner);
             }
-
-        }
-
-        private void OnOpenUIFormSuccess(object sender, GameEventArgs e)
-        {
-            OpenUIFormSuccessEventArgs ne = (OpenUIFormSuccessEventArgs)e;
-            // 判断userData是否为自己
-            if(ne.UserData != this)
-            {
-                return;
-            }
-
-            Log.Debug("MainMenuForm成功加载！");
-            m_MenuForm = (MainMenuForm)ne.UIForm.Logic;
         }
 
     }

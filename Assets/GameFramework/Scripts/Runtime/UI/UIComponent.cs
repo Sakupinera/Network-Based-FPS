@@ -9,6 +9,7 @@ using GameFramework;
 using GameFramework.ObjectPool;
 using GameFramework.Resource;
 using GameFramework.UI;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,6 +43,11 @@ namespace UnityGameFramework.Runtime
 
         [SerializeField]
         private bool m_EnableCloseUIFormCompleteEvent = true;
+
+        public void OpenUIForm(object roomListForm, string v)
+        {
+            throw new NotImplementedException();
+        }
 
         [SerializeField]
         private float m_InstanceAutoReleaseInterval = 60f;
