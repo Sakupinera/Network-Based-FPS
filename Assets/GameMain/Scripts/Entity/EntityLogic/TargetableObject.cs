@@ -1,11 +1,4 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityGameFramework.Runtime;
 
 namespace NetworkBasedFPS
@@ -44,21 +37,13 @@ namespace NetworkBasedFPS
             }
         }
 
-#if UNITY_2017_3_OR_NEWER
         protected override void OnInit(object userData)
-#else
-        protected internal override void OnInit(object userData)
-#endif
         {
             base.OnInit(userData);
             gameObject.SetLayerRecursively(Constant.Layer.TargetableObjectLayerId);
         }
 
-#if UNITY_2017_3_OR_NEWER
         protected override void OnShow(object userData)
-#else
-        protected internal override void OnShow(object userData)
-#endif
         {
             base.OnShow(userData);
 
@@ -85,7 +70,7 @@ namespace NetworkBasedFPS
 
             if (entity is TargetableObject && entity.Id >= Id)
             {
-                // 碰撞事件由 Id 小的一方处理，避免重复处理
+                // 碰撞事件由Id小的一方处理，避免重复处理
                 return;
             }
 

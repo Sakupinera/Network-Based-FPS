@@ -24,8 +24,7 @@ namespace NetworkBasedFPS
             public const int UIFormAsset = 50;
             public const int UISoundAsset = 30;
 
-            public const int MyAircraftAsset = 90;
-            public const int AircraftAsset = 80;
+            public const int CharacterAsset = 80;
             public const int ThrusterAsset = 30;
             public const int WeaponAsset = 30;
             public const int ArmorAsset = 30;

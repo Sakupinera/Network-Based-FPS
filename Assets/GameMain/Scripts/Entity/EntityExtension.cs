@@ -40,9 +40,14 @@ namespace NetworkBasedFPS
             entityComponent.AttachEntity(entity.Entity, ownerId, parentTransformPath, userData);
         }
 
-        public static void ShowWeapon(this EntityComponent entityComponent, WeaponData data)
+        public static void ShowPlayer(this EntityComponent entityComponent, PlayerData data)
         {
-            entityComponent.ShowEntity(typeof(Weapon), "Weapon", Constant.AssetPriority.WeaponAsset, data);
+            entityComponent.ShowEntity(typeof(Player), "Player", Constant.AssetPriority.CharacterAsset, data);
+        }
+
+        public static void ShowGun(this EntityComponent entityComponent, GunData data)
+        {
+            entityComponent.ShowEntity(typeof(Gun), "Weapon", Constant.AssetPriority.WeaponAsset, data);
         }
 
         public static void ShowBullet(this EntityComponent entityCompoennt, BulletData data)

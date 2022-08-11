@@ -1,0 +1,6 @@
+﻿#	声音配置表							
+#	Id		AssetName	Priority	Loop	Volume	SpatialBlend	MaxDistance
+#	int		string	int	bool	float	float	float
+#	声音编号	策划备注	资源名称	优先级（默认0，128最高，-128最低）	是否循环	音量（0~1）	声音空间混合量（0为2D，1为3D，中间值混合效果）	声音最大距离
+	60000	AKM开火声音	AKM_Shoot	0	FALSE	1	0	100
+	61000	小蓝人脚步声	FootStep_01	0	TRUE	1	0	100

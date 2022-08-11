@@ -22,7 +22,7 @@ namespace NetworkBasedFPS
         /// <summary>
         /// 主菜单。
         /// </summary>
-        MenuForm = 100,
+        MainMenuForm = 100,
 
         /// <summary>
         /// 设置。

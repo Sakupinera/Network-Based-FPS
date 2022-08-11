@@ -1,10 +1,4 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
-
+﻿using GameFramework.DataTable;
 using System;
 using UnityEngine;
 
@@ -19,7 +13,14 @@ namespace NetworkBasedFPS
         public EffectData(int entityId, int typeId)
             : base(entityId, typeId)
         {
-            m_KeepTime = 3f;
+            IDataTable<DREffect> dtGun = GameEntry.DataTable.GetDataTable<DREffect>();
+            DREffect drGun = dtGun.GetDataRow(TypeId);
+            if (drGun == null)
+            {
+                return;
+            }
+
+            m_KeepTime = drGun.KeepTime;
         }
 
         public float KeepTime
