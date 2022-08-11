@@ -1,5 +1,6 @@
 ﻿using GameFramework.DataTable;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NetworkBasedFPS
@@ -14,6 +15,12 @@ namespace NetworkBasedFPS
         private float m_AttackInterval = 0;
 
         [SerializeField]
+        private float m_AttackRange = 0;
+
+        [SerializeField]
+        private Vector3 m_AttachLocalPosition = new Vector3();
+
+        [SerializeField]
         private int m_MagazineSize = 0;
 
         [SerializeField]
@@ -21,6 +28,9 @@ namespace NetworkBasedFPS
 
         [SerializeField]
         private float m_ReloadTime = 0;
+
+        [SerializeField]
+        private float m_EmptyReloadTime = 0;
 
         [SerializeField]
         private int m_BulletId = 0;
@@ -37,6 +47,9 @@ namespace NetworkBasedFPS
         [SerializeField]
         private int m_BulletHoleId = 0;
 
+        [SerializeField]
+        private List<Vector3> m_Trajectory = null;
+
         public GunData(int entityId, int typeId, int ownerId, CampType ownerCamp)
             : base(entityId, typeId, ownerId, ownerCamp)
         {
@@ -49,14 +62,18 @@ namespace NetworkBasedFPS
 
             m_Attack = drGun.Attack;
             m_AttackInterval = drGun.AttackInterval;
+            m_AttackRange = drGun.AttackRange;
+            m_AttachLocalPosition = drGun.AttachPosition;
             m_MagazineSize = drGun.MagazineSize;
             m_BulletNum = drGun.BulletMaxSize;
             m_ReloadTime = drGun.ReloadTime;
+            m_EmptyReloadTime = drGun.EmptyReloadTime;
             m_BulletId = drGun.BulletId;
             m_BulletSpeed = drGun.BulletSpeed;
             m_BulletSoundId = drGun.FireSoundId;
             m_MuzzleSparkId = drGun.MuzzleSparkId;
             m_BulletHoleId = drGun.BulletHoleId;
+            m_Trajectory = drGun.Trajectory;
         }
 
         /// <summary>
@@ -73,6 +90,19 @@ namespace NetworkBasedFPS
         public float AttackInterval
         {
             get => m_AttackInterval;
+        }
+
+        /// <summary>
+        /// 射击范围
+        /// </summary>
+        public float AttackRange
+        {
+            get => m_AttackRange;
+        }
+
+        public Vector3 AttachLocalPosition
+        {
+            get => m_AttachLocalPosition;
         }
 
         /// <summary>
@@ -98,6 +128,11 @@ namespace NetworkBasedFPS
         public float ReloadTime
         {
             get => m_ReloadTime;
+        }
+
+        public float EmptyReloadTime
+        {
+            get => m_EmptyReloadTime;
         }
 
         /// <summary>
@@ -147,6 +182,11 @@ namespace NetworkBasedFPS
         public int BulletHoleId
         {
             get => m_BulletHoleId;
+        }
+
+        public List<Vector3> Trajectory
+        {
+            get => m_Trajectory;
         }
     }
 }

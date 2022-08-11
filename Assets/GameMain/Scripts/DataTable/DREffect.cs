@@ -5,7 +5,7 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 // 此文件由工具自动生成，请勿直接修改。
-// 生成时间：2022-08-11 11:20:44.895
+// 生成时间：2022-08-11 11:20:44.917
 //------------------------------------------------------------
 
 using GameFramework;
@@ -19,14 +19,14 @@ using UnityGameFramework.Runtime;
 namespace NetworkBasedFPS
 {
     /// <summary>
-    /// 实体表。
+    /// 特效表。
     /// </summary>
-    public class DREntity : DataRowBase
+    public class DREffect : DataRowBase
     {
         private int m_Id = 0;
 
         /// <summary>
-        /// 获取实体编号。
+        /// 获取特效编号。
         /// </summary>
         public override int Id
         {
@@ -37,9 +37,9 @@ namespace NetworkBasedFPS
         }
 
         /// <summary>
-        /// 获取资源名称。
+        /// 获取持续时间。
         /// </summary>
-        public string AssetName
+        public float KeepTime
         {
             get;
             private set;
@@ -57,7 +57,7 @@ namespace NetworkBasedFPS
             index++;
             m_Id = int.Parse(columnStrings[index++]);
             index++;
-            AssetName = columnStrings[index++];
+            KeepTime = float.Parse(columnStrings[index++]);
 
             GeneratePropertyArray();
             return true;

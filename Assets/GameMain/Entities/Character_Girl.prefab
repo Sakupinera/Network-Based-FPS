@@ -2799,7 +2799,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6951716957622676755}
   - component: {fileID: 6951716957622676756}
-  - component: {fileID: 3792572374542810415}
   m_Layer: 7
   m_Name: WorldCamera
   m_TagString: MainCamera

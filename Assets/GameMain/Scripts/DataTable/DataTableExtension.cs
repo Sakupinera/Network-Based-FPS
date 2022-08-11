@@ -7,6 +7,7 @@
 
 using GameFramework.DataTable;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityGameFramework.Runtime;
 
@@ -86,6 +87,22 @@ namespace NetworkBasedFPS
         {
             string[] splitedValue = value.Split(',');
             return new Vector4(float.Parse(splitedValue[0]), float.Parse(splitedValue[1]), float.Parse(splitedValue[2]), float.Parse(splitedValue[3]));
+        }
+
+        public static List<Vector3> ParseListVector3(string value)
+        {
+            List<Vector3> tmp = new List<Vector3>();
+            if (value == "empty" || value == "")
+            {
+                return tmp;
+            }
+            string[] splitedValues = value.Split(";");
+            for (int i = 0; i < splitedValues.Length; i++)
+            {
+                string[] splitedValue = splitedValues[i].Split(",");
+                tmp.Add(new Vector3(float.Parse(splitedValue[0]), float.Parse(splitedValue[1]), float.Parse(splitedValue[2])));
+            }
+            return tmp;
         }
     }
 }

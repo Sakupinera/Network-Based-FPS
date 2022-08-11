@@ -5,7 +5,7 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 // 此文件由工具自动生成，请勿直接修改。
-// 生成时间：2022-08-07 20:58:51.133
+// 生成时间：2022-08-11 11:20:44.904
 //------------------------------------------------------------
 
 using GameFramework;
@@ -55,6 +55,24 @@ namespace NetworkBasedFPS
         }
 
         /// <summary>
+        /// 获取攻击范围。
+        /// </summary>
+        public float AttackRange
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// 获取子实体局部坐标。
+        /// </summary>
+        public Vector3 AttachPosition
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// 获取弹夹容量。
         /// </summary>
         public int MagazineSize
@@ -67,6 +85,15 @@ namespace NetworkBasedFPS
         /// 获取换弹时间。
         /// </summary>
         public float ReloadTime
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// 获取空弹夹换弹时间。
+        /// </summary>
+        public float EmptyReloadTime
         {
             get;
             private set;
@@ -126,6 +153,15 @@ namespace NetworkBasedFPS
             private set;
         }
 
+        /// <summary>
+        /// 获取弹道偏移列表。
+        /// </summary>
+        public List<Vector3> Trajectory
+        {
+            get;
+            private set;
+        }
+
         public override bool ParseDataRow(string dataRowString, object userData)
         {
             string[] columnStrings = dataRowString.Split(DataTableExtension.DataSplitSeparators);
@@ -140,14 +176,18 @@ namespace NetworkBasedFPS
             index++;
             Attack = int.Parse(columnStrings[index++]);
             AttackInterval = float.Parse(columnStrings[index++]);
+            AttackRange = float.Parse(columnStrings[index++]);
+            AttachPosition = DataTableExtension.ParseVector3(columnStrings[index++]);
             MagazineSize = int.Parse(columnStrings[index++]);
             ReloadTime = float.Parse(columnStrings[index++]);
+            EmptyReloadTime = float.Parse(columnStrings[index++]);
             BulletId = int.Parse(columnStrings[index++]);
             BulletSpeed = float.Parse(columnStrings[index++]);
             BulletMaxSize = int.Parse(columnStrings[index++]);
             FireSoundId = int.Parse(columnStrings[index++]);
             MuzzleSparkId = int.Parse(columnStrings[index++]);
             BulletHoleId = int.Parse(columnStrings[index++]);
+            Trajectory = DataTableExtension.ParseListVector3(columnStrings[index++]);
 
             GeneratePropertyArray();
             return true;
@@ -161,15 +201,13 @@ namespace NetworkBasedFPS
                 {
                     m_Id = binaryReader.Read7BitEncodedInt32();
                     Attack = binaryReader.Read7BitEncodedInt32();
-                    AttackInterval = binaryReader.ReadSingle();
                     MagazineSize = binaryReader.Read7BitEncodedInt32();
-                    ReloadTime = binaryReader.ReadSingle();
                     BulletId = binaryReader.Read7BitEncodedInt32();
-                    BulletSpeed = binaryReader.ReadSingle();
                     BulletMaxSize = binaryReader.Read7BitEncodedInt32();
                     FireSoundId = binaryReader.Read7BitEncodedInt32();
                     MuzzleSparkId = binaryReader.Read7BitEncodedInt32();
                     BulletHoleId = binaryReader.Read7BitEncodedInt32();
+                    Trajectory = binaryReader.ReadListVector3();
                 }
             }
 

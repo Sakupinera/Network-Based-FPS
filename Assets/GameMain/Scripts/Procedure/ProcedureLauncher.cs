@@ -35,7 +35,7 @@ namespace NetworkBasedFPS
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
             // 切换流程
-            ChangeState<ProcedurePreload>(procedureOwner);
+            ChangeState<ProcedureSplash>(procedureOwner);
         }
 
         private void InitLanguageSettings()

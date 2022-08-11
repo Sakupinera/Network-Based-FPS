@@ -16,57 +16,34 @@ namespace NetworkBasedFPS
         [SerializeField]
         private GunData m_GunData = null;
 
-        private float m_NextAttackTime = 0f;
+        public GunData _GunData => m_GunData;
 
         //当前子弹数量
         public int currentBullects;
 
-        //射击位置
+        //子弹出生位置
         public Transform shootPoint;
 
         //开火计时器
         public float fireTimer = 0;
         //装弹计时器
         public float reloadTimer = 0;
-        //决定长按开火键多少时间算作连发
-        public float cFireMaxTime = 0.1f;
 
         //子弹发射方向
         public Vector3 shootDirection;
 
-        //武器射击范围
-        public float range = 100f;
-
-        public float ReloadRate => m_GunData.ReloadTime;
-
-        //弹道偏移值
-        public Queue<Vector3> excusions = new Queue<Vector3>();
-        protected Vector3[] vectors = new Vector3[] {new Vector3(-1f,0f,0),
-                                              new Vector3(-1f,0f,0),
-                                              new Vector3(-1f,0f,0),
-                                              new Vector3(-2f,0f,0),
-                                              new Vector3(-3f,0f,0),
-                                              new Vector3(-3f,0f,0),
-                                              new Vector3(0f,1f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,2f,0),
-                                              new Vector3(0f,-1f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),                                              new Vector3(0f,-1f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0),
-                                              new Vector3(0f,-2f,0)};
-
-        [SerializeField]
+        //武器动画
         private Animator m_FirstPersonAnimator;
+
+        //弹道偏移队列
+        public Queue<Vector3> excursion = new Queue<Vector3>();
+
+        public float ReloadRate {
+            get;
+            private set;
+        }
+
+        public float AttackInterval => m_GunData.AttackInterval;
 
         public Animator FirstPersonAnimator
         {
@@ -78,12 +55,6 @@ namespace NetworkBasedFPS
             base.OnInit(userData);
 
             shootPoint = transform.Find("Armature/Weapon/ShootPoint");
-
-            for (int i = 0; i < vectors.Length; i++)
-            {
-                excusions.Enqueue(vectors[i]);
-            }
-
         }
 
         protected override void OnShow(object userData)
@@ -97,6 +68,11 @@ namespace NetworkBasedFPS
                 return;
             }
             currentBullects = m_GunData.MagazineSize;
+            for (int i = 0; i < m_GunData.Trajectory.Count; i++)
+            {
+                excursion.Enqueue(m_GunData.Trajectory[i]);
+            }
+            ReloadRate = m_GunData.ReloadTime;
 
             m_FirstPersonAnimator = GetComponent<Animator>();
             GetComponent<EquipmentAnimation>().AssignAnimations(m_FirstPersonAnimator);
@@ -115,7 +91,7 @@ namespace NetworkBasedFPS
             }
 
             //装弹计时器每帧增加
-            if (reloadTimer < m_GunData.ReloadTime)
+            if (reloadTimer < ReloadRate)
             {
                 reloadTimer += Time.deltaTime;
             }
@@ -126,41 +102,36 @@ namespace NetworkBasedFPS
             base.OnAttachTo(parentEntity, parentTransform, userData);
 
             Name = Utility.Text.Format("Weapon of {0}", parentEntity.Name);
-            CachedTransform.localPosition = new Vector3(0.045f, 0.079f, 0.33f);
+            CachedTransform.localPosition = m_GunData.AttachLocalPosition;
 
-            (parentEntity as Player).firstPersonAnimator = m_FirstPersonAnimator;
-
+            gameObject.SetActive(false);
         }
-
-        //public void TryAttack()
-        //{
-        //    if (Time.time < m_NextAttackTime)
-        //    {
-        //        return;
-        //    }
-
-        //    m_NextAttackTime = Time.time + m_GunData.AttackInterval;
-        //    GameEntry.Entity.ShowBullet(new BulletData(GameEntry.Entity.GenerateSerialId(), m_GunData.BulletId, m_GunData.OwnerId, m_GunData.OwnerCamp, m_GunData.Attack, m_GunData.BulletSpeed)
-        //    {
-        //        Position = CachedTransform.position,
-        //    });
-        //    GameEntry.Sound.PlaySound(m_GunData.BulletSoundId);
-        //}
 
         public void Fire()
         {
-
-            //控制武器射击速度，两者的差值就是枪械的设计间隔
-            if (fireTimer < m_GunData.AttackInterval || currentBullects <= 0 || reloadTimer < m_GunData.ReloadTime)
+            if (currentBullects <= 0)
             {
-                m_FirstPersonAnimator.SetTrigger("Fire");
+                ReloadBullet();
                 return;
             }
+            //控制武器射击速度，两者的差值就是枪械的设计间隔
+            if (fireTimer < m_GunData.AttackInterval || reloadTimer < ReloadRate)
+            {
+                return;
+            }
+            m_FirstPersonAnimator.SetTrigger("Fire");
 
-            // TODO: 射线判定生成弹孔特效
-            //RaycastHit hit;
-            
+            //射线判定生成弹孔特效
+            RaycastHit hit;
             shootDirection = shootPoint.forward + shootPoint.right * Random.Range(0, 0.05f) + shootPoint.up * Random.Range(0, 0.05f);
+            if (Physics.Raycast(shootPoint.position, shootDirection, out hit, m_GunData.AttackRange))
+            {
+                GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
+                {
+                    Position = hit.point,
+                    Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
+                });
+            }
 
             //依据发射方向创建子弹预设体
             GameEntry.Entity.ShowBullet(new BulletData(GameEntry.Entity.GenerateSerialId(), m_GunData.BulletId, m_GunData.OwnerId, m_GunData.OwnerCamp, m_GunData.Attack, m_GunData.BulletSpeed)
@@ -191,10 +162,22 @@ namespace NetworkBasedFPS
         /// 换弹逻辑
         /// </summary>
         /// <param name="key"></param>
-        public void ReloadBullet(KeyCode key)
+        public void ReloadBullet()
         {
-            if (Input.GetKeyDown(key) && currentBullects < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
+            if (currentBullects < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
             {
+                // 播放换弹动画
+                if(currentBullects > 0)
+                {
+                    m_FirstPersonAnimator.SetTrigger("Reload");
+                    ReloadRate = m_GunData.ReloadTime;
+                }
+                else
+                {
+                    m_FirstPersonAnimator.SetTrigger("Empty Reload");
+                    ReloadRate = m_GunData.EmptyReloadTime;
+                }
+
                 //计算出当前子弹数补满一个弹夹需要的的剩余子弹
                 int bulletNeed = m_GunData.MagazineSize - currentBullects;
 
@@ -209,8 +192,6 @@ namespace NetworkBasedFPS
                     m_GunData.BulletNum = 0;
                 }
                 reloadTimer = 0;
-
-                FirstPersonAnimator.SetTrigger("Reload");
             }
             else
             {

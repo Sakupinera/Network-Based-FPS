@@ -18,7 +18,8 @@ namespace NetworkBasedFPS
             "Gun",
             "UIForm",
             "UISound",
-            "Sound"
+            "Sound",
+            "Effect"
         };
 
         private Dictionary<string, bool> m_LoadedFlag = new Dictionary<string, bool>();
