@@ -39,12 +39,15 @@ namespace NetworkBasedFPS
         [SerializeField]
         private int m_HitSoundId = 0;
 
+        public CtrlType CtrlType { get; set; }
+
+
         public PlayerData(int entityId, int typeId) : base(entityId, typeId, CampType.Unknown)
         {
 
             IDataTable<DRCharacter> dtCharacter = GameEntry.DataTable.GetDataTable<DRCharacter>();
             DRCharacter drCharacter = dtCharacter.GetDataRow(typeId);
-            if(drCharacter == null)
+            if (drCharacter == null)
             {
                 return;
             }
@@ -52,7 +55,7 @@ namespace NetworkBasedFPS
             m_MaxHP = drCharacter.MaxHP;
             m_Speed = drCharacter.MoveSpeed;
             m_FootStepSoundId = drCharacter.FootStepSoundId;
-
+            HP = m_MaxHP;
             AttachWeaponData(new GunData(GameEntry.Entity.GenerateSerialId(), 30000, Id, Camp));
         }
 

@@ -1,18 +1,30 @@
 using GameFramework;
+using GamePlayer;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 using UnityGameFramework.Runtime;
 
-namespace NetworkBasedFPS {
+namespace NetworkBasedFPS
+{
+    public enum CtrlType
+    {
+        player,
+        net,
+    }
+
     /// <summary>
     /// 玩家类
     /// </summary>
     public class Player : Entity
     {
+        public PlayerData GetPlayerData { get { return m_PlayerData; } }
+
+
         [SerializeField]
         private PlayerData m_PlayerData = null;
+
 
         [SerializeField]
         private List<Gun> m_Guns = new List<Gun>();
@@ -84,6 +96,8 @@ namespace NetworkBasedFPS {
             playerBody = this.transform;
 
             thridPersonAnimator = GetComponent<Animator>();
+
+
         }
 
         protected override void OnShow(object userData)
@@ -91,7 +105,7 @@ namespace NetworkBasedFPS {
             base.OnShow(userData);
 
             m_PlayerData = userData as PlayerData;
-            if(m_PlayerData == null)
+            if (m_PlayerData == null)
             {
                 Log.Error("Player data is invalid.");
             }
@@ -99,28 +113,33 @@ namespace NetworkBasedFPS {
             Name = Utility.Text.Format("Player ({0})", m_PlayerData.Name);
 
             List<GunData> gunDatas = m_PlayerData.GetAllGunDatas();
-            for(int i = 0; i < gunDatas.Count; i++)
+            for (int i = 0; i < gunDatas.Count; i++)
             {
                 GameEntry.Entity.ShowGun(gunDatas[i]);
             }
+
+            GameEntry.Event.Fire(this, PlayerOnShowEventArgs.Create(this.m_PlayerData.Id));
+
+
+            transform.position = m_PlayerData.Position;
         }
 
         protected override void OnAttached(EntityLogic childEntity, Transform parentTransform, object userData)
         {
             base.OnAttached(childEntity, parentTransform, userData);
 
-            if(childEntity is Gun)
+            if (childEntity is Gun)
             {
                 m_Guns.Add((Gun)childEntity);
                 m_CurrentGun = childEntity as Gun;
                 return;
             }
-            if(childEntity is MeleeWeapon)
+            if (childEntity is MeleeWeapon)
             {
                 m_MeleeWeapons.Add((MeleeWeapon)childEntity);
                 return;
             }
-            if(childEntity is Thrown)
+            if (childEntity is Thrown)
             {
                 m_Throwns.Add((Thrown)childEntity);
             }
@@ -129,7 +148,28 @@ namespace NetworkBasedFPS {
         protected override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
+            //每帧进行重力检测
+            GravitySimulation();
+            if (m_PlayerData.CtrlType == CtrlType.net)
+            {
+                NetUpdate();
+                //return;
+            }
+            PlayerCtrl();
 
+        }
+
+
+        private float lastSendInfoTime = float.MinValue;
+
+        //玩家控制
+        public void PlayerCtrl()
+        {
+            if (m_PlayerData.CtrlType != CtrlType.player)
+                return;
+
+            //每帧检测玩家的移动
+            CheckBodyAxis(new string[2] { "Horizontal", "Vertical" });
             //每帧检查玩家的鼠标移动
             CheckMouseAxis(new string[2] { "Mouse X", "Mouse Y" });
             //每帧检查玩家是否跳跃按下
@@ -138,15 +178,35 @@ namespace NetworkBasedFPS {
             CheckMouseButtonDown(0);
             //每帧检测玩家是否按下下蹲
             CheckKeyCode(KeyCode.LeftControl);
-            //每帧检测玩家的移动
-            CheckBodyAxis(new string[2] { "Horizontal", "Vertical" });
             //每帧检测玩家是否换弹
             CheckKeyCode(KeyCode.R);
             //每帧检测玩家是否开镜
             CheckMouseButtonDown(1);
 
-            //每帧进行重力检测
-            GravitySimulation();
+            //网络同步
+            if (Time.time - lastSendInfoTime > 0.2f)
+            {
+                SendMoveInfo();
+                lastSendInfoTime = Time.time;
+            }
+        }
+
+        //发送位置信息
+        private void SendMoveInfo()
+        {
+            MoveMsg msg = new MoveMsg();
+            PlayerPos pos = new PlayerPos();
+            pos.id = GameEntry.Net.ID;
+            pos.posX = transform.position.x;
+            pos.posY = transform.position.y;
+            pos.posZ = transform.position.z;
+            pos.rotX = transform.rotation.x;
+            pos.rotY = transform.rotation.y;
+            pos.rotZ = transform.rotation.z;
+            msg.playerPos = pos;
+            print(transform.position);
+            print(msg.playerPos.posX + " " + msg.playerPos.posY + " " + msg.playerPos.posZ);
+            GameEntry.Net.Send(msg);
         }
 
         protected override void OnHide(bool isShutdown, object userData)
@@ -219,7 +279,8 @@ namespace NetworkBasedFPS {
         /// <param name="key"></param>
         private void CheckKeyCode(KeyCode key)
         {
-            switch(key){
+            switch (key)
+            {
                 case KeyCode.R:
                     m_CurrentGun.ReloadBullet(key);
                     break;
@@ -379,6 +440,79 @@ namespace NetworkBasedFPS {
             {
                 //LeftControl抬起取消下蹲动画，并且回复速度
                 thridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
+            }
+        }
+
+        //last 上次的位置信息
+        Vector3 lPos;
+        Vector3 lRot;
+        //forecast 预测的位置信息
+        Vector3 fPos;
+        Vector3 fRot;
+        //时间间隔
+        float delta = 1;
+        //上次接收的时间
+        float lastRecvInfoTime = float.MinValue;
+
+
+        //位置预测
+        public void NetForecastInfo(Vector3 nPos, Vector3 nRot)
+        {
+            //预测的位置
+            fPos = lPos + (nPos - lPos) * 2;
+            fRot = lRot + (nRot - lRot) * 2;
+            if (Time.time - lastRecvInfoTime > 0.3f)
+            {
+                fPos = nPos;
+                fRot = nRot;
+            }
+            //时间
+            delta = Time.time - lastRecvInfoTime;
+            //更新
+            lPos = nPos;
+            lRot = nRot;
+            lastRecvInfoTime = Time.time;
+        }
+
+        //初始化位置预测数据
+        public void InitNetCtrl()
+        {
+            playerCame.gameObject.SetActive(false);
+            ChangeLayer(transform, "ThridPerson_Other");
+
+            lPos = transform.position;
+            lRot = transform.eulerAngles;
+            fPos = transform.position;
+            fRot = transform.eulerAngles;
+        }
+
+        public void NetUpdate()
+        {
+            //当前位置
+            Vector3 pos = transform.position;
+            Vector3 rot = transform.eulerAngles;
+
+            //更新位置
+            if (delta > 0)
+            {
+                transform.position = Vector3.Lerp(pos, fPos, delta);
+                transform.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
+                                                  Quaternion.Euler(fRot), delta);
+            }
+        }
+
+        private void ChangeLayer(Transform trans, string targetLayer)
+        {
+            if (LayerMask.NameToLayer(targetLayer) == -1)
+            {
+                Debug.Log("Layer中不存在,请手动添加LayerName");
+                return;
+            }
+            //遍历更改所有子物体layer
+            trans.gameObject.layer = LayerMask.NameToLayer(targetLayer);
+            foreach (Transform child in trans)
+            {
+                ChangeLayer(child, targetLayer);
             }
         }
     }
