@@ -21,6 +21,7 @@ public class MsgPool
 		Register(2014, typeof(LeaveRoomMsg), typeof(LeaveRoomMsgHandler));
 		Register(2015, typeof(ChangeCampMsg), typeof(ChangeCampMsgHandler));
 		Register(2016, typeof(RequestFightMsg), typeof(RequestFightMsgHandler));
+		Register(2017, typeof(LoadedSceneMsg), typeof(LoadedSceneMsgHandler));
 		Register(1002, typeof(HeartMsg), typeof(HeartMsgHandler));
 		Register(1003, typeof(QuitMsg), typeof(QuitMsgHandler));
 		Register(3000, typeof(GetListMsg), typeof(GetListMsgHandler));

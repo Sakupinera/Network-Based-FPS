@@ -142,6 +142,10 @@
   <message id="2016" name="RequestFightMsg" namespace="GamePlayer">
     <field type="int" name="id"/>
   </message>
+  <!--场景加载完成消息-->
+  <message id="2017" name="LoadedSceneMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+  </message>
 
 
   <!--心跳消息-->

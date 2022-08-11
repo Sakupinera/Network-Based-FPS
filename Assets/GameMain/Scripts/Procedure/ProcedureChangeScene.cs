@@ -1,5 +1,6 @@
 ﻿using GameFramework.DataTable;
 using GameFramework.Event;
+using GamePlayer;
 using UnityGameFramework.Runtime;
 using ProcedureOwner = GameFramework.Fsm.IFsm<GameFramework.Procedure.IProcedureManager>;
 
@@ -90,6 +91,14 @@ namespace NetworkBasedFPS
             Log.Info("Load scene '{0}' OK.", ne.SceneAssetName);
 
             m_IsChangeSceneComplete = true;
+
+            if (ne.SceneAssetName == "Battle")
+            {
+                LoadedSceneMsg msg = new LoadedSceneMsg();
+                msg.id = GameEntry.Net.ID;
+                GameEntry.Net.Send(msg);
+                //Log.Info()
+            }
         }
 
         private void OnLoadSceneFailure(object sender, GameEventArgs e)

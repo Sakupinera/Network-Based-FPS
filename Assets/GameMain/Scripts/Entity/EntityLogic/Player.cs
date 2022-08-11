@@ -148,6 +148,12 @@ namespace NetworkBasedFPS
         protected override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
+
+
+        }
+
+        private void FixedUpdate()
+        {
             //每帧进行重力检测
             GravitySimulation();
             if (m_PlayerData.CtrlType == CtrlType.net)
@@ -156,9 +162,7 @@ namespace NetworkBasedFPS
                 //return;
             }
             PlayerCtrl();
-
         }
-
 
         private float lastSendInfoTime = float.MinValue;
 
@@ -184,7 +188,7 @@ namespace NetworkBasedFPS
             CheckMouseButtonDown(1);
 
             //网络同步
-            if (Time.time - lastSendInfoTime > 0.2f)
+            if (Time.time - lastSendInfoTime > 0.02f)
             {
                 SendMoveInfo();
                 lastSendInfoTime = Time.time;
@@ -200,12 +204,12 @@ namespace NetworkBasedFPS
             pos.posX = transform.position.x;
             pos.posY = transform.position.y;
             pos.posZ = transform.position.z;
-            pos.rotX = transform.rotation.x;
-            pos.rotY = transform.rotation.y;
-            pos.rotZ = transform.rotation.z;
+            pos.rotX = transform.eulerAngles.x;
+            pos.rotY = transform.eulerAngles.y;
+            pos.rotZ = transform.eulerAngles.z;
             msg.playerPos = pos;
-            print(transform.position);
-            print(msg.playerPos.posX + " " + msg.playerPos.posY + " " + msg.playerPos.posZ);
+            //print(transform.position + " " + transform.rotation);
+            //print(msg.playerPos.posX + " " + msg.playerPos.posY + " " + msg.playerPos.posZ + " " + msg.playerPos.rotX + " " + msg.playerPos.rotY + " " + msg.playerPos.rotZ);
             GameEntry.Net.Send(msg);
         }
 
@@ -395,6 +399,7 @@ namespace NetworkBasedFPS
                 {
                     case "Jump":
                         {
+                            print("跳");
                             //Physics.CheckSpher在一个指定位置创建一个指定半径的球体，并与指定的层级的物体进行碰撞判断
                             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
                             if (isGrounded)
@@ -459,15 +464,15 @@ namespace NetworkBasedFPS
         public void NetForecastInfo(Vector3 nPos, Vector3 nRot)
         {
             //预测的位置
-            fPos = lPos + (nPos - lPos) * 2;
-            fRot = lRot + (nRot - lRot) * 2;
-            if (Time.time - lastRecvInfoTime > 0.3f)
-            {
-                fPos = nPos;
-                fRot = nRot;
-            }
-            //时间
-            delta = Time.time - lastRecvInfoTime;
+            fPos = lPos + (nPos - lPos) * 1.2f;
+            fRot = lRot + (nRot - lRot) * 1.2f;
+            //if (Time.time - lastRecvInfoTime > 0.3f)
+            //{
+            //    fPos = nPos;
+            //    fRot = nRot;
+            //}
+            ////时间
+            //delta = Time.time - lastRecvInfoTime;
             //更新
             lPos = nPos;
             lRot = nRot;
@@ -484,21 +489,39 @@ namespace NetworkBasedFPS
             lRot = transform.eulerAngles;
             fPos = transform.position;
             fRot = transform.eulerAngles;
+
+            loffset = new Vector3(0, 0, 0);
         }
 
+        Vector3 loffset;
         public void NetUpdate()
         {
             //当前位置
-            Vector3 pos = transform.position;
-            Vector3 rot = transform.eulerAngles;
+            Vector3 pos = playerBody.position;
+            Vector3 rot = playerBody.eulerAngles;
 
             //更新位置
-            if (delta > 0)
+            //if (delta > 0)
+            //{
+            //playerBody.position = Vector3.Lerp(pos, fPos, delta);
+            //playerBody.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
+            //                                  Quaternion.Euler(fRot), delta);
+            var offset = (fPos - transform.position);
+            if (offset.sqrMagnitude > 0.005f)
             {
-                transform.position = Vector3.Lerp(pos, fPos, delta);
-                transform.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
-                                                  Quaternion.Euler(fRot), delta);
+                offset = offset.normalized;
+                thridPersonAnimator.SetFloat("VelocityX", offset.x, Time.deltaTime * 5, Time.deltaTime);
+                thridPersonAnimator.SetFloat("VelocityZ", offset.z, Time.deltaTime * 5, Time.deltaTime);
+                controller.Move(offset * m_PlayerData.Speed * Time.deltaTime);
             }
+            else
+            {
+                thridPersonAnimator.SetFloat("VelocityX", 0, Time.deltaTime * 5, Time.deltaTime);
+                thridPersonAnimator.SetFloat("VelocityZ", 0, Time.deltaTime * 5, Time.deltaTime);
+            }
+            playerBody.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
+                                              Quaternion.Euler(fRot), Time.deltaTime * 10);
+            //}
         }
 
         private void ChangeLayer(Transform trans, string targetLayer)
