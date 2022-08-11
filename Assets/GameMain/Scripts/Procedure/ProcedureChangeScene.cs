@@ -89,7 +89,7 @@ namespace NetworkBasedFPS
             }
 
             Log.Info("Load scene '{0}' OK.", ne.SceneAssetName);
-
+            Log.Error("aaaaaaaaaaa");
             m_IsChangeSceneComplete = true;
 
             if (ne.SceneAssetName == "Battle")

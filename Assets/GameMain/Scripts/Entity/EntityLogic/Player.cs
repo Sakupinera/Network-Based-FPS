@@ -14,6 +14,15 @@ namespace NetworkBasedFPS
         net,
     }
 
+    //玩家状态枚举
+    public enum PlayerStats
+    {
+        WALK,
+        CROUCH,
+        JUMP,
+        IDLE
+    }
+
     /// <summary>
     /// 玩家类
     /// </summary>
@@ -458,6 +467,7 @@ namespace NetworkBasedFPS
                             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
                             if (isGrounded)
                             {
+                                print("跳了");
                                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
                                 playerStats = PlayerStats.JUMP;
                             }

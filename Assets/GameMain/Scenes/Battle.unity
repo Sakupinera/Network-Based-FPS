@@ -526,12 +526,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1399247220444709540, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1399247220444709540, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
       propertyPath: m_TagString
       value: Ground
       objectReference: {fileID: 0}
     - target: {fileID: 1844905331015486910, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1844905331015486910, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
       propertyPath: m_TagString
       value: Ground
+      objectReference: {fileID: 0}
+    - target: {fileID: 7384745766431068766, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7384745766431068766, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
       propertyPath: m_TagString
@@ -584,6 +596,10 @@ PrefabInstance:
     - target: {fileID: 9090762415937700707, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
       propertyPath: m_Name
       value: dx2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9090762415937700707, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9090762415937700707, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
       propertyPath: m_TagString
