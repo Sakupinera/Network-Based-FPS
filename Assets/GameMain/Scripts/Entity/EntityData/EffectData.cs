@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameFramework.DataTable;
+using System;
 using UnityEngine;
 
 namespace NetworkBasedFPS
@@ -12,7 +13,14 @@ namespace NetworkBasedFPS
         public EffectData(int entityId, int typeId)
             : base(entityId, typeId)
         {
-            m_KeepTime = 2f;
+            IDataTable<DREffect> dtGun = GameEntry.DataTable.GetDataTable<DREffect>();
+            DREffect drGun = dtGun.GetDataRow(TypeId);
+            if (drGun == null)
+            {
+                return;
+            }
+
+            m_KeepTime = drGun.KeepTime;
         }
 
         public float KeepTime

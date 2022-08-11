@@ -5,7 +5,8 @@ using UnityEngine;
 
 using UnityGameFramework.Runtime;
 
-namespace NetworkBasedFPS {
+namespace NetworkBasedFPS
+{
     /// <summary>
     /// 玩家类
     /// </summary>
@@ -43,14 +44,11 @@ namespace NetworkBasedFPS {
         public bool isGrounded;
 
         //用于鼠标转动视角的一系列变量
-        public float mouseSensitivity = 100f;
+        public float mouseSensitivity;
         public Texture2D tex;
         public Transform playerBody;
         public Transform playerCame;
         public float xRotation = 0f;
-
-        //移动音效
-        public AudioSource walkAS;
 
         //角色状态
         public PlayerStats playerStats;
@@ -60,7 +58,6 @@ namespace NetworkBasedFPS {
 
         public CharacterController controller;
 
-        public Animator firstPersonAnimator;
         public Animator thridPersonAnimator;
 
         //按下开火键的累计时间
@@ -78,6 +75,7 @@ namespace NetworkBasedFPS {
             //获得自身控件
             controller = GetComponent<CharacterController>();
             //walkAS = GetComponent<AudioSource>();
+            mouseSensitivity = GameEntry.Setting.GetInt("MouseSensitivity");
             groundCheck = transform.Find("GroundCheck");
             playerCame = transform.Find("WorldCamera");
             groundMask = LayerMask.GetMask("Ground");
@@ -91,7 +89,7 @@ namespace NetworkBasedFPS {
             base.OnShow(userData);
 
             m_PlayerData = userData as PlayerData;
-            if(m_PlayerData == null)
+            if (m_PlayerData == null)
             {
                 Log.Error("Player data is invalid.");
             }
@@ -99,7 +97,7 @@ namespace NetworkBasedFPS {
             Name = Utility.Text.Format("Player ({0})", m_PlayerData.Name);
 
             List<GunData> gunDatas = m_PlayerData.GetAllGunDatas();
-            for(int i = 0; i < gunDatas.Count; i++)
+            for (int i = 0; i < gunDatas.Count; i++)
             {
                 GameEntry.Entity.ShowGun(gunDatas[i]);
             }
@@ -109,20 +107,20 @@ namespace NetworkBasedFPS {
         {
             base.OnAttached(childEntity, parentTransform, userData);
 
-            if(childEntity is Gun)
+            if (childEntity is Gun)
             {
                 m_Guns.Add((Gun)childEntity);
-                m_CurrentGun = childEntity as Gun;
                 return;
             }
-            if(childEntity is MeleeWeapon)
+            if (childEntity is MeleeWeapon)
             {
                 m_MeleeWeapons.Add((MeleeWeapon)childEntity);
                 return;
             }
-            if(childEntity is Thrown)
+            if (childEntity is Thrown)
             {
                 m_Throwns.Add((Thrown)childEntity);
+                return;
             }
         }
 
@@ -134,16 +132,23 @@ namespace NetworkBasedFPS {
             CheckMouseAxis(new string[2] { "Mouse X", "Mouse Y" });
             //每帧检查玩家是否跳跃按下
             CheckButtonDown("Jump");
-            //每帧检测玩家是否开火
-            CheckMouseButtonDown(0);
             //每帧检测玩家是否按下下蹲
             CheckKeyCode(KeyCode.LeftControl);
+            //检测换枪
+            CheckKeyCode(KeyCode.Alpha1);
+            CheckKeyCode(KeyCode.Alpha2);
             //每帧检测玩家的移动
             CheckBodyAxis(new string[2] { "Horizontal", "Vertical" });
-            //每帧检测玩家是否换弹
-            CheckKeyCode(KeyCode.R);
-            //每帧检测玩家是否开镜
-            CheckMouseButtonDown(1);
+
+            if (m_CurrentGun != null)
+            {
+                //每帧检测玩家是否开火
+                CheckMouseButtonDown(0);
+                //每帧检测玩家是否开镜
+                CheckMouseButtonDown(1);
+                //每帧检测玩家是否换弹
+                CheckKeyCode(KeyCode.R);
+            }
 
             //每帧进行重力检测
             GravitySimulation();
@@ -219,12 +224,22 @@ namespace NetworkBasedFPS {
         /// <param name="key"></param>
         private void CheckKeyCode(KeyCode key)
         {
-            switch(key){
+            switch (key)
+            {
                 case KeyCode.R:
-                    m_CurrentGun.ReloadBullet(key);
+                    if (Input.GetKeyDown(key))
+                        m_CurrentGun.ReloadBullet();
                     break;
                 case KeyCode.LeftControl:
                     Crouch(key);
+                    break;
+                case KeyCode.Alpha1:
+                    if (Input.GetKeyDown(KeyCode.Alpha1))
+                        WeaponSwap(0);
+                    break;
+                case KeyCode.Alpha2:
+                    if (Input.GetKeyDown(KeyCode.Alpha2))
+                        WeaponSwap(1);
                     break;
             }
         }
@@ -246,7 +261,7 @@ namespace NetworkBasedFPS {
                 if (m_CurrentGun.currentBullects > 0 && m_CurrentGun.reloadTimer >= m_CurrentGun.ReloadRate)
                 {
                     cFireTime += Time.deltaTime;
-                    if (cFireTime >= m_CurrentGun.cFireMaxTime)
+                    if (cFireTime >= m_CurrentGun.AttackInterval)
                     {
                         cFireTime = 0;
                         Vector3 vector = m_CurrentGun.excursion.Dequeue();
@@ -265,6 +280,46 @@ namespace NetworkBasedFPS {
             {
                 cFireTime = 0f;
             }
+        }
+
+        /// <summary>
+        /// 玩家切枪逻辑
+        /// </summary>
+        public void WeaponSwap(int index)
+        {
+            if (m_CurrentGun != null)
+            {
+                m_CurrentGun.FirstPersonAnimator.SetTrigger("Unwield");
+                StartCoroutine(RealWeaponSwap(index));
+            }
+            else
+            {
+                m_Guns[index].gameObject.SetActive(true);
+                m_CurrentGun = m_Guns[index];
+            }
+        }
+
+        /// <summary>
+        /// 协程换枪
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private IEnumerator RealWeaponSwap(int index)
+        {
+            yield return null;
+            AnimatorStateInfo stateinfo = m_CurrentGun.FirstPersonAnimator.GetCurrentAnimatorStateInfo(0);
+            if (stateinfo.IsName("Unwield") && (stateinfo.normalizedTime >= 1.0f))
+            {
+                m_CurrentGun.gameObject.SetActive(false);
+
+                m_Guns[index].gameObject.SetActive(true);
+                m_CurrentGun = m_Guns[index];
+            }
+            else
+            {
+                StartCoroutine(RealWeaponSwap(index));
+            }
+
         }
 
         /// <summary>
@@ -381,5 +436,6 @@ namespace NetworkBasedFPS {
                 thridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
             }
         }
+
     }
 }

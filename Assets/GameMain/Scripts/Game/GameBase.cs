@@ -37,6 +37,9 @@ namespace NetworkBasedFPS
                 Position = new Vector3(50f, 0, 50f)
             });
 
+            // 设置鼠标灵敏度
+            GameEntry.Setting.SetInt("MouseSensitivity", 100);
+
             GameOver = false;
             m_Player = null;
         }

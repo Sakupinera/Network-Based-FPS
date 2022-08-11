@@ -52,11 +52,6 @@ namespace NetworkBasedFPS
             if (other.CompareTag("Ground"))
             {
                 //当子弹销毁时，可以创建一个火花特效
-                GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70002)
-                {
-                    Position = CachedTransform.position,
-                    Rotation = CachedTransform.rotation
-                });
                 GameEntry.Entity.HideEntity(this);
             }
             if (other.CompareTag("Player"))
@@ -66,6 +61,27 @@ namespace NetworkBasedFPS
                 GameEntry.Entity.HideEntity(this);
             }
         }
+        //private void DoHitscan(Camera camera)
+        //{
+        //    RaycastHit hitInfo;
+
+        //    Ray ray = camera.ViewportPointToRay(Vector2.one * 0.5f);
+
+        //    if(Physics.Raycast(ray, out hitInfo, 50, LayerMask.NameToLayer("Ground"))){
+        //        if(hitInfo.collider.gameObject.tag == "Player")
+        //        {
+        //            return;
+        //        }
+        //        //当子弹销毁时，可以创建一个弹孔特效
+        //        GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
+        //        {
+        //            Position = CachedTransform.position,
+        //            Rotation = CachedTransform.rotation
+        //        });
+        //        GameEntry.Entity.HideEntity(this);
+        //    }
+        //}
+
 
         protected override void OnHide(bool isShutdown, object userData)
         {

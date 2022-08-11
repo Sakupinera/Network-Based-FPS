@@ -15,6 +15,12 @@ namespace NetworkBasedFPS
         private float m_AttackInterval = 0;
 
         [SerializeField]
+        private float m_AttackRange = 0;
+
+        [SerializeField]
+        private Vector3 m_AttachLocalPosition = new Vector3();
+
+        [SerializeField]
         private int m_MagazineSize = 0;
 
         [SerializeField]
@@ -22,6 +28,9 @@ namespace NetworkBasedFPS
 
         [SerializeField]
         private float m_ReloadTime = 0;
+
+        [SerializeField]
+        private float m_EmptyReloadTime = 0;
 
         [SerializeField]
         private int m_BulletId = 0;
@@ -53,20 +62,17 @@ namespace NetworkBasedFPS
 
             m_Attack = drGun.Attack;
             m_AttackInterval = drGun.AttackInterval;
+            m_AttackRange = drGun.AttackRange;
+            m_AttachLocalPosition = drGun.AttachPosition;
             m_MagazineSize = drGun.MagazineSize;
             m_BulletNum = drGun.BulletMaxSize;
             m_ReloadTime = drGun.ReloadTime;
+            m_EmptyReloadTime = drGun.EmptyReloadTime;
             m_BulletId = drGun.BulletId;
             m_BulletSpeed = drGun.BulletSpeed;
             m_BulletSoundId = drGun.FireSoundId;
             m_MuzzleSparkId = drGun.MuzzleSparkId;
             m_BulletHoleId = drGun.BulletHoleId;
-
-            for(int i = 0; i < drGun.Trajectory.Count; i++)
-            {
-                Debug.Log(drGun.Trajectory[i]);
-            }
-
             m_Trajectory = drGun.Trajectory;
         }
 
@@ -84,6 +90,19 @@ namespace NetworkBasedFPS
         public float AttackInterval
         {
             get => m_AttackInterval;
+        }
+
+        /// <summary>
+        /// 射击范围
+        /// </summary>
+        public float AttackRange
+        {
+            get => m_AttackRange;
+        }
+
+        public Vector3 AttachLocalPosition
+        {
+            get => m_AttachLocalPosition;
         }
 
         /// <summary>
@@ -109,6 +128,11 @@ namespace NetworkBasedFPS
         public float ReloadTime
         {
             get => m_ReloadTime;
+        }
+
+        public float EmptyReloadTime
+        {
+            get => m_EmptyReloadTime;
         }
 
         /// <summary>

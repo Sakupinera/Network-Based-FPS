@@ -5,7 +5,7 @@
 // Feedback: mailto:ellan@gameframework.cn
 //------------------------------------------------------------
 // 此文件由工具自动生成，请勿直接修改。
-// 生成时间：2022-08-09 17:52:15.443
+// 生成时间：2022-08-11 11:20:44.904
 //------------------------------------------------------------
 
 using GameFramework;
@@ -55,6 +55,24 @@ namespace NetworkBasedFPS
         }
 
         /// <summary>
+        /// 获取攻击范围。
+        /// </summary>
+        public float AttackRange
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// 获取子实体局部坐标。
+        /// </summary>
+        public Vector3 AttachPosition
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// 获取弹夹容量。
         /// </summary>
         public int MagazineSize
@@ -67,6 +85,15 @@ namespace NetworkBasedFPS
         /// 获取换弹时间。
         /// </summary>
         public float ReloadTime
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// 获取空弹夹换弹时间。
+        /// </summary>
+        public float EmptyReloadTime
         {
             get;
             private set;
@@ -149,8 +176,11 @@ namespace NetworkBasedFPS
             index++;
             Attack = int.Parse(columnStrings[index++]);
             AttackInterval = float.Parse(columnStrings[index++]);
+            AttackRange = float.Parse(columnStrings[index++]);
+            AttachPosition = DataTableExtension.ParseVector3(columnStrings[index++]);
             MagazineSize = int.Parse(columnStrings[index++]);
             ReloadTime = float.Parse(columnStrings[index++]);
+            EmptyReloadTime = float.Parse(columnStrings[index++]);
             BulletId = int.Parse(columnStrings[index++]);
             BulletSpeed = float.Parse(columnStrings[index++]);
             BulletMaxSize = int.Parse(columnStrings[index++]);
