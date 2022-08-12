@@ -161,13 +161,17 @@ namespace NetworkBasedFPS
             }
         }
 
-
+        int n = 0;
         private void UpdatePlayerMoveInfo(object sender, GameEventArgs e)
         {
             MsgEventArgs<MoveMsg> msgEventArgs = (MsgEventArgs<MoveMsg>)e;
             PlayerPos pos = msgEventArgs.Msg.playerPos;
             if (pos.id == GameEntry.Net.ID)
+            {
+
+                Debug.Log("接收 " + n++);
                 return;
+            }
             Player player = list[pos.id];
             player.NetForecastInfo(new Vector3(pos.posX, pos.posY, pos.posZ), new Vector3(pos.rotX, pos.rotY, pos.rotZ));
         }

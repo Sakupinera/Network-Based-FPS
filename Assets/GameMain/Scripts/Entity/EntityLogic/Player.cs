@@ -201,14 +201,14 @@ namespace NetworkBasedFPS
             }
 
             //网络同步
-            if (Time.time - lastSendInfoTime > 0.02f)
+            if (Time.time - lastSendInfoTime > 0.1f)
             {
                 SendMoveInfo();
                 lastSendInfoTime = Time.time;
             }
 
         }
-
+        int n = 0;
         //发送位置信息
         private void SendMoveInfo()
         {
@@ -225,6 +225,8 @@ namespace NetworkBasedFPS
             //print(transform.position + " " + transform.rotation);
             //print(msg.playerPos.posX + " " + msg.playerPos.posY + " " + msg.playerPos.posZ + " " + msg.playerPos.rotX + " " + msg.playerPos.rotY + " " + msg.playerPos.rotZ);
             GameEntry.Net.Send(msg);
+
+            Debug.Log("发送" + n++);
         }
 
         protected override void OnHide(bool isShutdown, object userData)
@@ -462,12 +464,10 @@ namespace NetworkBasedFPS
                 {
                     case "Jump":
                         {
-                            print("跳");
                             //Physics.CheckSpher在一个指定位置创建一个指定半径的球体，并与指定的层级的物体进行碰撞判断
                             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
                             if (isGrounded)
                             {
-                                print("跳了");
                                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
                                 playerStats = PlayerStats.JUMP;
                             }
@@ -565,12 +565,13 @@ namespace NetworkBasedFPS
             Vector3 rot = playerBody.eulerAngles;
 
             //更新位置
-            //if (delta > 0)
-            //{
-            //playerBody.position = Vector3.Lerp(pos, fPos, delta);
-            //playerBody.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
-            //                                  Quaternion.Euler(fRot), delta);
             var offset = (fPos - transform.position);
+            if (offset.sqrMagnitude > 2f)
+            {
+                playerBody.position = fPos;
+                playerBody.eulerAngles = fRot;
+            }
+
             if (offset.sqrMagnitude > 0.005f)
             {
                 offset = offset.normalized;
@@ -585,7 +586,13 @@ namespace NetworkBasedFPS
             }
             playerBody.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
                                               Quaternion.Euler(fRot), Time.deltaTime * 10);
-            //}
+
+            //跳跃
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
+            if (!isGrounded)
+                thridPersonAnimator.SetTrigger("Jump");
+
+
         }
 
         private void ChangeLayer(Transform trans, string targetLayer)

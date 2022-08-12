@@ -70,13 +70,16 @@ namespace NetworkBasedFPS
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
-            if (m_ChangeToMenu)
+            if (m_IsChangeSceneComplete)
             {
-                ChangeState<ProcedureMainMenu>(procedureOwner);
-            }
-            else
-            {
-                ChangeState<ProcedureBattle>(procedureOwner);
+                if (m_ChangeToMenu)
+                {
+                    ChangeState<ProcedureMainMenu>(procedureOwner);
+                }
+                else
+                {
+                    ChangeState<ProcedureBattle>(procedureOwner);
+                }
             }
         }
 
@@ -89,15 +92,13 @@ namespace NetworkBasedFPS
             }
 
             Log.Info("Load scene '{0}' OK.", ne.SceneAssetName);
-            Log.Error("aaaaaaaaaaa");
             m_IsChangeSceneComplete = true;
-
-            if (ne.SceneAssetName == "Battle")
+            Log.Error(ne.SceneAssetName);
+            if (ne.SceneAssetName == AssetUtility.GetSceneAsset("Battle"))
             {
                 LoadedSceneMsg msg = new LoadedSceneMsg();
                 msg.id = GameEntry.Net.ID;
                 GameEntry.Net.Send(msg);
-                //Log.Info()
             }
         }
 
