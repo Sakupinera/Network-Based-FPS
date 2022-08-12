@@ -72,7 +72,8 @@ namespace NetworkBasedFPS
                 }
             }
 
-            procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.MainMenu"));
+            //procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.MainMenu"));
+            procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Battle"));
             ChangeState<ProcedureChangeScene>(procedureOwner);
         }
 

@@ -3,7 +3,7 @@ using UnityGameFramework.Runtime;
 
 namespace NetworkBasedFPS
 {
-    public class MainMenuForm : UGuiForm
+    public class TestForm : UGuiForm
     {
         [SerializeField]
         private GameObject m_QuitButton = null;

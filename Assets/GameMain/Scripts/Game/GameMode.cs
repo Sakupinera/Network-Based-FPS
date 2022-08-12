@@ -26,5 +26,10 @@ namespace NetworkBasedFPS
         /// 生存模式。
         /// </summary>
         Survival,
+
+        /// <summary>
+        /// 单人模式
+        /// </summary>
+        Single
     }
 }

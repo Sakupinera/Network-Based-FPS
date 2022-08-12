@@ -46,5 +46,10 @@ namespace NetworkBasedFPS
         /// 房间面板
         /// </summary>
         RoomForm = 104,
+
+        /// <summary>
+        /// 测试面板
+        /// </summary>
+        TestForm = 255,
     }
 }
