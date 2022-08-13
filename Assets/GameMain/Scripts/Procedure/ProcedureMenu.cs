@@ -7,7 +7,7 @@ using ProcedureOwner = GameFramework.Fsm.IFsm<GameFramework.Procedure.IProcedure
 
 namespace NetworkBasedFPS
 {
-    public class ProcedureMainMenu : ProcedureBase
+    public class ProcedureMenu : ProcedureBase
     {
         private bool m_StartGame = false;
 
@@ -28,7 +28,6 @@ namespace NetworkBasedFPS
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
             base.OnEnter(procedureOwner);
-            Log.Debug("进入菜单流程，可以在这里加载菜单UI");
 
             GameEntry.Event.Subscribe(MsgEventArgs<ResponseFightMsg>.EventId, StartGame);
 

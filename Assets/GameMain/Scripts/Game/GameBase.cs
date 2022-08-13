@@ -31,12 +31,6 @@ namespace NetworkBasedFPS
             GameEntry.Event.Subscribe(ShowEntitySuccessEventArgs.EventId, OnShowEntitySuccess);
             GameEntry.Event.Subscribe(ShowEntityFailureEventArgs.EventId, OnShowEntityFailure);
 
-            //GameEntry.Entity.ShowPlayer(new PlayerData(GameEntry.Entity.GenerateSerialId(), 11001)
-            //{
-            //    Name = "Sakupinera",
-            //    Position = new Vector3(50f, 0, 50f)
-            //});
-
             // 设置鼠标灵敏度
             GameEntry.Setting.SetInt("MouseSensitivity", 100);
 

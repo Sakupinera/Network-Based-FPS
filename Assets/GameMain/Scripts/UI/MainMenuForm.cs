@@ -3,12 +3,12 @@ using UnityGameFramework.Runtime;
 
 namespace NetworkBasedFPS
 {
-    public class MainMenuForm : UGuiForm
+    public class TestForm : UGuiForm
     {
         [SerializeField]
         private GameObject m_QuitButton = null;
 
-        private ProcedureMainMenu m_ProcedureMainMenu = null;
+        private ProcedureMenu m_ProcedureMainMenu = null;
 
         public void OnStartButtonClick()
         {
@@ -40,7 +40,7 @@ namespace NetworkBasedFPS
         {
             base.OnOpen(userData);
 
-            m_ProcedureMainMenu = (ProcedureMainMenu)userData;
+            m_ProcedureMainMenu = (ProcedureMenu)userData;
             if (m_ProcedureMainMenu == null)
             {
                 Log.Warning("ProcedureMainMenu is invalid when open MainMenuForm.");

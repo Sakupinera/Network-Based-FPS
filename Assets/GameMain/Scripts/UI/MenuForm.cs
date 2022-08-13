@@ -11,7 +11,7 @@ namespace NetworkBasedFPS
 {
     public class MenuForm : UGuiForm
     {
-        private ProcedureMainMenu m_ProcedureMenu = null;
+        private ProcedureMenu m_ProcedureMenu = null;
 
         [SerializeField]
         private Button m_StartButton = null;
