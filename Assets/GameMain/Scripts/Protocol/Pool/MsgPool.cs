@@ -13,6 +13,7 @@ public class MsgPool
 		Register(1001, typeof(PlayerInfoMsg), typeof(PlayerInfoMsgHandler));
 		Register(2000, typeof(MoveMsg), typeof(MoveMsgHandler));
 		Register(2001, typeof(StatusMsg), typeof(StatusMsgHandler));
+		Register(2002, typeof(ShootMsg), typeof(ShootMsgHandler));
 		Register(2003, typeof(DamageMsg), typeof(DamageMsgHandler));
 		Register(2010, typeof(GetRoomListMsg), typeof(GetRoomListMsgHandler));
 		Register(2011, typeof(CteateRoomMsg), typeof(CteateRoomMsgHandler));

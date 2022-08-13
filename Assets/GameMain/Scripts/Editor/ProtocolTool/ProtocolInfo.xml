@@ -21,12 +21,9 @@
   </enum>
   <!--玩家状态枚举-->
   <enum name="E_PLAYER_STATUS" namespace="GamePlayer">
-    <field name="Walk"/>
-    <field name="Jump"/>
-    <field name="Fire"/>
-    <field name="Idle"/>
+    <field name="Normal"/>
+    <field name="Silent"/>
     <field name="Crouch"/>
-    <field name="Reload"/>
     <field name="Die"/>
   </enum>
   <enum name="E_MONSTER_TYPE" namespace="GameMonster">
@@ -51,15 +48,15 @@
     <field type="float" name="rotX"/>
     <field type="float" name="rotY"/>
     <field type="float" name="rotZ"/>
-    <field type="float" name="cmRotX"/>
+    <!--<field type="float" name="cmRotX"/>
     <field type="float" name="cmRotY"/>
-    <field type="float" name="cmRotZ"/>
+    <field type="float" name="cmRotZ"/>-->
   </data>
   <!--玩家状态（枚举状态类型、血量）-->
   <data name="PlayerStatus" namespace="GamePlayer">
     <field type="int" name="id"/>
     <field type="enum" data="E_PLAYER_STATUS" name="playerStatus"/>
-    <field type="int" name="hp"/>
+    <!--<field type="int" name="hp"/>-->
   </data>
   <!--房间信息（房间状态、房间人数）-->
   <data name="RoomData" namespace="GameServer">
@@ -68,7 +65,6 @@
   </data>
 
   <!--子弹信息-->
-  <!--
   <data name="Bullet" namespace="GamePlayer">
     <field type="float" name="posX"/>
     <field type="float" name="posY"/>
@@ -76,12 +72,8 @@
     <field type="float" name="rotX"/>
     <field type="float" name="rotY"/>
     <field type="float" name="rotZ"/>
-    <field type="float" name="cmRotX"/>
-    <field type="float" name="cmRotY"/>
-    <field type="float" name="cmRotZ"/>
-  </data>-->
-
-
+    <field type="float" name="rotW"/>
+  </data>
 
   <!--消息类类配置规则-->
   <!--客户端ID消息-->
@@ -97,14 +89,16 @@
   <message id="2000" name="MoveMsg" namespace="GamePlayer">
     <field type="PlayerPos" name="playerPos"/>
   </message>
-  <!--玩家状态信息-->
+  <!--玩家状态消息-->
   <message id="2001" name="StatusMsg" namespace="GamePlayer">
     <field type="PlayerStatus" name="playerStatus"/>
   </message>
-  <!--<message id="2002" name="ShootMsg" namespace="GamePlayer">
-
-  </message>-->
-  <!--伤害信息-->
+  <!--射击消息-->
+  <message id="2002" name="ShootMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+    <field type="Bullet" name="bullet"/>
+  </message>
+  <!--伤害消息-->
   <message id="2003" name="DamageMsg" namespace="GamePlayer">
     <field type="int" name="id"/>
     <field type="int" name="damage"/>

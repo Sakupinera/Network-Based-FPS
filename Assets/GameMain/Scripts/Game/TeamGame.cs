@@ -22,6 +22,7 @@ namespace NetworkBasedFPS
             GameEntry.Event.Subscribe(MsgEventArgs<GetListMsg>.EventId, StartBattle);
             GameEntry.Event.Subscribe(PlayerOnShowEventArgs.EventId, SetPlayerList);
             GameEntry.Event.Subscribe(MsgEventArgs<MoveMsg>.EventId, UpdatePlayerMoveInfo);
+            GameEntry.Event.Subscribe(MsgEventArgs<ShootMsg>.EventId, UpdateShootInfo);
             Debug.Log("开始团队模式");
         }
 
@@ -161,19 +162,48 @@ namespace NetworkBasedFPS
             }
         }
 
-        int n = 0;
+        //更新玩家位置
         private void UpdatePlayerMoveInfo(object sender, GameEventArgs e)
         {
             MsgEventArgs<MoveMsg> msgEventArgs = (MsgEventArgs<MoveMsg>)e;
             PlayerPos pos = msgEventArgs.Msg.playerPos;
             if (pos.id == GameEntry.Net.ID)
             {
-
-                Debug.Log("接收 " + n++);
                 return;
             }
             Player player = list[pos.id];
             player.NetForecastInfo(new Vector3(pos.posX, pos.posY, pos.posZ), new Vector3(pos.rotX, pos.rotY, pos.rotZ));
+        }
+
+        //更新玩家状态
+        private void UpdatePlayerStatusInfo(object sender, GameEventArgs e)
+        {
+
+        }
+
+        //子弹发射
+        private void UpdateShootInfo(object sender, GameEventArgs e)
+        {
+            MsgEventArgs<ShootMsg> msgEventArgs = (MsgEventArgs<ShootMsg>)e;
+            ShootMsg msg = msgEventArgs.Msg;
+            if (msg.id == GameEntry.Net.ID)
+            {
+                return;
+            }
+            Debug.Log("生成子弹");
+            GamePlayer.Bullet bullet = msg.bullet;
+            GameEntry.Entity.ShowBullet(new BulletData(GameEntry.Entity.GenerateSerialId(), 50000, 0, CampType.Unknown, 0, 60)
+            {
+                Position = new Vector3(bullet.posX, bullet.posY, bullet.posZ),
+                Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
+            });
+
+            GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70000)
+            {
+                Position = new Vector3(bullet.posX, bullet.posY, bullet.posZ),
+                Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
+            });
+
         }
     }
 }
