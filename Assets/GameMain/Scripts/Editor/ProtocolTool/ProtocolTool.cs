@@ -11,7 +11,7 @@ public class ProtocolTool
 
     private static GenerateCSharp generateCSharp = new GenerateCSharp();
 
-    [MenuItem("ProtocolTool/生成C#协议代码")]
+    [MenuItem("ProtocolTool/Generate C# ProtocolCode")]
     private static void GenerateCSharp()
     {
         //1.��ȡxml��ص���Ϣ

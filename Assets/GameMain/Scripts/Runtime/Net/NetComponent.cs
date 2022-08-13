@@ -14,11 +14,6 @@ namespace NetworkBasedFPS
     public class NetComponent : GameFrameworkComponent
     {
 
-
-        //private static NetMgr instance;
-
-        //public static NetMgr Instance => instance;
-
         //客户端ID
         public int ID;
 

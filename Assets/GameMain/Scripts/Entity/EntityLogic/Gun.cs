@@ -1,4 +1,5 @@
 ﻿using GameFramework;
+using GamePlayer;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,7 +39,8 @@ namespace NetworkBasedFPS
         //弹道偏移队列
         public Queue<Vector3> excursion = new Queue<Vector3>();
 
-        public float ReloadRate {
+        public float ReloadRate
+        {
             get;
             private set;
         }
@@ -140,6 +142,8 @@ namespace NetworkBasedFPS
                 Rotation = shootPoint.rotation
             });
 
+            SendBulletMsg(shootPoint.position, shootPoint.rotation);
+
             //创建并且播放枪口特效
             GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), m_GunData.MuzzleSparkId)
             {
@@ -158,6 +162,23 @@ namespace NetworkBasedFPS
 
         }
 
+        //发射子弹协议
+        public void SendBulletMsg(Vector3 p, Quaternion r)
+        {
+            ShootMsg msg = new ShootMsg();
+            msg.id = GameEntry.Net.ID;
+            GamePlayer.Bullet bullet = new GamePlayer.Bullet();
+            bullet.posX = p.x;
+            bullet.posY = p.y;
+            bullet.posZ = p.z;
+            bullet.rotX = r.x;
+            bullet.rotY = r.y;
+            bullet.rotZ = r.z;
+            bullet.rotW = r.w;
+            msg.bullet = bullet;
+            GameEntry.Net.Send(msg);
+        }
+
         /// <summary>
         /// 换弹逻辑
         /// </summary>
@@ -167,7 +188,7 @@ namespace NetworkBasedFPS
             if (currentBullects < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
             {
                 // 播放换弹动画
-                if(currentBullects > 0)
+                if (currentBullects > 0)
                 {
                     m_FirstPersonAnimator.SetTrigger("Reload");
                     ReloadRate = m_GunData.ReloadTime;

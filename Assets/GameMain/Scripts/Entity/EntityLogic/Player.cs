@@ -208,7 +208,6 @@ namespace NetworkBasedFPS
             }
 
         }
-        int n = 0;
         //发送位置信息
         private void SendMoveInfo()
         {
@@ -222,11 +221,7 @@ namespace NetworkBasedFPS
             pos.rotY = transform.eulerAngles.y;
             pos.rotZ = transform.eulerAngles.z;
             msg.playerPos = pos;
-            //print(transform.position + " " + transform.rotation);
-            //print(msg.playerPos.posX + " " + msg.playerPos.posY + " " + msg.playerPos.posZ + " " + msg.playerPos.rotX + " " + msg.playerPos.rotY + " " + msg.playerPos.rotZ);
             GameEntry.Net.Send(msg);
-
-            Debug.Log("发送" + n++);
         }
 
         protected override void OnHide(bool isShutdown, object userData)
@@ -408,7 +403,10 @@ namespace NetworkBasedFPS
             float x = num[0];
             float z = num[1];
 
-            Vector3 move = transform.right * x + transform.forward * z;
+            float nX = Input.GetAxisRaw(axis[0]);
+            float nZ = Input.GetAxisRaw(axis[1]);
+
+            Vector3 move = transform.right * nX + transform.forward * nZ;
             controller.Move(move * m_PlayerData.Speed * Time.deltaTime);
             thridPersonAnimator.SetFloat("VelocityX", x);
             thridPersonAnimator.SetFloat("VelocityZ", z);
@@ -512,17 +510,17 @@ namespace NetworkBasedFPS
             }
         }
 
+
+        #region CtrlNet
+
         //last 上次的位置信息
         Vector3 lPos;
         Vector3 lRot;
         //forecast 预测的位置信息
         Vector3 fPos;
         Vector3 fRot;
-        //时间间隔
-        float delta = 1;
-        //上次接收的时间
-        float lastRecvInfoTime = float.MinValue;
 
+        float speedMultiple = 1f;
 
         //位置预测
         public void NetForecastInfo(Vector3 nPos, Vector3 nRot)
@@ -530,17 +528,8 @@ namespace NetworkBasedFPS
             //预测的位置
             fPos = lPos + (nPos - lPos) * 1.2f;
             fRot = lRot + (nRot - lRot) * 1.2f;
-            //if (Time.time - lastRecvInfoTime > 0.3f)
-            //{
-            //    fPos = nPos;
-            //    fRot = nRot;
-            //}
-            ////时间
-            //delta = Time.time - lastRecvInfoTime;
-            //更新
             lPos = nPos;
             lRot = nRot;
-            lastRecvInfoTime = Time.time;
         }
 
         //初始化位置预测数据
@@ -554,10 +543,8 @@ namespace NetworkBasedFPS
             fPos = transform.position;
             fRot = transform.eulerAngles;
 
-            loffset = new Vector3(0, 0, 0);
         }
 
-        Vector3 loffset;
         public void NetUpdate()
         {
             //当前位置
@@ -568,24 +555,28 @@ namespace NetworkBasedFPS
             var offset = (fPos - transform.position);
             if (offset.sqrMagnitude > 2f)
             {
-                playerBody.position = fPos;
-                playerBody.eulerAngles = fRot;
+                //playerBody.position = fPos;
+                //playerBody.eulerAngles = fRot;
+                speedMultiple = 1.2f;
             }
 
+            //移动和转向
             if (offset.sqrMagnitude > 0.005f)
             {
                 offset = offset.normalized;
                 thridPersonAnimator.SetFloat("VelocityX", offset.x, Time.deltaTime * 5, Time.deltaTime);
                 thridPersonAnimator.SetFloat("VelocityZ", offset.z, Time.deltaTime * 5, Time.deltaTime);
-                controller.Move(offset * m_PlayerData.Speed * Time.deltaTime);
+                controller.Move(offset * m_PlayerData.Speed * speedMultiple * Time.deltaTime);
             }
             else
             {
+                speedMultiple = 1f;
                 thridPersonAnimator.SetFloat("VelocityX", 0, Time.deltaTime * 5, Time.deltaTime);
                 thridPersonAnimator.SetFloat("VelocityZ", 0, Time.deltaTime * 5, Time.deltaTime);
             }
             playerBody.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
                                               Quaternion.Euler(fRot), Time.deltaTime * 10);
+
 
             //跳跃
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
@@ -609,5 +600,6 @@ namespace NetworkBasedFPS
                 ChangeLayer(child, targetLayer);
             }
         }
+        #endregion
     }
 }
