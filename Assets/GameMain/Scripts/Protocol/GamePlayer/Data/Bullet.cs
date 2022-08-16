@@ -12,6 +12,10 @@ namespace GamePlayer
 		public float rotY;
 		public float rotZ;
 		public float rotW;
+
+		//public int attack;
+		//public float speed;
+
 		public override int GetBytesNum()
 		{
 			int num = 0;
@@ -20,6 +24,9 @@ namespace GamePlayer
 			num += 4;
 			num += 4;
 			num += 4;
+			num += 4;
+			num += 4;
+
 			num += 4;
 			num += 4;
 			return num;

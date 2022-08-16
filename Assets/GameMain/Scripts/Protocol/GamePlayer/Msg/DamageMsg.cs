@@ -7,7 +7,10 @@ namespace GamePlayer
 	{
 		public int id;
 		public int damage;
+
+		//	受击者ID
 		public int injured;
+		//	是否被击杀
 		public bool isKilled;
 		public override int GetBytesNum()
 		{

@@ -61,7 +61,6 @@ namespace NetworkBasedFPS
         public float xRotation = 0f;
 
         //角色状态
-        //public PlayerStats playerStats;
         public E_PLAYER_STATUS playerStatus = E_PLAYER_STATUS.Normal;
 
         float mouseX;
@@ -157,6 +156,12 @@ namespace NetworkBasedFPS
             if (playerStatus == E_PLAYER_STATUS.Die)
                 return;
 
+            if(m_PlayerData.HP <= 0)
+            {
+                Dead();
+                return;
+            }
+
             if (m_PlayerData.CtrlType == CtrlType.net)
             {
                 NetUpdate();
@@ -219,9 +224,9 @@ namespace NetworkBasedFPS
             pos.rotX = transform.eulerAngles.x;
             pos.rotY = transform.eulerAngles.y;
             pos.rotZ = transform.eulerAngles.z;
-            //pos.tPosX
-            //pos.tPosY
-            //pos.tPosZ
+            pos.tPosX = m_AimTarget.position.x;
+            pos.tPosY = m_AimTarget.position.y;
+            pos.tPosZ = m_AimTarget.position.z;
             msg.playerPos = pos;
             GameEntry.Net.Send(msg);
         }
@@ -237,10 +242,11 @@ namespace NetworkBasedFPS
         }
 
         //发送武器信息（切换武器或换弹发送）
-        private void SendWeaponInfo(int weaponID, bool isReload)
+        public void SendWeaponInfo(int weaponID, bool isReload)
         {
             WeaponMsg msg = new WeaponMsg();
             msg.id = GameEntry.Net.ID;
+            Debug.LogWarning(msg.id +" &&& " + weaponID);
             msg.weaponID = weaponID;
             msg.isReload = isReload;
             GameEntry.Net.Send(msg);
@@ -374,7 +380,7 @@ namespace NetworkBasedFPS
         /// <summary>
         /// 协程换枪
         /// </summary>
-        /// <param name="index"></param>
+        /// <param name="index">0是第1把枪，1是第2把枪</param>
         /// <returns></returns>
         private IEnumerator RealWeaponSwap(int index)
         {
@@ -382,13 +388,17 @@ namespace NetworkBasedFPS
             AnimatorStateInfo stateinfo = m_CurrentGun.FirstPersonAnimator.GetCurrentAnimatorStateInfo(0);
             if (stateinfo.IsName("Unwield") && (stateinfo.normalizedTime >= 1.0f))
             {
+                // 第一人称的换枪
                 m_CurrentGun.gameObject.SetActive(false);
-
                 m_Guns[index].gameObject.SetActive(true);
                 m_CurrentGun = m_Guns[index];
+
+                // 第三人称Animation Rigging的瞄准目标
                 m_AimTarget.SetParent(m_CurrentGun.ShootPoint);
                 m_AimTarget.localPosition = Vector3.zero;
                 m_AimTarget.position += m_CurrentGun.ShootPoint.forward * 2f;
+
+                SendWeaponInfo(index, false);
             }
             else
             {
@@ -452,7 +462,7 @@ namespace NetworkBasedFPS
                             if (isGrounded)
                             {
                                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                                thridPersonAnimator.SetTrigger("Jump");
+                                ThridPersonAnimator.SetTrigger("Jump");
                             }
                         }
                         break;
@@ -485,7 +495,7 @@ namespace NetworkBasedFPS
             if (Input.GetKeyDown(key))
             {
                 //播放下蹲动画，降低移动速度，摄像头高度下降
-                thridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
+                ThridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
                 if (playerStatus != E_PLAYER_STATUS.Crouch)
                 {
                     playerStatus = E_PLAYER_STATUS.Crouch;
@@ -496,7 +506,7 @@ namespace NetworkBasedFPS
             if (Input.GetKeyUp(key))
             {
                 //LeftControl抬起取消下蹲动画，并且回复速度
-                thridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
+                ThridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
                 if (playerStatus != E_PLAYER_STATUS.Normal)
                 {
                     playerStatus = E_PLAYER_STATUS.Normal;
@@ -511,6 +521,7 @@ namespace NetworkBasedFPS
         {
             //更新并发送状态消息
             playerStatus = E_PLAYER_STATUS.Die;
+            //ThridPersonAnimator.SetTrigger("Dying");
             SendStatusInfo();
             StartCoroutine(Revive());
         }
@@ -538,8 +549,21 @@ namespace NetworkBasedFPS
             //更新位置
             transform.position = swopTrans.position;
             //刷新武器
+            ResetWeaponDatas();
         }
 
+        private void ResetWeaponDatas()
+        {
+            foreach(var e in m_Guns)
+            {
+                GameEntry.Entity.HideEntity(e.Id);
+            }
+            List<GunData> gunDatas = m_PlayerData.GetAllGunDatas();
+            for (int i = 0; i < gunDatas.Count; i++)
+            {
+                GameEntry.Entity.ShowGun(gunDatas[i]);
+            }
+        }
 
         #region CtrlNet
 
@@ -563,15 +587,25 @@ namespace NetworkBasedFPS
         //Net玩家武器信息
         public void NetWeapon(int weaponID, bool isReload)
         {
+            //换弹
+            if (isReload)
+            {
+                ThridPersonAnimator.SetTrigger("Reload");
+                return;
+            }
             //切换武器
             if (weaponID != lweaponID)
             {
                 lweaponID = weaponID;
-
-            }
-            //换弹
-            if (isReload)
-            {
+                Debug.LogWarning("Net玩家武器：" + weaponID);
+                if (weaponID == 0)
+                {
+                    ThridPersonAnimator.CrossFade("Rifle Aim", 0.2f);
+                }
+                else if(weaponID == 1)
+                {
+                    ThridPersonAnimator.CrossFade("Pistol Aim", 0.2f);
+                }
 
             }
         }
@@ -583,7 +617,7 @@ namespace NetworkBasedFPS
             {
                 if (lplayerStatus != E_PLAYER_STATUS.Normal)
                 {
-                    thridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
+                    ThridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
                     lplayerStatus = E_PLAYER_STATUS.Normal;
                 }
                 speedStatus = 1f;
@@ -592,7 +626,7 @@ namespace NetworkBasedFPS
             {
                 if (lplayerStatus != E_PLAYER_STATUS.Crouch)
                 {
-                    thridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
+                    ThridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
                     lplayerStatus = E_PLAYER_STATUS.Crouch;
                 }
                 speedStatus = 0.5f;
@@ -623,7 +657,10 @@ namespace NetworkBasedFPS
         //初始化位置预测数据
         public void InitNetCtrl()
         {
-            m_playerCamera.gameObject.SetActive(false);
+            //m_playerCamera.gameObject.SetActive(false);
+          
+            m_playerCamera.GetComponent<Camera>().enabled = false;
+            m_playerCamera.Find("FirstPersonCamera").GetComponent<Camera>().enabled = false;
             UnityUtility.ChangeLayer(transform, "ThridPerson_Other");
 
             lPos = transform.position;
@@ -640,6 +677,7 @@ namespace NetworkBasedFPS
             //当前位置
             Vector3 pos = transform.position;
             Vector3 rot = transform.eulerAngles;
+            Vector3 tPos = m_AimTarget.position;
 
             //更新位置
             var offset = (fPos - transform.position);
@@ -649,8 +687,8 @@ namespace NetworkBasedFPS
             }
             else if (offset.sqrMagnitude > 10f)
             {
-                playerBody.position = fPos;
-                playerBody.eulerAngles = fRot;
+                transform.position = fPos;
+                transform.eulerAngles = fRot;
             }
 
 
@@ -658,9 +696,9 @@ namespace NetworkBasedFPS
             if (offset.sqrMagnitude > 0.005f)
             {
                 offset = offset.normalized;
-                thridPersonAnimator.SetFloat("VelocityX", offset.x, Time.deltaTime * 5, Time.deltaTime);
-                thridPersonAnimator.SetFloat("VelocityZ", offset.z, Time.deltaTime * 5, Time.deltaTime);
-                controller.Move(offset * m_PlayerData.Speed * speedMultiple * speedStatus * Time.deltaTime);
+                ThridPersonAnimator.SetFloat("VelocityX", offset.x, Time.deltaTime * 5, Time.deltaTime);
+                ThridPersonAnimator.SetFloat("VelocityZ", offset.z, Time.deltaTime * 5, Time.deltaTime);
+                m_Controller.Move(offset * m_PlayerData.Speed * speedMultiple * speedStatus * Time.deltaTime);
             }
             else
             {
@@ -671,7 +709,7 @@ namespace NetworkBasedFPS
             transform.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
                                               Quaternion.Euler(fRot), Time.deltaTime * 10);
             //朝向
-
+            m_AimTarget.position = Vector3.Lerp(tPos, ftPos, Time.deltaTime * 50);
 
             //跳跃
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
@@ -679,8 +717,8 @@ namespace NetworkBasedFPS
             //    isJumping = false;
             if (!isGrounded/* && isJumping == false*/)
             {
-                print(m_PlayerData.Name + " 起跳");
-                thridPersonAnimator.SetTrigger("Jump");
+                //print(m_PlayerData.Name + " 起跳");
+                ThridPersonAnimator.SetTrigger("Jump");
                 //isJumping = true;
             }
         }

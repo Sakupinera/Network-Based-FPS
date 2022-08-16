@@ -184,6 +184,7 @@ namespace NetworkBasedFPS
             bullet.rotY = r.y;
             bullet.rotZ = r.z;
             bullet.rotW = r.w;
+
             msg.bullet = bullet;
             GameEntry.Net.Send(msg);
         }
@@ -196,6 +197,8 @@ namespace NetworkBasedFPS
         {
             if (currentBullects < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
             {
+
+                (GameEntry.Entity.GetParentEntity(Id).Logic as Player).SendWeaponInfo(-1, true);
                 // 播放换弹动画
                 if (currentBullects > 0)
                 {

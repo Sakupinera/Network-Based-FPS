@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityGameFramework.Runtime;
+using GamePlayer;
 
 namespace NetworkBasedFPS
 {
@@ -63,7 +64,17 @@ namespace NetworkBasedFPS
                         Position = hit.point,
                         Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
                     });
+                    Player injuredPlayer = hit.collider.GetComponent<Player>();
+                    injuredPlayer._PlayerData.HP -= m_BulletData.Attack;
+                    bool isKilled = false;
+                    if(injuredPlayer._PlayerData.HP <= 0)
+                    {
+                        isKilled = true;
+                    }
 
+                    Log.Debug("我打到{0}了，造成了{1}点巨额伤害，对手还剩{2}滴血", injuredPlayer.Id, m_BulletData.Attack, injuredPlayer._PlayerData.HP);
+
+                    SendHitMsg(injuredPlayer.Id, m_BulletData.Attack, isKilled);
                 }
                 else if(hit.transform.tag != "Empty")
                 {
@@ -76,6 +87,16 @@ namespace NetworkBasedFPS
                 }
                 GameEntry.Entity.HideEntity(this);
             }
+        }
+
+        public void SendHitMsg(int hitEntityId, int damage, bool isKilled)
+        {
+            DamageMsg msg = new DamageMsg();
+            msg.id = GameEntry.Net.ID;
+            msg.damage = damage;
+            msg.injured = hitEntityId;
+            msg.isKilled = isKilled;
+            GameEntry.Net.Send(msg);
         }
 
         protected override void OnHide(bool isShutdown, object userData)

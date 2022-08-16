@@ -144,15 +144,6 @@ namespace NetworkBasedFPS
         {
             PlayerOnShowEventArgs args = (PlayerOnShowEventArgs)e;
             int id = args.PlayerEntryID;
-            //Debug.Log("实体ID " + id);
-            //if (GameEntry.Entity.HasEntity(id))
-            //{
-            //    Debug.Log("有实体");
-            //}
-            //else
-            //{
-            //    Debug.Log("没有实体");
-            //}
             Player player = GameEntry.Entity.GetEntity(id).Logic as Player;
             Debug.Log(player.name);
             list.Add(id, player);
@@ -213,6 +204,7 @@ namespace NetworkBasedFPS
                 Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
             });
 
+            //  枪口特效
             GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70000)
             {
                 Position = new Vector3(bullet.posX, bullet.posY, bullet.posZ),
