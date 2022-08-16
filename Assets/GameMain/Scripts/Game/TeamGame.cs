@@ -4,6 +4,7 @@ using GameFramework.Event;
 using GamePlayer;
 using GameServer;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,17 +20,27 @@ namespace NetworkBasedFPS
         public override void Initialize()
         {
             base.Initialize();
-            GameEntry.Event.Subscribe(MsgEventArgs<GetListMsg>.EventId, StartBattle);
             GameEntry.Event.Subscribe(PlayerOnShowEventArgs.EventId, SetPlayerList);
+            GameEntry.Event.Subscribe(MsgEventArgs<GetListMsg>.EventId, StartBattle);
             GameEntry.Event.Subscribe(MsgEventArgs<MoveMsg>.EventId, UpdatePlayerMoveInfo);
+            GameEntry.Event.Subscribe(MsgEventArgs<StatusMsg>.EventId, UpdatePlayerStatusInfo);
             GameEntry.Event.Subscribe(MsgEventArgs<ShootMsg>.EventId, UpdateShootInfo);
+            GameEntry.Event.Subscribe(MsgEventArgs<WeaponMsg>.EventId, UpdateWeapon);
+            GameEntry.Event.Subscribe(MsgEventArgs<EndFightMsg>.EventId, EndFight);
             Debug.Log("开始团队模式");
         }
+
 
 
         public override void Update(float elapseSeconds, float realElapseSeconds)
         {
             base.Update(elapseSeconds, realElapseSeconds);
+
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                Debug.Log("玩家1死亡");
+                list[1].Dead();
+            }
         }
 
         //获取阵营
@@ -71,9 +82,9 @@ namespace NetworkBasedFPS
             Debug.Log("一共有玩家 " + num + " 个");
             //清理场景
             ClearBattle();
-            //每一个玩家
             int swopID_A = 0;
             int swopID_B = 0;
+            //每一个玩家
             for (int i = 0; i < num; i++)
             {
                 CampType camp;
@@ -126,7 +137,6 @@ namespace NetworkBasedFPS
                 Position = swopTrans.position,
                 Camp = team,
             });
-
         }
 
         //列表处理
@@ -134,15 +144,15 @@ namespace NetworkBasedFPS
         {
             PlayerOnShowEventArgs args = (PlayerOnShowEventArgs)e;
             int id = args.PlayerEntryID;
-            Debug.Log("实体ID " + id);
-            if (GameEntry.Entity.HasEntity(id))
-            {
-                Debug.Log("有实体");
-            }
-            else
-            {
-                Debug.Log("没有实体");
-            }
+            //Debug.Log("实体ID " + id);
+            //if (GameEntry.Entity.HasEntity(id))
+            //{
+            //    Debug.Log("有实体");
+            //}
+            //else
+            //{
+            //    Debug.Log("没有实体");
+            //}
             Player player = GameEntry.Entity.GetEntity(id).Logic as Player;
             Debug.Log(player.name);
             list.Add(id, player);
@@ -170,13 +180,20 @@ namespace NetworkBasedFPS
                 return;
             }
             Player player = list[pos.id];
-            player.NetForecastInfo(new Vector3(pos.posX, pos.posY, pos.posZ), new Vector3(pos.rotX, pos.rotY, pos.rotZ));
+            player.NetForecastInfo(new Vector3(pos.posX, pos.posY, pos.posZ), new Vector3(pos.rotX, pos.rotY, pos.rotZ), new Vector3(pos.tPosX, pos.tPosY, pos.tPosZ));
         }
 
         //更新玩家状态
         private void UpdatePlayerStatusInfo(object sender, GameEventArgs e)
         {
-
+            MsgEventArgs<StatusMsg> msgEventArgs = (MsgEventArgs<StatusMsg>)e;
+            StatusMsg msg = msgEventArgs.Msg;
+            if (msg.playerStatus.id == GameEntry.Net.ID)
+            {
+                return;
+            }
+            Player player = list[msg.playerStatus.id];
+            player.playerStatus = msg.playerStatus.playerStatus;
         }
 
         //子弹发射
@@ -202,6 +219,27 @@ namespace NetworkBasedFPS
                 Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
             });
 
+        }
+
+        //更新武器
+        private void UpdateWeapon(object sender, GameEventArgs e)
+        {
+            MsgEventArgs<WeaponMsg> msgEventArgs = (MsgEventArgs<WeaponMsg>)e;
+            WeaponMsg msg = msgEventArgs.Msg;
+            if (msg.id == GameEntry.Net.ID)
+            {
+                return;
+            }
+            Player player = list[msg.id];
+            player.NetWeapon(msg.weaponID, msg.isReload);
+        }
+
+        //结束游戏
+        private void EndFight(object sender, GameEventArgs e)
+        {
+            MsgEventArgs<EndFightMsg> msgEventArgs = (MsgEventArgs<EndFightMsg>)e;
+            int winer = msgEventArgs.Msg.fightResult;
+            GameEntry.UI.OpenUIForm(UIFormId.EndGameForm, winer);
         }
     }
 }

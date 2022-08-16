@@ -9,7 +9,7 @@
       <AdditionalCompressionSelected>True</AdditionalCompressionSelected>
       <ForceRebuildAssetBundleSelected>False</ForceRebuildAssetBundleSelected>
       <BuildEventHandlerTypeName>NetworkBasedFPS.Editor.NetworkBasedFPSBuildEventHandler</BuildEventHandlerTypeName>
-      <OutputDirectory>E:/tmp/AssetBundle</OutputDirectory>
+      <OutputDirectory>D:/桌面/AB包</OutputDirectory>
       <OutputPackageSelected>True</OutputPackageSelected>
       <OutputFullSelected>False</OutputFullSelected>
       <OutputPackedSelected>False</OutputPackedSelected>

@@ -12,9 +12,15 @@ namespace GamePlayer
 		public float rotX;
 		public float rotY;
 		public float rotZ;
+		public float tPosX;
+		public float tPosY;
+		public float tPosZ;
 		public override int GetBytesNum()
 		{
 			int num = 0;
+			num += 4;
+			num += 4;
+			num += 4;
 			num += 4;
 			num += 4;
 			num += 4;
@@ -35,6 +41,9 @@ namespace GamePlayer
 			WriteFloat(bytes, rotX, ref index);
 			WriteFloat(bytes, rotY, ref index);
 			WriteFloat(bytes, rotZ, ref index);
+			WriteFloat(bytes, tPosX, ref index);
+			WriteFloat(bytes, tPosY, ref index);
+			WriteFloat(bytes, tPosZ, ref index);
 			return bytes;
 		}
 		public override int Reading(byte[] bytes, int beginIndex = 0)
@@ -47,6 +56,9 @@ namespace GamePlayer
 			rotX = ReadFloat(bytes, ref index);
 			rotY = ReadFloat(bytes, ref index);
 			rotZ = ReadFloat(bytes, ref index);
+			tPosX = ReadFloat(bytes, ref index);
+			tPosY = ReadFloat(bytes, ref index);
+			tPosZ = ReadFloat(bytes, ref index);
 			return index - beginIndex;
 		}
 	}

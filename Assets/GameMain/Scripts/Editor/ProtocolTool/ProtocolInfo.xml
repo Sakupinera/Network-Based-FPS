@@ -48,6 +48,9 @@
     <field type="float" name="rotX"/>
     <field type="float" name="rotY"/>
     <field type="float" name="rotZ"/>
+    <field type="float" name="tPosX"/>
+    <field type="float" name="tPosY"/>
+    <field type="float" name="tPosZ"/>
     <!--<field type="float" name="cmRotX"/>
     <field type="float" name="cmRotY"/>
     <field type="float" name="cmRotZ"/>-->
@@ -103,6 +106,13 @@
     <field type="int" name="id"/>
     <field type="int" name="damage"/>
     <field type="int" name="injured"/>
+    <field type="bool" name="isKilled"/>
+  </message>
+  <!--武器消息（武器ID、是否换弹）-->
+  <message id="2004" name="WeaponMsg" namespace="GamePlayer">
+    <field type="int" name="id"/>
+    <field type="int" name="weaponID"/>
+    <field type="bool" name="isReload"/>
   </message>
 
   <!--房间-->
@@ -173,5 +183,9 @@
   <!--回应请求战斗消息-->
   <message id="3005" name="ResponseFightMsg" namespace="GameServer">
     <field type="int" name="responseFight"/>
+  </message>
+  <!--结束战斗消息，返回战斗结果-->
+  <message id="3006" name="EndFightMsg" namespace="GameServer">
+    <field type="int" name="fightResult"/>
   </message>
 </messages>
