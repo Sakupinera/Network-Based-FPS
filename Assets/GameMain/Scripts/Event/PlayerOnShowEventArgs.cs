@@ -40,6 +40,7 @@ public class PlayerOnShowEventArgs : GameEventArgs
         return playerOnShowEventArgs;
     }
 
+
     public override void Clear()
     {
         PlayerEntryID = 0;

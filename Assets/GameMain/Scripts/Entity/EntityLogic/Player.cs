@@ -28,6 +28,8 @@ namespace NetworkBasedFPS
     /// </summary>
     public class Player : Entity
     {
+        
+
         public PlayerData GetPlayerData { get { return m_PlayerData; } }
 
 
@@ -46,6 +48,7 @@ namespace NetworkBasedFPS
 
         [SerializeField]
         private List<Thrown> m_Throwns = new List<Thrown>();
+
 
         //重力
         public float gravity = -9.81f;
@@ -189,7 +192,8 @@ namespace NetworkBasedFPS
             //检测换枪
             CheckKeyCode(KeyCode.Alpha1);
             CheckKeyCode(KeyCode.Alpha2);
-
+            //每帧检测玩家是否按下地图
+            CheckMap(KeyCode.G);
             if (m_CurrentGun != null)
             {
                 //每帧检测玩家是否开火
@@ -608,6 +612,24 @@ namespace NetworkBasedFPS
             {
                 ChangeLayer(child, targetLayer);
             }
+        }
+
+
+        int? id = 0;
+        public void CheckMap(KeyCode key)
+        {
+            
+            if (Input.GetKeyDown(key))
+            {
+                id = GameEntry.UI.OpenUIForm(UIFormId.MiniMapForm);
+
+            }
+            if (Input.GetKeyUp(key))
+            {
+                GameEntry.UI.CloseUIForm((int)id);
+
+            }
+           
         }
     }
 }

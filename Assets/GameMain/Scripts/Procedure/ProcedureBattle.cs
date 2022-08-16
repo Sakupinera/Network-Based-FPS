@@ -23,6 +23,13 @@ namespace NetworkBasedFPS {
             }
         }
 
+        public GameBase CurrentGame
+        {
+            get { return m_CurrentGame; }
+        }
+
+       
+
         public void GotoMenu()
         {
             m_GotoMenu = true;

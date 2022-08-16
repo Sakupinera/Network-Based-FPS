@@ -51,5 +51,10 @@ namespace NetworkBasedFPS
         /// 测试面板
         /// </summary>
         TestForm = 255,
+
+        /// <summary>
+        /// 小地图面板
+        /// </summary>
+        MiniMapForm = 150
     }
 }

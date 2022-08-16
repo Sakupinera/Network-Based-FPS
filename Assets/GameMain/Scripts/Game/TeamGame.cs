@@ -40,6 +40,7 @@ namespace NetworkBasedFPS
             {
                 if (player.gameObject == playerObj)
                     return player.GetPlayerData.Camp;
+                
             }
             return 0;
         }
