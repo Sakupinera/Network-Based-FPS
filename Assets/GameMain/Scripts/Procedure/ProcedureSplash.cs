@@ -33,12 +33,6 @@ namespace NetworkBasedFPS
                 Log.Info("Package resource mode detected.");
                 ChangeState<ProcedureInitResources>(procedureOwner);
             }
-            //else
-            //{
-            //    // 可更新模式
-            //    Log.Info("Updatable resource mode detected.");
-            //    ChangeState<ProcedureCheckVersion>(procedureOwner);
-            //}
         }
     }
 }

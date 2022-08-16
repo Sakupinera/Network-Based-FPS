@@ -32,15 +32,13 @@ namespace NetworkBasedFPS
             base.Update(elapseSeconds, realElapseSeconds);
         }
 
-
-
         //获取阵营
         public CampType GetCamp(GameObject playerObj)
         {
             foreach (Player player in list.Values)
             {
                 if (player.gameObject == playerObj)
-                    return player.GetPlayerData.Camp;
+                    return player._PlayerData.Camp;
             }
             return 0;
         }
@@ -151,13 +149,13 @@ namespace NetworkBasedFPS
             //玩家处理
             if (id == GameEntry.Net.ID)
             {
-                list[id].GetPlayerData.CtrlType = CtrlType.player;
+                list[id]._PlayerData.CtrlType = CtrlType.player;
                 Debug.Log("玩家 " + list[id].Name + " 为玩家操控");
             }
             else
             {
                 Debug.Log("玩家 " + list[id].Name + " 为Net操控");
-                list[id].GetPlayerData.CtrlType = CtrlType.net;
+                list[id]._PlayerData.CtrlType = CtrlType.net;
                 list[id].InitNetCtrl();  //初始化网络同步
             }
         }

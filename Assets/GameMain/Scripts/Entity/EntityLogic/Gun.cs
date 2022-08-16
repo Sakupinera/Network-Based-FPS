@@ -23,7 +23,9 @@ namespace NetworkBasedFPS
         public int currentBullects;
 
         //子弹出生位置
-        public Transform shootPoint;
+        private Transform m_shootPoint;
+
+        public Transform ShootPoint => m_shootPoint;
 
         //开火计时器
         public float fireTimer = 0;
@@ -35,6 +37,8 @@ namespace NetworkBasedFPS
 
         //武器动画
         private Animator m_FirstPersonAnimator;
+
+        private Transform m_aimTarget;
 
         //弹道偏移队列
         public Queue<Vector3> excursion = new Queue<Vector3>();
@@ -56,7 +60,7 @@ namespace NetworkBasedFPS
         {
             base.OnInit(userData);
 
-            shootPoint = transform.Find("Armature/Weapon/ShootPoint");
+            m_shootPoint = transform.Find("Armature/Weapon/ShootPoint");
         }
 
         protected override void OnShow(object userData)
@@ -79,6 +83,7 @@ namespace NetworkBasedFPS
             m_FirstPersonAnimator = GetComponent<Animator>();
             GetComponent<EquipmentAnimation>().AssignAnimations(m_FirstPersonAnimator);
 
+            // 挂载自身到父物体身上
             GameEntry.Entity.AttachEntity(Entity, m_GunData.OwnerId, AttachPoint);
         }
 
@@ -123,32 +128,36 @@ namespace NetworkBasedFPS
             }
             m_FirstPersonAnimator.SetTrigger("Fire");
 
-            //射线判定生成弹孔特效
+            //射线判定子弹目标点
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
             RaycastHit hit;
-            shootDirection = shootPoint.forward + shootPoint.right * Random.Range(0, 0.05f) + shootPoint.up * Random.Range(0, 0.05f);
-            if (Physics.Raycast(shootPoint.position, shootDirection, out hit, m_GunData.AttackRange))
+            Vector3 target;
+            if (Physics.Raycast(ray, out hit))
             {
-                GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
-                {
-                    Position = hit.point,
-                    Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
-                });
+                target = hit.point; //  记录碰撞的目标点
             }
+            else
+            {
+                target = Camera.main.transform.forward * 800;
+            }
+            m_shootPoint.LookAt(target);
+            shootDirection = m_shootPoint.forward + m_shootPoint.right * Random.Range(-0.01f, 0.01f) + m_shootPoint.up * Random.Range(-0.01f, 0.01f);
+            m_shootPoint.transform.forward = shootDirection;
 
             //依据发射方向创建子弹预设体
             GameEntry.Entity.ShowBullet(new BulletData(GameEntry.Entity.GenerateSerialId(), m_GunData.BulletId, m_GunData.OwnerId, m_GunData.OwnerCamp, m_GunData.Attack, m_GunData.BulletSpeed)
             {
-                Position = shootPoint.position,
-                Rotation = shootPoint.rotation
+                Position = m_shootPoint.position,
+                Rotation = m_shootPoint.rotation
             });
 
-            SendBulletMsg(shootPoint.position, shootPoint.rotation);
+            SendBulletMsg(m_shootPoint.position, m_shootPoint.rotation);
 
             //创建并且播放枪口特效
             GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), m_GunData.MuzzleSparkId)
             {
-                Position = shootPoint.position,
-                Rotation = shootPoint.rotation
+                Position = m_shootPoint.position,
+                Rotation = m_shootPoint.rotation
             });
 
             //播放射击音效
@@ -198,6 +207,8 @@ namespace NetworkBasedFPS
                     m_FirstPersonAnimator.SetTrigger("Empty Reload");
                     ReloadRate = m_GunData.EmptyReloadTime;
                 }
+                Player p = (Player)GameEntry.Entity.GetParentEntity(Id).Logic;
+                p.ThridPersonAnimator.SetTrigger("Reload");
 
                 //计算出当前子弹数补满一个弹夹需要的的剩余子弹
                 int bulletNeed = m_GunData.MagazineSize - currentBullects;

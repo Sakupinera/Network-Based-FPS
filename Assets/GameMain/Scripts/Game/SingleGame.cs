@@ -16,7 +16,7 @@ namespace NetworkBasedFPS
             GameEntry.Entity.ShowPlayer(new PlayerData(GameEntry.Entity.GenerateSerialId(), 11001)
             {
                 Name = "Sakupinera",
-                Position = new Vector3(50f, 0, 50f)
+                Position = new Vector3(6f, 1.5f, 40f)
             });
         }
 

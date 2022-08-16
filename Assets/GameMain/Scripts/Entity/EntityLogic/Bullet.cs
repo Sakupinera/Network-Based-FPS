@@ -40,6 +40,7 @@ namespace NetworkBasedFPS
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
 
+            DoHitscan();
             CachedTransform.Translate(Vector3.forward * m_BulletData.Speed * elapseSeconds, Space.Self);
         }
 
@@ -47,41 +48,35 @@ namespace NetworkBasedFPS
         /// 碰撞判定
         /// </summary>
         /// <param name="other"></param>
-        private void OnTriggerEnter(Collider other)
+        private void DoHitscan()
         {
-            if (other.CompareTag("Ground"))
+            RaycastHit hit;
+            // 生成弹孔或者出血特效
+            if (Physics.Raycast(CachedTransform.position, CachedTransform.forward, out hit, 10))
             {
-                //当子弹销毁时，可以创建一个火花特效
-                GameEntry.Entity.HideEntity(this);
-            }
-            if (other.CompareTag("Player"))
-            {
-                //当子弹击中玩家时，可以创建一个出血特效
+                //Debug.Log("碰撞对象：" + hit.collider.name);
+                if (hit.transform.tag == "Player")
+                {
+                    //  生成出血特效
+                    GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
+                    {
+                        Position = hit.point,
+                        Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
+                    });
 
+                }
+                else if(hit.transform.tag != "Empty")
+                {
+                    //  生成弹孔特效
+                    GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
+                    {
+                        Position = hit.point,
+                        Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
+                    });
+                }
                 GameEntry.Entity.HideEntity(this);
             }
         }
-        //private void DoHitscan(Camera camera)
-        //{
-        //    RaycastHit hitInfo;
-
-        //    Ray ray = camera.ViewportPointToRay(Vector2.one * 0.5f);
-
-        //    if(Physics.Raycast(ray, out hitInfo, 50, LayerMask.NameToLayer("Ground"))){
-        //        if(hitInfo.collider.gameObject.tag == "Player")
-        //        {
-        //            return;
-        //        }
-        //        //当子弹销毁时，可以创建一个弹孔特效
-        //        GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
-        //        {
-        //            Position = CachedTransform.position,
-        //            Rotation = CachedTransform.rotation
-        //        });
-        //        GameEntry.Entity.HideEntity(this);
-        //    }
-        //}
-
 
         protected override void OnHide(bool isShutdown, object userData)
         {

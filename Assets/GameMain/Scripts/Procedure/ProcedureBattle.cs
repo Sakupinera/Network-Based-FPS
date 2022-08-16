@@ -49,7 +49,10 @@ namespace NetworkBasedFPS {
             m_GotoMenu = false;
             GameMode gameMode = (GameMode)procedureOwner.GetData<VarByte>("GameMode").Value;
             m_CurrentGame = m_Games[gameMode];
+            //m_CurrentGame = new SingleGame();
             m_CurrentGame.Initialize();
+
+            GameEntry.UI.OpenUIForm(UIFormId.BattleForm);
 
             Log.Debug("开始战斗！");
         }

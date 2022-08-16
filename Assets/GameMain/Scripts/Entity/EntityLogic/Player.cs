@@ -3,6 +3,7 @@ using GamePlayer;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 using UnityGameFramework.Runtime;
 
@@ -14,22 +15,12 @@ namespace NetworkBasedFPS
         net,
     }
 
-    //玩家状态枚举
-    public enum PlayerStats
-    {
-        WALK,
-        CROUCH,
-        JUMP,
-        IDLE
-    }
-
     /// <summary>
     /// 玩家类
     /// </summary>
     public class Player : Entity
     {
-        public PlayerData GetPlayerData { get { return m_PlayerData; } }
-
+        public PlayerData _PlayerData { get { return m_PlayerData; } }
 
         [SerializeField]
         private PlayerData m_PlayerData = null;
@@ -66,8 +57,7 @@ namespace NetworkBasedFPS
         //用于鼠标转动视角的一系列变量
         public float mouseSensitivity;
         public Texture2D tex;
-        public Transform playerBody;
-        public Transform playerCame;
+        public Transform m_playerCamera;
         public float xRotation = 0f;
 
         //角色状态
@@ -76,9 +66,11 @@ namespace NetworkBasedFPS
         float mouseX;
         float mouseY;
 
-        public CharacterController controller;
+        private CharacterController m_Controller;
 
-        public Animator thridPersonAnimator;
+        public Animator ThridPersonAnimator;
+
+        private Transform m_AimTarget;
 
         //按下开火键的累计时间
         public float cFireTime = 0;
@@ -93,17 +85,14 @@ namespace NetworkBasedFPS
             Cursor.SetCursor(tex, Vector2.zero, CursorMode.Auto);
 
             //获得自身控件
-            controller = GetComponent<CharacterController>();
-            //walkAS = GetComponent<AudioSource>();
+            m_Controller = GetComponent<CharacterController>();
             mouseSensitivity = GameEntry.Setting.GetInt("MouseSensitivity");
             groundCheck = transform.Find("GroundCheck");
-            playerCame = transform.Find("WorldCamera");
+            m_playerCamera = transform.Find("WorldCamera");
             groundMask = LayerMask.GetMask("Ground");
-            playerBody = this.transform;
 
-            thridPersonAnimator = GetComponent<Animator>();
-
-
+            ThridPersonAnimator = GetComponentInChildren<Animator>();
+            m_AimTarget = transform.Find("AimTarget");
         }
 
         protected override void OnShow(object userData)
@@ -125,7 +114,6 @@ namespace NetworkBasedFPS
             }
 
             GameEntry.Event.Fire(this, PlayerOnShowEventArgs.Create(this.m_PlayerData.Id));
-
 
             transform.position = m_PlayerData.Position;
         }
@@ -251,42 +239,8 @@ namespace NetworkBasedFPS
         /// </summary>
         public void Aim()
         {
-            //if (Input.GetMouseButtonDown(1))
-            //{
-            //    if (m_CurrentGun != null)
-            //    {
 
-            //        StartCoroutine(AimTransform(0, m_CurrentGun.transform.localPosition, new Vector3(-0.083f, 0.098f, -0.115f)));
-            //        //StartCoroutine(AimTransform(1, playerWeapon.transform.localRotation.eulerAngles, new Vector3(-0.923f, 3.337f, -0.954f)));
-            //        m_CurrentGun.transform.localRotation = Quaternion.Euler(new Vector3(-0.923f, 3.337f, -0.954f));
-            //    }
-            //}
-            //if (Input.GetMouseButtonUp(1))
-            //{
-            //    StartCoroutine(AimTransform(0, m_CurrentGun.transform.localPosition, new Vector3(-0.012f, 0.012f, 0f)));
-            //    //StartCoroutine(AimTransform(1, playerWeapon.transform.localRotation.eulerAngles, new Vector3(0f, 0f, 0f)));
-            //    m_CurrentGun.transform.localRotation = Quaternion.Euler(new Vector3(0f, 0f, 0f));
-            //}
         }
-
-        //IEnumerator AimTransform(int i, Vector3 origin, Vector3 target)
-        //{
-        //    float timer = 0f;
-        //    while (timer <= 1)
-        //    {
-        //        timer += Time.deltaTime * 5;
-        //        if (i == 0)
-        //        {
-        //            m_CurrentGun.transform.localPosition = Vector3.Lerp(origin, target, timer);
-        //        }
-        //        else if (i == 1)
-        //        {
-        //            //playerWeapon.transform.localRotation = Quaternion.Euler(Vector3.Lerp(origin, target, timer));
-        //        }
-
-        //        yield return null;
-        //    }
-        //}
 
         /// <summary>
         /// 玩家按键触发
@@ -298,18 +252,28 @@ namespace NetworkBasedFPS
             {
                 case KeyCode.R:
                     if (Input.GetKeyDown(key))
+                    {
                         m_CurrentGun.ReloadBullet();
+                    }
                     break;
                 case KeyCode.LeftControl:
                     Crouch(key);
                     break;
                 case KeyCode.Alpha1:
                     if (Input.GetKeyDown(KeyCode.Alpha1))
+                    {
                         WeaponSwap(0);
+                        ThridPersonAnimator.CrossFade("Rifle Aim", 0.2f);
+                        GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha1));
+                    }
                     break;
                 case KeyCode.Alpha2:
                     if (Input.GetKeyDown(KeyCode.Alpha2))
+                    {
                         WeaponSwap(1);
+                        ThridPersonAnimator.CrossFade("Pistol Aim", 0.2f);
+                        GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha2));
+                    }
                     break;
             }
         }
@@ -339,8 +303,8 @@ namespace NetworkBasedFPS
                         xRotation += vector.x;
                         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-                        playerCame.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-                        playerBody.Rotate(Vector3.up * vector.y);
+                        m_playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                        transform.Rotate(Vector3.up * vector.y);
                         m_CurrentGun.excursion.Enqueue(vector);
                     }
                 }
@@ -359,6 +323,7 @@ namespace NetworkBasedFPS
         {
             if (m_CurrentGun != null)
             {
+                m_AimTarget.SetParent(transform);
                 m_CurrentGun.FirstPersonAnimator.SetTrigger("Unwield");
                 StartCoroutine(RealWeaponSwap(index));
             }
@@ -366,6 +331,9 @@ namespace NetworkBasedFPS
             {
                 m_Guns[index].gameObject.SetActive(true);
                 m_CurrentGun = m_Guns[index];
+                m_AimTarget.SetParent(m_CurrentGun.ShootPoint);
+                m_AimTarget.localPosition = Vector3.zero;
+                m_AimTarget.position += m_CurrentGun.ShootPoint.forward * 2f;
             }
         }
 
@@ -384,6 +352,9 @@ namespace NetworkBasedFPS
 
                 m_Guns[index].gameObject.SetActive(true);
                 m_CurrentGun = m_Guns[index];
+                m_AimTarget.SetParent(m_CurrentGun.ShootPoint);
+                m_AimTarget.localPosition = Vector3.zero;
+                m_AimTarget.position += m_CurrentGun.ShootPoint.forward * 2f;
             }
             else
             {
@@ -407,30 +378,10 @@ namespace NetworkBasedFPS
             float nZ = Input.GetAxisRaw(axis[1]);
 
             Vector3 move = transform.right * nX + transform.forward * nZ;
-            controller.Move(move * m_PlayerData.Speed * Time.deltaTime);
-            thridPersonAnimator.SetFloat("VelocityX", x);
-            thridPersonAnimator.SetFloat("VelocityZ", z);
-            //后续做Crouch动作时，再额外加上蹲下静音的判断
-            //在地面上 且有速度变化，播放走路音效
-            //if (move.sqrMagnitude > 0.9f && isGrounded)
-            //{
-            //    //走路音效未播放
-            //    if (!walkAS.isPlaying)
-            //    {
-            //        //播放
-            //        walkAS.Play();
-            //    }
-            //}
-            //else
-            //{
-            //    //走路音效播放中
-            //    if (walkAS.isPlaying)
-            //    {
-            //        //暂停
-            //        walkAS.Pause();
-            //    }
+            m_Controller.Move(move * m_PlayerData.Speed * Time.deltaTime);
+            ThridPersonAnimator.SetFloat("VelocityX", x);
+            ThridPersonAnimator.SetFloat("VelocityZ", z);
 
-            //}
         }
 
         /// <summary>
@@ -444,10 +395,10 @@ namespace NetworkBasedFPS
             mouseX = nums[0] * mouseSensitivity * Time.deltaTime;
             mouseY = nums[1] * mouseSensitivity * Time.deltaTime;
             xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            xRotation = Mathf.Clamp(xRotation, -80f, 40f);
 
-            playerCame.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            playerBody.Rotate(Vector3.up * mouseX);
+            m_playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            transform.Rotate(Vector3.up * mouseX);
         }
 
         /// <summary>
@@ -467,9 +418,8 @@ namespace NetworkBasedFPS
                             if (isGrounded)
                             {
                                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                                playerStats = PlayerStats.JUMP;
                             }
-                            thridPersonAnimator.SetTrigger("Jump");
+                            ThridPersonAnimator.SetTrigger("Jump");
                         }
                         break;
                 }
@@ -490,7 +440,7 @@ namespace NetworkBasedFPS
                 velocity.y = -2f;
             }
             velocity.y += gravity * Time.deltaTime;
-            controller.Move(velocity * Time.deltaTime);
+            m_Controller.Move(velocity * Time.deltaTime);
         }
 
         /// <summary>
@@ -501,12 +451,12 @@ namespace NetworkBasedFPS
             if (Input.GetKeyDown(key))
             {
                 //播放下蹲动画，降低移动速度，摄像头高度下降
-                thridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
+                ThridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
             }
             if (Input.GetKeyUp(key))
             {
                 //LeftControl抬起取消下蹲动画，并且回复速度
-                thridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
+                ThridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
             }
         }
 
@@ -535,8 +485,8 @@ namespace NetworkBasedFPS
         //初始化位置预测数据
         public void InitNetCtrl()
         {
-            playerCame.gameObject.SetActive(false);
-            ChangeLayer(transform, "ThridPerson_Other");
+            m_playerCamera.gameObject.SetActive(false);
+            UnityUtility.ChangeLayer(transform, "ThridPerson_Other");
 
             lPos = transform.position;
             lRot = transform.eulerAngles;
@@ -548,8 +498,8 @@ namespace NetworkBasedFPS
         public void NetUpdate()
         {
             //当前位置
-            Vector3 pos = playerBody.position;
-            Vector3 rot = playerBody.eulerAngles;
+            Vector3 pos = transform.position;
+            Vector3 rot = transform.eulerAngles;
 
             //更新位置
             var offset = (fPos - transform.position);
@@ -564,42 +514,28 @@ namespace NetworkBasedFPS
             if (offset.sqrMagnitude > 0.005f)
             {
                 offset = offset.normalized;
-                thridPersonAnimator.SetFloat("VelocityX", offset.x, Time.deltaTime * 5, Time.deltaTime);
-                thridPersonAnimator.SetFloat("VelocityZ", offset.z, Time.deltaTime * 5, Time.deltaTime);
-                controller.Move(offset * m_PlayerData.Speed * speedMultiple * Time.deltaTime);
+                ThridPersonAnimator.SetFloat("VelocityX", offset.x, Time.deltaTime * 5, Time.deltaTime);
+                ThridPersonAnimator.SetFloat("VelocityZ", offset.z, Time.deltaTime * 5, Time.deltaTime);
+                m_Controller.Move(offset * m_PlayerData.Speed * speedMultiple * Time.deltaTime);
             }
             else
             {
                 speedMultiple = 1f;
-                thridPersonAnimator.SetFloat("VelocityX", 0, Time.deltaTime * 5, Time.deltaTime);
-                thridPersonAnimator.SetFloat("VelocityZ", 0, Time.deltaTime * 5, Time.deltaTime);
+                ThridPersonAnimator.SetFloat("VelocityX", 0, Time.deltaTime * 5, Time.deltaTime);
+                ThridPersonAnimator.SetFloat("VelocityZ", 0, Time.deltaTime * 5, Time.deltaTime);
             }
-            playerBody.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
+            transform.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
                                               Quaternion.Euler(fRot), Time.deltaTime * 10);
 
 
             //跳跃
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
             if (!isGrounded)
-                thridPersonAnimator.SetTrigger("Jump");
+                ThridPersonAnimator.SetTrigger("Jump");
 
 
         }
 
-        private void ChangeLayer(Transform trans, string targetLayer)
-        {
-            if (LayerMask.NameToLayer(targetLayer) == -1)
-            {
-                Debug.Log("Layer中不存在,请手动添加LayerName");
-                return;
-            }
-            //遍历更改所有子物体layer
-            trans.gameObject.layer = LayerMask.NameToLayer(targetLayer);
-            foreach (Transform child in trans)
-            {
-                ChangeLayer(child, targetLayer);
-            }
-        }
         #endregion
     }
 }

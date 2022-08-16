@@ -46,5 +46,10 @@ namespace NetworkBasedFPS
         /// 房间面板
         /// </summary>
         RoomForm = 104,
+
+        /// <summary>
+        /// 战斗面板
+        /// </summary>
+        BattleForm = 200
     }
 }
