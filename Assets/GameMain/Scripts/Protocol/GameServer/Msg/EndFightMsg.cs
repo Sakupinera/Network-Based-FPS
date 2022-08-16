@@ -1,21 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-namespace GamePlayer
+namespace GameServer
 {
-	public class DamageMsg : BaseMsg
+	public class EndFightMsg : BaseMsg
 	{
-		public int id;
-		public int damage;
-		public int injured;
-		public bool isKilled;
+		public int fightResult;
 		public override int GetBytesNum()
 		{
 			int num = 8;
 			num += 4;
-			num += 4;
-			num += 4;
-			num += 1;
 			return num;
 		}
 		public override byte[] Writing()
@@ -24,24 +18,18 @@ namespace GamePlayer
 			byte[] bytes = new byte[GetBytesNum()];
 			WriteInt(bytes, GetID(), ref index);
 			WriteInt(bytes, bytes.Length - 8, ref index);
-			WriteInt(bytes, id, ref index);
-			WriteInt(bytes, damage, ref index);
-			WriteInt(bytes, injured, ref index);
-			WriteBool(bytes, isKilled, ref index);
+			WriteInt(bytes, fightResult, ref index);
 			return bytes;
 		}
 		public override int Reading(byte[] bytes, int beginIndex = 0)
 		{
 			int index = beginIndex;
-			id = ReadInt(bytes, ref index);
-			damage = ReadInt(bytes, ref index);
-			injured = ReadInt(bytes, ref index);
-			isKilled = ReadBool(bytes, ref index);
+			fightResult = ReadInt(bytes, ref index);
 			return index - beginIndex;
 		}
 		public override int GetID()
 		{
-			return 2003;
+			return 3006;
 		}
 	}
 }

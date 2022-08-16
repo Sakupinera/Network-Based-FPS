@@ -46,5 +46,10 @@ namespace NetworkBasedFPS
         /// 房间面板
         /// </summary>
         RoomForm = 104,
+
+        /// <summary>
+        /// 结算面板
+        /// </summary>
+        EndGameForm = 200,
     }
 }

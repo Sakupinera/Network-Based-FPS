@@ -14,15 +14,6 @@ namespace NetworkBasedFPS
         net,
     }
 
-    //玩家状态枚举
-    public enum PlayerStats
-    {
-        WALK,
-        CROUCH,
-        JUMP,
-        IDLE
-    }
-
     /// <summary>
     /// 玩家类
     /// </summary>
@@ -71,7 +62,8 @@ namespace NetworkBasedFPS
         public float xRotation = 0f;
 
         //角色状态
-        public PlayerStats playerStats;
+        //public PlayerStats playerStats;
+        public E_PLAYER_STATUS playerStatus = E_PLAYER_STATUS.Normal;
 
         float mouseX;
         float mouseY;
@@ -155,18 +147,25 @@ namespace NetworkBasedFPS
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
 
+            //生命值为0死亡
+            if (m_PlayerData.HP <= 0)
+            {
+                Dead();
+            }
 
         }
 
         private void FixedUpdate()
         {
-            //每帧进行重力检测
-            GravitySimulation();
+            if (playerStatus == E_PLAYER_STATUS.Die)
+                return;
+
             if (m_PlayerData.CtrlType == CtrlType.net)
             {
                 NetUpdate();
-                //return;
+                return;
             }
+
             PlayerCtrl();
         }
 
@@ -178,6 +177,9 @@ namespace NetworkBasedFPS
             if (m_PlayerData.CtrlType != CtrlType.player)
                 return;
 
+
+            //每帧进行重力检测
+            GravitySimulation();
             //每帧检测玩家的移动
             CheckBodyAxis(new string[2] { "Horizontal", "Vertical" });
             //每帧检查玩家的鼠标移动
@@ -208,7 +210,7 @@ namespace NetworkBasedFPS
             }
 
         }
-        //发送位置信息
+        //发送位置信息（update发送）
         private void SendMoveInfo()
         {
             MoveMsg msg = new MoveMsg();
@@ -220,7 +222,30 @@ namespace NetworkBasedFPS
             pos.rotX = transform.eulerAngles.x;
             pos.rotY = transform.eulerAngles.y;
             pos.rotZ = transform.eulerAngles.z;
+            //pos.tPosX
+            //pos.tPosY
+            //pos.tPosZ
             msg.playerPos = pos;
+            GameEntry.Net.Send(msg);
+        }
+
+        //发送状态消息（切换状态发送）
+        private void SendStatusInfo()
+        {
+            StatusMsg msg = new StatusMsg();
+            msg.playerStatus = new PlayerStatus();
+            msg.playerStatus.id = GameEntry.Net.ID;
+            msg.playerStatus.playerStatus = playerStatus;
+            GameEntry.Net.Send(msg);
+        }
+
+        //发送武器信息（切换武器或换弹发送）
+        private void SendWeaponInfo(int weaponID, bool isReload)
+        {
+            WeaponMsg msg = new WeaponMsg();
+            msg.id = GameEntry.Net.ID;
+            msg.weaponID = weaponID;
+            msg.isReload = isReload;
             GameEntry.Net.Send(msg);
         }
 
@@ -467,9 +492,8 @@ namespace NetworkBasedFPS
                             if (isGrounded)
                             {
                                 velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-                                playerStats = PlayerStats.JUMP;
+                                thridPersonAnimator.SetTrigger("Jump");
                             }
-                            thridPersonAnimator.SetTrigger("Jump");
                         }
                         break;
                 }
@@ -502,12 +526,58 @@ namespace NetworkBasedFPS
             {
                 //播放下蹲动画，降低移动速度，摄像头高度下降
                 thridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
+                if (playerStatus != E_PLAYER_STATUS.Crouch)
+                {
+                    playerStatus = E_PLAYER_STATUS.Crouch;
+                    SendStatusInfo();
+                    //print("蹲下");
+                }
             }
             if (Input.GetKeyUp(key))
             {
                 //LeftControl抬起取消下蹲动画，并且回复速度
                 thridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
+                if (playerStatus != E_PLAYER_STATUS.Normal)
+                {
+                    playerStatus = E_PLAYER_STATUS.Normal;
+                    SendStatusInfo();
+                    //print("站起");
+                }
             }
+        }
+
+        //角色死亡
+        public void Dead()
+        {
+            //更新并发送状态消息
+            playerStatus = E_PLAYER_STATUS.Die;
+            SendStatusInfo();
+            StartCoroutine(Revive());
+        }
+
+        //复活
+        private IEnumerator Revive()
+        {
+            //3秒后复活
+            yield return new WaitForSeconds(3);
+            print("复活玩家 Name：" + m_PlayerData.Name);
+            Transform sp = GameObject.Find("SwopPoints").transform;
+            Transform swopTrans;
+            if (m_PlayerData.Camp == CampType.BlueCamp)
+            {
+                swopTrans = sp.GetChild(0);
+            }
+            else
+            {
+                swopTrans = sp.GetChild(1);
+            }
+            //更新并发送状态消息
+            playerStatus = E_PLAYER_STATUS.Normal;
+            m_PlayerData.HP = 100;
+            SendStatusInfo();
+            //更新位置
+            transform.position = swopTrans.position;
+            //刷新武器
         }
 
 
@@ -516,20 +586,78 @@ namespace NetworkBasedFPS
         //last 上次的位置信息
         Vector3 lPos;
         Vector3 lRot;
+        Vector3 ltPos;
         //forecast 预测的位置信息
         Vector3 fPos;
         Vector3 fRot;
+        Vector3 ftPos;
+
+        E_PLAYER_STATUS lplayerStatus;
+
+        int lweaponID;
 
         float speedMultiple = 1f;
 
+        float speedStatus = 1f;
+
+        //Net玩家武器信息
+        public void NetWeapon(int weaponID, bool isReload)
+        {
+            //切换武器
+            if (weaponID != lweaponID)
+            {
+                lweaponID = weaponID;
+
+            }
+            //换弹
+            if (isReload)
+            {
+
+            }
+        }
+
+        //Net玩家切换状态
+        public void NetChangeStatus()
+        {
+            if (playerStatus == E_PLAYER_STATUS.Normal)
+            {
+                if (lplayerStatus != E_PLAYER_STATUS.Normal)
+                {
+                    thridPersonAnimator.CrossFade("Crouch To Stand", 0.2f);
+                    lplayerStatus = E_PLAYER_STATUS.Normal;
+                }
+                speedStatus = 1f;
+            }
+            else if (playerStatus == E_PLAYER_STATUS.Crouch)
+            {
+                if (lplayerStatus != E_PLAYER_STATUS.Crouch)
+                {
+                    thridPersonAnimator.CrossFade("Stand To Crouch", 0.2f);
+                    lplayerStatus = E_PLAYER_STATUS.Crouch;
+                }
+                speedStatus = 0.5f;
+            }
+            else if (playerStatus == E_PLAYER_STATUS.Silent)
+            {
+                speedStatus = 0.8f;
+            }
+            else if (playerStatus == E_PLAYER_STATUS.Die)
+            {
+                Dead();
+            }
+        }
+
         //位置预测
-        public void NetForecastInfo(Vector3 nPos, Vector3 nRot)
+        public void NetForecastInfo(Vector3 nPos, Vector3 nRot, Vector3 ntPos)
         {
             //预测的位置
             fPos = lPos + (nPos - lPos) * 1.2f;
             fRot = lRot + (nRot - lRot) * 1.2f;
+            ftPos = ltPos + (ntPos - ltPos) * 1.2f;
             lPos = nPos;
             lRot = nRot;
+            ltPos = ntPos;
+
         }
 
         //初始化位置预测数据
@@ -544,9 +672,11 @@ namespace NetworkBasedFPS
             fRot = transform.eulerAngles;
 
         }
-
         public void NetUpdate()
         {
+
+            NetChangeStatus();
+
             //当前位置
             Vector3 pos = playerBody.position;
             Vector3 rot = playerBody.eulerAngles;
@@ -555,18 +685,22 @@ namespace NetworkBasedFPS
             var offset = (fPos - transform.position);
             if (offset.sqrMagnitude > 2f)
             {
-                //playerBody.position = fPos;
-                //playerBody.eulerAngles = fRot;
                 speedMultiple = 1.2f;
             }
+            else if (offset.sqrMagnitude > 10f)
+            {
+                playerBody.position = fPos;
+                playerBody.eulerAngles = fRot;
+            }
 
-            //移动和转向
+
+            //移动、转向、朝向
             if (offset.sqrMagnitude > 0.005f)
             {
                 offset = offset.normalized;
                 thridPersonAnimator.SetFloat("VelocityX", offset.x, Time.deltaTime * 5, Time.deltaTime);
                 thridPersonAnimator.SetFloat("VelocityZ", offset.z, Time.deltaTime * 5, Time.deltaTime);
-                controller.Move(offset * m_PlayerData.Speed * speedMultiple * Time.deltaTime);
+                controller.Move(offset * m_PlayerData.Speed * speedMultiple * speedStatus * Time.deltaTime);
             }
             else
             {
@@ -576,14 +710,19 @@ namespace NetworkBasedFPS
             }
             playerBody.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
                                               Quaternion.Euler(fRot), Time.deltaTime * 10);
+            //朝向
 
 
             //跳跃
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
-            if (!isGrounded)
+            //if (isGrounded)
+            //    isJumping = false;
+            if (!isGrounded/* && isJumping == false*/)
+            {
+                print(m_PlayerData.Name + " 起跳");
                 thridPersonAnimator.SetTrigger("Jump");
-
-
+                //isJumping = true;
+            }
         }
 
         private void ChangeLayer(Transform trans, string targetLayer)

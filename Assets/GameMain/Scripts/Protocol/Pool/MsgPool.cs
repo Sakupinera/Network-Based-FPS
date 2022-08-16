@@ -15,6 +15,7 @@ public class MsgPool
 		Register(2001, typeof(StatusMsg), typeof(StatusMsgHandler));
 		Register(2002, typeof(ShootMsg), typeof(ShootMsgHandler));
 		Register(2003, typeof(DamageMsg), typeof(DamageMsgHandler));
+		Register(2004, typeof(WeaponMsg), typeof(WeaponMsgHandler));
 		Register(2010, typeof(GetRoomListMsg), typeof(GetRoomListMsgHandler));
 		Register(2011, typeof(CteateRoomMsg), typeof(CteateRoomMsgHandler));
 		Register(2012, typeof(EnterRoomMsg), typeof(EnterRoomMsgHandler));
@@ -31,6 +32,7 @@ public class MsgPool
 		Register(3003, typeof(RoomInfoMsg), typeof(RoomInfoMsgHandler));
 		Register(3004, typeof(RoomListMsg), typeof(RoomListMsgHandler));
 		Register(3005, typeof(ResponseFightMsg), typeof(ResponseFightMsgHandler));
+		Register(3006, typeof(EndFightMsg), typeof(EndFightMsgHandler));
 	}
 	private void Register(int id, Type messageType, Type handlerType)
 	{
