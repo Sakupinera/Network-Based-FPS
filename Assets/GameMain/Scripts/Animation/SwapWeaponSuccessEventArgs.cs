@@ -41,10 +41,17 @@ namespace NetworkBasedFPS
             private set;
         }
 
-        public static SwapWeaponSuccessEventArgs Create(KeyCode key)
+        public int PlayerID
+        {
+            get;
+            private set;
+        }
+
+        public static SwapWeaponSuccessEventArgs Create(KeyCode key, int playerID)
         {
             SwapWeaponSuccessEventArgs args = ReferencePool.Acquire<SwapWeaponSuccessEventArgs>();
             args.Key = key;
+            args.PlayerID = playerID;
             return args;
         }
 

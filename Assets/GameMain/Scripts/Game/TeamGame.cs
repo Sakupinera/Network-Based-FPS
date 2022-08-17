@@ -26,11 +26,10 @@ namespace NetworkBasedFPS
             GameEntry.Event.Subscribe(MsgEventArgs<StatusMsg>.EventId, UpdatePlayerStatusInfo);
             GameEntry.Event.Subscribe(MsgEventArgs<ShootMsg>.EventId, UpdateShootInfo);
             GameEntry.Event.Subscribe(MsgEventArgs<WeaponMsg>.EventId, UpdateWeapon);
+            GameEntry.Event.Subscribe(MsgEventArgs<DamageMsg>.EventId, UpdateDamage);
             GameEntry.Event.Subscribe(MsgEventArgs<EndFightMsg>.EventId, EndFight);
             Debug.Log("开始团队模式");
         }
-
-
 
         public override void Update(float elapseSeconds, float realElapseSeconds)
         {
@@ -130,7 +129,7 @@ namespace NetworkBasedFPS
                 return;
             }
             //产生玩家
-            Debug.LogWarning(swopTrans.position);
+            //Debug.LogWarning(swopTrans.position);
             GameEntry.Entity.ShowPlayer(new PlayerData(id, 11001)
             {
                 Name = name,
@@ -151,11 +150,11 @@ namespace NetworkBasedFPS
             if (id == GameEntry.Net.ID)
             {
                 list[id]._PlayerData.CtrlType = CtrlType.player;
-                Debug.Log("玩家 " + list[id].Name + " 为玩家操控");
+                Debug.Log("玩家 " + id + " " + list[id].Name + " 为玩家操控");
             }
             else
             {
-                Debug.Log("玩家 " + list[id].Name + " 为Net操控");
+                Debug.Log("玩家 " + id + " " + list[id].Name + " 为Net操控");
                 list[id]._PlayerData.CtrlType = CtrlType.net;
                 list[id].InitNetCtrl();  //初始化网络同步
             }
@@ -225,6 +224,21 @@ namespace NetworkBasedFPS
             Player player = list[msg.id];
             player.NetWeapon(msg.weaponID, msg.isReload);
         }
+
+        //伤害同步
+        private void UpdateDamage(object sender, GameEventArgs e)
+        {
+            MsgEventArgs<DamageMsg> msgEventArgs = (MsgEventArgs<DamageMsg>)e;
+            DamageMsg msg = msgEventArgs.Msg;
+            if (msg.id == GameEntry.Net.ID)
+            {
+                return;
+            }
+            Player player = list[msg.injured];
+            player._PlayerData.HP -= msg.damage;
+            Debug.Log("玩家：" + list[msg.id] + " 打中了 " + list[msg.injured] + "   造成" + msg.damage + " 点伤害");
+        }
+
 
         //结束游戏
         private void EndFight(object sender, GameEventArgs e)

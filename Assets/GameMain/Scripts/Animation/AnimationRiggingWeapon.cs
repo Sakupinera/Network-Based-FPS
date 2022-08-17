@@ -1,4 +1,4 @@
-using GameFramework.Event;
+﻿using GameFramework.Event;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +14,19 @@ namespace NetworkBasedFPS
 
         RigBuilder m_rigBuilder;
 
+        public int id = 0;
+
         // Start is called before the first frame update
         void Awake()
         {
             m_rigBuilder = GetComponent<RigBuilder>();
+        }
+
+        private void Update()
+        {
+            if (id != 0)
+                return;
+            id = GetComponentsInParent<Player>()[0].Id;
         }
 
         private void OnEnable()
@@ -33,6 +42,9 @@ namespace NetworkBasedFPS
         private void OnSwapWeaponSuccess(object sender, GameEventArgs e)
         {
             SwapWeaponSuccessEventArgs ne = (SwapWeaponSuccessEventArgs)e;
+            if (ne.PlayerID != id)
+                return;
+            print(id + "切枪");
             for (int i = 1; i < m_rigBuilder.layers.Count; i++)
             {
                 m_rigBuilder.layers[i].active = false;

@@ -156,12 +156,6 @@ namespace NetworkBasedFPS
             if (playerStatus == E_PLAYER_STATUS.Die)
                 return;
 
-            if(m_PlayerData.HP <= 0)
-            {
-                Dead();
-                return;
-            }
-
             if (m_PlayerData.CtrlType == CtrlType.net)
             {
                 NetUpdate();
@@ -246,7 +240,7 @@ namespace NetworkBasedFPS
         {
             WeaponMsg msg = new WeaponMsg();
             msg.id = GameEntry.Net.ID;
-            Debug.LogWarning(msg.id +" &&& " + weaponID);
+            Debug.LogWarning(m_PlayerData.Name + " &&& " + msg.id + " &&& " + weaponID);
             msg.weaponID = weaponID;
             msg.isReload = isReload;
             GameEntry.Net.Send(msg);
@@ -303,16 +297,19 @@ namespace NetworkBasedFPS
                     if (Input.GetKeyDown(KeyCode.Alpha1))
                     {
                         WeaponSwap(0);
+                        //ThridPersonAnimator.z;
+                        Debug.Log(m_PlayerData.Name + "换枪 步枪");
                         ThridPersonAnimator.CrossFade("Rifle Aim", 0.2f);
-                        GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha1));
+                        GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha1, Id));
                     }
                     break;
                 case KeyCode.Alpha2:
                     if (Input.GetKeyDown(KeyCode.Alpha2))
                     {
                         WeaponSwap(1);
+                        Debug.Log(m_PlayerData.Name + "换枪 手枪");
                         ThridPersonAnimator.CrossFade("Pistol Aim", 0.2f);
-                        GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha2));
+                        GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha2, Id));
                     }
                     break;
             }
@@ -554,7 +551,7 @@ namespace NetworkBasedFPS
 
         private void ResetWeaponDatas()
         {
-            foreach(var e in m_Guns)
+            foreach (var e in m_Guns)
             {
                 GameEntry.Entity.HideEntity(e.Id);
             }
@@ -578,7 +575,7 @@ namespace NetworkBasedFPS
 
         E_PLAYER_STATUS lplayerStatus;
 
-        int lweaponID;
+        int lweaponID = -1;
 
         float speedMultiple = 1f;
 
@@ -590,20 +587,25 @@ namespace NetworkBasedFPS
             //换弹
             if (isReload)
             {
+                Debug.LogWarning("Net玩家" + m_PlayerData.Name + "  换弹");
                 ThridPersonAnimator.SetTrigger("Reload");
                 return;
             }
             //切换武器
-            if (weaponID != lweaponID)
+            if (weaponID != lweaponID || lweaponID == -1)
             {
                 lweaponID = weaponID;
-                Debug.LogWarning("Net玩家武器：" + weaponID);
+                Debug.LogWarning("Net玩家" + m_PlayerData.Name + "  武器：" + weaponID);
                 if (weaponID == 0)
                 {
+                    Debug.Log(m_PlayerData.Name + " " + Id + " " + "换枪 步枪");
+                    GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha1, Id));
                     ThridPersonAnimator.CrossFade("Rifle Aim", 0.2f);
                 }
-                else if(weaponID == 1)
+                else if (weaponID == 1)
                 {
+                    Debug.Log(m_PlayerData.Name + " " + Id + " " + "换枪 手枪");
+                    GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha2, Id));
                     ThridPersonAnimator.CrossFade("Pistol Aim", 0.2f);
                 }
 
@@ -658,7 +660,7 @@ namespace NetworkBasedFPS
         public void InitNetCtrl()
         {
             //m_playerCamera.gameObject.SetActive(false);
-          
+
             m_playerCamera.GetComponent<Camera>().enabled = false;
             m_playerCamera.Find("FirstPersonCamera").GetComponent<Camera>().enabled = false;
             UnityUtility.ChangeLayer(transform, "ThridPerson_Other");
@@ -709,7 +711,7 @@ namespace NetworkBasedFPS
             transform.rotation = Quaternion.Lerp(Quaternion.Euler(rot),
                                               Quaternion.Euler(fRot), Time.deltaTime * 10);
             //朝向
-            m_AimTarget.position = Vector3.Lerp(tPos, ftPos, Time.deltaTime * 50);
+            m_AimTarget.position = Vector3.Lerp(tPos, ftPos, Time.deltaTime * 30);
 
             //跳跃
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
