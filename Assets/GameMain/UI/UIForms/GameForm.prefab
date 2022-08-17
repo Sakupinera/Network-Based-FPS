@@ -434,6 +434,7 @@ GameObject:
   - component: {fileID: 2535854948593269899}
   - component: {fileID: 2535854948593607979}
   - component: {fileID: 2535854948593851611}
+  - component: {fileID: 7348655925058410675}
   m_Layer: 5
   m_Name: HPBarItem
   m_TagString: Untagged
@@ -505,6 +506,19 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &7348655925058410675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2535854948604948269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f36800ceda7cb64996c56c9d9ee381e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HPBar: {fileID: 2535854948604963759}
 --- !u!1 &2535854948604963759
 GameObject:
   m_ObjectHideFlags: 0
