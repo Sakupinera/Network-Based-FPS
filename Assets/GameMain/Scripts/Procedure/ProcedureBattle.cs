@@ -23,6 +23,13 @@ namespace NetworkBasedFPS {
             }
         }
 
+        public GameBase CurrentGame
+        {
+            get { return m_CurrentGame; }
+        }
+
+       
+
         public void GotoMenu()
         {
             m_GotoMenu = true;
@@ -32,7 +39,7 @@ namespace NetworkBasedFPS {
         {
             base.OnInit(procedureOwner);
 
-            m_Games.Add(GameMode.Team, new TeamGame());
+            //m_Games.Add(GameMode.Team, new TeamGame());
         }
 
         protected override void OnDestroy(ProcedureOwner procedureOwner)
@@ -49,7 +56,6 @@ namespace NetworkBasedFPS {
             m_GotoMenu = false;
             GameMode gameMode = (GameMode)procedureOwner.GetData<VarByte>("GameMode").Value;
             m_CurrentGame = m_Games[gameMode];
-            //m_CurrentGame = new SingleGame();
             m_CurrentGame.Initialize();
 
             GameEntry.UI.OpenUIForm(UIFormId.BattleForm);
@@ -72,24 +78,24 @@ namespace NetworkBasedFPS {
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
-            if (m_CurrentGame != null && !m_CurrentGame.GameOver)
-            {
-                m_CurrentGame.Update(elapseSeconds, realElapseSeconds);
-                return;
-            }
+            //if (m_CurrentGame != null && !m_CurrentGame.GameOver)
+            //{
+            //    m_CurrentGame.Update(elapseSeconds, realElapseSeconds);
+            //    return;
+            //}
 
-            if (!m_GotoMenu)
-            {
-                m_GotoMenu = true;
-                m_GotoMenuDelaySeconds = 0;
-            }
+            //if (!m_GotoMenu)
+            //{
+            //    m_GotoMenu = true;
+            //    m_GotoMenuDelaySeconds = 0;
+            //}
 
-            m_GotoMenuDelaySeconds += elapseSeconds;
-            if (m_GotoMenuDelaySeconds >= GameOverDelayedSeconds)
-            {
-                procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
-                ChangeState<ProcedureChangeScene>(procedureOwner);
-            }
+            //m_GotoMenuDelaySeconds += elapseSeconds;
+            //if (m_GotoMenuDelaySeconds >= GameOverDelayedSeconds)
+            //{
+            //    procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
+            //    ChangeState<ProcedureChangeScene>(procedureOwner);
+            //}
         }
     } 
 }

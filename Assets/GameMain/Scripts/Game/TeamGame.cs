@@ -48,7 +48,7 @@ namespace NetworkBasedFPS
             foreach (Player player in list.Values)
             {
                 if (player.gameObject == playerObj)
-                    return player._PlayerData.Camp;
+                    return player.GetPlayerData.Camp;
             }
             return 0;
         }
