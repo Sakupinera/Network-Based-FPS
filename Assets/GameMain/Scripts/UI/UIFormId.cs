@@ -58,13 +58,15 @@ namespace NetworkBasedFPS
         EscForm = 151,
 
         /// <summary>
-        /// 战斗菜单面板
+        /// 小地图面板
         /// </summary>
-        BattleMenuForm = 151,
+        MiniMapForm = 152,
 
         /// <summary>
         /// 结算面板
         /// </summary>
         EndGameForm = 200,
+
+
     }
 }

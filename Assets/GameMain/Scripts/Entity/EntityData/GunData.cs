@@ -119,7 +119,6 @@ namespace NetworkBasedFPS
         public int BulletNum
         {
             get => m_BulletNum;
-            set { m_BulletNum = value; }
         }
 
         /// <summary>

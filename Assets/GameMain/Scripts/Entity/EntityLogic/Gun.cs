@@ -19,8 +19,11 @@ namespace NetworkBasedFPS
 
         public GunData _GunData => m_GunData;
 
-        //当前子弹数量
-        public int currentBullects;
+        //  当前弹夹子弹数量
+        public int currentMagBullets;
+
+        //  当前子弹总量
+        public int currentBulletNum;
 
         //子弹出生位置
         private Transform m_shootPoint;
@@ -73,7 +76,9 @@ namespace NetworkBasedFPS
                 Log.Error("Weapon data is invalid.");
                 return;
             }
-            currentBullects = m_GunData.MagazineSize;
+            currentMagBullets = m_GunData.MagazineSize;
+            currentBulletNum = m_GunData.BulletNum;
+
             for (int i = 0; i < m_GunData.Trajectory.Count; i++)
             {
                 excursion.Enqueue(m_GunData.Trajectory[i]);
@@ -116,7 +121,7 @@ namespace NetworkBasedFPS
 
         public void Fire()
         {
-            if (currentBullects <= 0)
+            if (currentMagBullets <= 0)
             {
                 ReloadBullet();
                 return;
@@ -166,7 +171,9 @@ namespace NetworkBasedFPS
             //fireAudioSource.Play();
 
             //当前子弹减少
-            currentBullects--;
+            currentMagBullets--;
+            print(currentMagBullets);
+            GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
 
             //重置开火计时器
             fireTimer = 0;
@@ -197,12 +204,12 @@ namespace NetworkBasedFPS
         /// <param name="key"></param>
         public void ReloadBullet()
         {
-            if (currentBullects < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
+            if (currentMagBullets < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
             {
 
                 (GameEntry.Entity.GetParentEntity(Id).Logic as Player).SendWeaponInfo(-1, true);
                 // 播放换弹动画
-                if (currentBullects > 0)
+                if (currentMagBullets > 0)
                 {
                     m_FirstPersonAnimator.SetTrigger("Reload");
                     ReloadRate = m_GunData.ReloadTime;
@@ -216,24 +223,40 @@ namespace NetworkBasedFPS
                 p.ThridPersonAnimator.SetTrigger("Reload");
 
                 //计算出当前子弹数补满一个弹夹需要的的剩余子弹
-                int bulletNeed = m_GunData.MagazineSize - currentBullects;
+                int bulletNeed = m_GunData.MagazineSize - currentMagBullets;
 
                 if (m_GunData.BulletNum >= bulletNeed)
                 {
-                    m_GunData.BulletNum -= bulletNeed;
-                    currentBullects += bulletNeed;
+                    currentBulletNum -= bulletNeed;
+                    currentMagBullets += bulletNeed;
                 }
                 else if (m_GunData.BulletNum < bulletNeed)
                 {
-                    currentBullects += m_GunData.BulletNum;
-                    m_GunData.BulletNum = 0;
+                    currentMagBullets += currentBulletNum;
+                    currentBulletNum = 0;
                 }
                 reloadTimer = 0;
+
+                GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
             }
             else
             {
                 return;
             }
+        }
+
+        //  重置武器的状态
+        public void ResetGunData()
+        {
+            currentMagBullets = m_GunData.MagazineSize;
+            currentBulletNum = m_GunData.BulletNum;
+
+            excursion.Clear();
+            for (int i = 0; i < m_GunData.Trajectory.Count; i++)
+            {
+                excursion.Enqueue(m_GunData.Trajectory[i]);
+            }
+            ReloadRate = m_GunData.ReloadTime;
         }
     }
 }

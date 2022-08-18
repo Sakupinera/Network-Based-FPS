@@ -5,7 +5,8 @@ using GameFramework;
 using UnityGameFramework.Runtime;
 using ProcedureOwner = GameFramework.Fsm.IFsm<GameFramework.Procedure.IProcedureManager>;
 
-namespace NetworkBasedFPS {
+namespace NetworkBasedFPS
+{
     public class ProcedureBattle : ProcedureBase
     {
         private const float GameOverDelayedSeconds = 2f;
@@ -22,6 +23,13 @@ namespace NetworkBasedFPS {
                 return false;
             }
         }
+
+        public GameBase CurrentGame
+        {
+            get { return m_CurrentGame; }
+        }
+
+
 
         public void GotoMenu()
         {
@@ -49,10 +57,9 @@ namespace NetworkBasedFPS {
             m_GotoMenu = false;
             GameMode gameMode = (GameMode)procedureOwner.GetData<VarByte>("GameMode").Value;
             m_CurrentGame = m_Games[gameMode];
-            //m_CurrentGame = new SingleGame();
             m_CurrentGame.Initialize();
 
-            GameEntry.UI.OpenUIForm(UIFormId.BattleForm);
+            GameEntry.UI.OpenUIForm(UIFormId.GameForm);
 
             Log.Debug("开始战斗！");
         }
@@ -84,11 +91,11 @@ namespace NetworkBasedFPS {
                 return;
             }
 
-            if (!m_GotoMenu)
-            {
-                m_GotoMenu = true;
-                m_GotoMenuDelaySeconds = 0;
-            }
+            //if (!m_GotoMenu)
+            //{
+            //    m_GotoMenu = true;
+            //    m_GotoMenuDelaySeconds = 0;
+            //}
 
             m_GotoMenuDelaySeconds += elapseSeconds;
             if (m_GotoMenuDelaySeconds >= GameOverDelayedSeconds)
@@ -98,5 +105,5 @@ namespace NetworkBasedFPS {
             }
 
         }
-    } 
+    }
 }

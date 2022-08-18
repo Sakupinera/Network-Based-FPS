@@ -35,7 +35,6 @@ namespace NetworkBasedFPS
             GameEntry.Setting.SetFloat("MouseSensitivity", 100f);
 
             GameOver = false;
-            m_Player = null;
         }
 
         public virtual void Shutdown()
