@@ -33,8 +33,17 @@ namespace NetworkBasedFPS
 
             m_StartGame = false;
 
-            // 加载主菜单UIForm
-            GameEntry.UI.OpenUIForm(UIFormId.MenuForm);
+            if (procedureOwner.GetData<VarBoolean>("isBattleToMenu"))
+            {
+                //  加载房间UIForm
+                GameEntry.UI.OpenUIForm(UIFormId.RoomForm);
+            }
+            else
+            {
+                // 加载主菜单UIForm
+                GameEntry.UI.OpenUIForm(UIFormId.MenuForm);
+            }
+
 
         }
 

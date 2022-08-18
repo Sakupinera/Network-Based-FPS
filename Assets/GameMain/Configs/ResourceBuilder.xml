@@ -2,14 +2,14 @@
 <UnityGameFramework>
   <ResourceBuilder>
     <Settings>
-      <InternalResourceVersion>4</InternalResourceVersion>
+      <InternalResourceVersion>6</InternalResourceVersion>
       <Platforms>2</Platforms>
       <AssetBundleCompression>1</AssetBundleCompression>
       <CompressionHelperTypeName>UnityGameFramework.Runtime.DefaultCompressionHelper</CompressionHelperTypeName>
       <AdditionalCompressionSelected>True</AdditionalCompressionSelected>
       <ForceRebuildAssetBundleSelected>False</ForceRebuildAssetBundleSelected>
       <BuildEventHandlerTypeName>NetworkBasedFPS.Editor.NetworkBasedFPSBuildEventHandler</BuildEventHandlerTypeName>
-      <OutputDirectory>D:/桌面/ab</OutputDirectory>
+      <OutputDirectory>E:/tmp/AssetBundle</OutputDirectory>
       <OutputPackageSelected>True</OutputPackageSelected>
       <OutputFullSelected>False</OutputFullSelected>
       <OutputPackedSelected>False</OutputPackedSelected>

@@ -48,19 +48,24 @@ namespace NetworkBasedFPS
         RoomForm = 104,
 
         /// <summary>
-        /// 战斗面板
+        /// 战斗面板（准星）
         /// </summary>
         BattleForm = 150,
 
         /// <summary>
-        /// 战斗菜单
+        /// 战斗UI（血条，枪械，击杀）
         /// </summary>
-        EscForm = 151,
+        GameForm = 151,
 
         /// <summary>
         /// 小地图面板
         /// </summary>
         MiniMapForm = 152,
+
+        /// <summary>
+        /// 战斗菜单
+        /// </summary>
+        EscForm = 180,
 
         /// <summary>
         /// 结算面板

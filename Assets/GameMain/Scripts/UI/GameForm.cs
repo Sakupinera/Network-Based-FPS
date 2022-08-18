@@ -31,6 +31,8 @@ namespace NetworkBasedFPS
 
         private int m_killNum = 0;
 
+        private int? miniMapId = 0;
+
         protected override void OnInit(object userData)
         {
             base.OnInit(userData);
@@ -54,6 +56,15 @@ namespace NetworkBasedFPS
             base.OnUpdate(elapseSeconds, realElapseSeconds);
 
             m_miniMap.GetComponent<MiniMap>().UpdatePlayer();
+
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                miniMapId = GameEntry.UI.OpenUIForm(UIFormId.MiniMapForm);
+            }
+            if (Input.GetKeyUp(KeyCode.G) && GameEntry.UI.HasUIForm((int)miniMapId))
+            {
+                GameEntry.UI.CloseUIForm((int)miniMapId);
+            }
         }
 
 

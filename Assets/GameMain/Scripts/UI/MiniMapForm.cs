@@ -35,7 +35,7 @@ namespace NetworkBasedFPS
         {
             base.OnInit(userData);
 
-
+            terrain = GameObject.Find("Dust");
             //获取当前的战斗流程
             procedureBattle = GameEntry.Procedure.CurrentProcedure as ProcedureBattle;
             if (procedureBattle.CurrentGame.GameMode == GameMode.Team)
@@ -92,6 +92,22 @@ namespace NetworkBasedFPS
                 //计算玩家在小地图上的位置
                 float x = (player.transform.position.x / (terrain.GetComponent<Collider>().bounds.size.x / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.width / 2);
                 float y = (player.transform.position.z / (terrain.GetComponent<Collider>().bounds.size.z / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.height / 2);
+
+                //找到本地玩家
+                if (player.GetPlayerData.CtrlType == CtrlType.player)
+                {
+                    images[player].rectTransform.anchoredPosition = new Vector2(x, y);
+                    images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
+
+                    float realX = (player.transform.position.x + terrain.GetComponent<Collider>().bounds.size.x / 2f) / terrain.GetComponent<Collider>().bounds.size.x;
+                    float realY = (player.transform.position.z + terrain.GetComponent<Collider>().bounds.size.z / 2f) / terrain.GetComponent<Collider>().bounds.size.z;
+
+                    //miniMap.GetComponent<Image>().rectTransform.pivot = new Vector2(realX, realY);
+                    //miniMap.GetComponent<Image>().rectTransform.localPosition = Vector2.zero;
+                    //miniMap.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, player.transform.eulerAngles.y);
+
+
+                }
 
                 //判断是否为相同阵营
                 if (teamGame.IsSameCamp(m_player.gameObject, player.gameObject))

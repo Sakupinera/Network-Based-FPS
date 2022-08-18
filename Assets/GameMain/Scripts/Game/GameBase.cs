@@ -31,9 +31,6 @@ namespace NetworkBasedFPS
             //GameEntry.Event.Subscribe(ShowEntitySuccessEventArgs.EventId, OnShowEntitySuccess);
             //GameEntry.Event.Subscribe(ShowEntityFailureEventArgs.EventId, OnShowEntityFailure);
 
-            // 设置鼠标灵敏度
-            GameEntry.Setting.SetFloat("MouseSensitivity", 100f);
-
             GameOver = false;
         }
 

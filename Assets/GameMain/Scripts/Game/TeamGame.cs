@@ -34,12 +34,6 @@ namespace NetworkBasedFPS
         public override void Update(float elapseSeconds, float realElapseSeconds)
         {
             base.Update(elapseSeconds, realElapseSeconds);
-
-            if (Input.GetKeyDown(KeyCode.X))
-            {
-                Debug.Log("玩家1死亡");
-                list[1].Dead();
-            }
         }
 
         //获取阵营
@@ -62,12 +56,14 @@ namespace NetworkBasedFPS
         //清理场景
         public void ClearBattle()
         {
+            //GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            //for (int i = 0; i < players.Length; i++)
+            //{
+            //    players[i].GetComponent<Player>().HideMyself();
+            //}
+            foreach (Player player in list.Values)
+                player.HideMyself();
             list.Clear();
-            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-            for (int i = 0; i < players.Length; i++)
-            {
-
-            }
         }
 
         //开始战斗
@@ -107,8 +103,12 @@ namespace NetworkBasedFPS
         }
 
         //生成玩家
-        public void GeneratePlayer(int id, string name, CampType team, int swopID, int modelId = 11001)
+        public void GeneratePlayer(int id, string name, CampType team, int swopID, int modelId = 11000)
         {
+            if (team == CampType.BlueCamp)
+                modelId = 11000;
+            if (team == CampType.RedCamp)
+                modelId = 11001;
             Debug.Log("生成玩家 " + name);
             //获取出生点
             Transform sp = GameObject.Find("SwopPoints").transform;
@@ -130,7 +130,7 @@ namespace NetworkBasedFPS
             }
             //产生玩家
             //Debug.LogWarning(swopTrans.position);
-            GameEntry.Entity.ShowPlayer(new PlayerData(id, 11001)
+            GameEntry.Entity.ShowPlayer(new PlayerData(id, modelId)
             {
                 Name = name,
                 Position = swopTrans.position,
@@ -236,11 +236,13 @@ namespace NetworkBasedFPS
             {
                 GameEntry.Event.Fire(this, PlayerScoreChangedEventArgs.Create(list[msg.injured].GetPlayerData.Camp));
             }
+            Player player = list[msg.injured];
             if (msg.id == GameEntry.Net.ID)
             {
+                if (msg.id == msg.injured)
+                    player.isSuicide = true;
                 return;
             }
-            Player player = list[msg.injured];
             player.GetPlayerData.HP -= msg.damage;
 
             if (msg.injured == GameEntry.Net.ID)
@@ -259,6 +261,7 @@ namespace NetworkBasedFPS
             MsgEventArgs<EndFightMsg> msgEventArgs = (MsgEventArgs<EndFightMsg>)e;
             int winer = msgEventArgs.Msg.fightResult;
             GameEntry.UI.OpenUIForm(UIFormId.EndGameForm, winer);
+            GameOver = true;
         }
     }
 }

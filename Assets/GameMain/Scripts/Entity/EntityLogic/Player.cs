@@ -147,8 +147,12 @@ namespace NetworkBasedFPS
             base.OnUpdate(elapseSeconds, realElapseSeconds);
 
             //生命值为0死亡
-            if (m_PlayerData.HP <= 0)
+            if (m_PlayerData.HP <= 0 && playerStatus != E_PLAYER_STATUS.Die)
             {
+                Debug.LogWarning("AWSL");
+                RetractWeapon();
+                GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha3, Id));
+                //GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha0, Id));
                 Dead();
             }
 
@@ -176,7 +180,6 @@ namespace NetworkBasedFPS
             if (m_PlayerData.CtrlType != CtrlType.player)
                 return;
 
-
             //每帧进行重力检测
             GravitySimulation();
             //每帧检测玩家的移动
@@ -190,8 +193,7 @@ namespace NetworkBasedFPS
             //检测换枪
             CheckKeyCode(KeyCode.Alpha1);
             CheckKeyCode(KeyCode.Alpha2);
-            //每帧检测玩家是否按下地图
-            CheckMap(KeyCode.G);
+            //CheckKeyCode(KeyCode.Alpha3);
             if (m_CurrentGun != null)
             {
                 //每帧检测玩家是否开火
@@ -244,7 +246,7 @@ namespace NetworkBasedFPS
         {
             WeaponMsg msg = new WeaponMsg();
             msg.id = GameEntry.Net.ID;
-            Debug.LogWarning(m_PlayerData.Name + " &&& " + msg.id + " &&& " + weaponID);
+            //Debug.LogWarning(m_PlayerData.Name + " &&& " + msg.id + " &&& " + weaponID);
             msg.weaponID = weaponID;
             msg.isReload = isReload;
             GameEntry.Net.Send(msg);
@@ -316,6 +318,14 @@ namespace NetworkBasedFPS
                         GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha2, Id));
                     }
                     break;
+                case KeyCode.Alpha3:
+                    if (Input.GetKeyDown(KeyCode.Alpha3))
+                    {
+                        RetractWeapon();
+                        Debug.Log("收枪");
+                        GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha3, Id));
+                    }
+                    break;
             }
         }
 
@@ -358,6 +368,43 @@ namespace NetworkBasedFPS
         }
 
         /// <summary>
+        /// 收枪
+        /// </summary>
+        private void RetractWeapon()
+        {
+            if (m_CurrentGun != null)
+            {
+                m_CurrentGun = null;
+                m_AimTarget.SetParent(transform);
+                m_AimTarget.position = transform.forward * 2;
+                m_CurrentGun.FirstPersonAnimator.SetTrigger("Unwield");
+                StartCoroutine(RealRetractWeapon());
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private IEnumerator RealRetractWeapon()
+        {
+            yield return null;
+            AnimatorStateInfo stateinfo = m_CurrentGun.FirstPersonAnimator.GetCurrentAnimatorStateInfo(0);
+            if (stateinfo.IsName("Unwield") && (stateinfo.normalizedTime >= 1.0f))
+            {
+                ThridPersonAnimator.CrossFade("Unarmed Locomotion", 0.2f);
+                foreach(var e in m_Guns)
+                {
+                    e.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                StartCoroutine(RealRetractWeapon());
+            }
+        } 
+
+        /// <summary>
         /// 玩家切枪逻辑
         /// </summary>
         public void WeaponSwap(int index)
@@ -372,9 +419,12 @@ namespace NetworkBasedFPS
             {
                 m_Guns[index].gameObject.SetActive(true);
                 m_CurrentGun = m_Guns[index];
+
                 m_AimTarget.SetParent(m_CurrentGun.ShootPoint);
                 m_AimTarget.localPosition = Vector3.zero;
                 m_AimTarget.position += m_CurrentGun.ShootPoint.forward * 2f;
+
+                SendWeaponInfo(index, false);
             }
         }
 
@@ -517,14 +567,25 @@ namespace NetworkBasedFPS
             }
         }
 
+        public bool isSuicide = false;
         //角色死亡
         public void Dead()
         {
             //更新并发送状态消息
             playerStatus = E_PLAYER_STATUS.Die;
+
             ThridPersonAnimator.SetTrigger("Die");
+
             SendStatusInfo();
-            StartCoroutine(Revive());
+            if (isSuicide == false)
+                StartCoroutine(Revive());
+            else
+                HideMyself();
+        }
+
+        public void HideMyself()
+        {
+            GameEntry.Entity.HideEntity(this.Id);
         }
 
         //复活
@@ -571,25 +632,6 @@ namespace NetworkBasedFPS
             //{
             //    GameEntry.Entity.ShowGun(new GunData(GameEntry.Entity.GenerateSerialId(), e.TypeId, e.OwnerId, e.OwnerCamp));
             //}
-        }
-
-        //小地图
-
-        int? id = 0;
-        public void CheckMap(KeyCode key)
-        {
-
-            if (Input.GetKeyDown(key))
-            {
-                id = GameEntry.UI.OpenUIForm(UIFormId.MiniMapForm);
-
-            }
-            if (Input.GetKeyUp(key))
-            {
-                GameEntry.UI.CloseUIForm((int)id);
-
-            }
-
         }
 
         #region CtrlNet

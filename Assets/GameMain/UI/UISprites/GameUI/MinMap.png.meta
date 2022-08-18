@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 99139b74d9e210843b301820915cc038
+guid: b16b8de88e741d64a9ee7349b028ce7a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -116,7 +116,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: arrows_0
+      name: minimap_arrows_0
       rect:
         serializedVersion: 2
         x: 75
@@ -124,7 +124,7 @@ TextureImporter:
         width: 66
         height: 75
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -137,7 +137,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: arrows_1
+      name: minimap_arrows_1
       rect:
         serializedVersion: 2
         x: 204
@@ -145,7 +145,7 @@ TextureImporter:
         width: 40
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -168,8 +168,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      arrows_1: 1503876163
-      arrows_0: -717201560
+      minimap_arrows_0: -717201560
+      minimap_arrows_1: 1503876163
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

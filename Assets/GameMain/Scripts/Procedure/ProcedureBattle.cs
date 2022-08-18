@@ -9,7 +9,7 @@ namespace NetworkBasedFPS
 {
     public class ProcedureBattle : ProcedureBase
     {
-        private const float GameOverDelayedSeconds = 2f;
+        private const float GameOverDelayedSeconds = 1f;
 
         private readonly Dictionary<GameMode, GameBase> m_Games = new Dictionary<GameMode, GameBase>();
         private GameBase m_CurrentGame = null;
@@ -79,10 +79,11 @@ namespace NetworkBasedFPS
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
 
+            //  如果当前游戏不为空，并且游戏没有结束
             if (m_CurrentGame != null && !m_CurrentGame.GameOver)
             {
                 m_CurrentGame.Update(elapseSeconds, realElapseSeconds);
-                if (Input.GetKeyDown(KeyCode.T))
+                if (Input.GetKeyDown(KeyCode.Escape))
                 {
                     Log.Debug("Escape Pressed");
                     GameEntry.UI.OpenUIForm(UIFormId.EscForm);
@@ -91,16 +92,27 @@ namespace NetworkBasedFPS
                 return;
             }
 
+            //  自动结束游戏返回主菜单
             //if (!m_GotoMenu)
             //{
             //    m_GotoMenu = true;
             //    m_GotoMenuDelaySeconds = 0;
             //}
 
-            m_GotoMenuDelaySeconds += elapseSeconds;
-            if (m_GotoMenuDelaySeconds >= GameOverDelayedSeconds)
+            //  经过xx秒返回主菜单
+            //m_GotoMenuDelaySeconds += elapseSeconds;
+            //if (m_GotoMenuDelaySeconds >= GameOverDelayedSeconds)
+            //{
+            //    Debug.LogWarning("返回主菜单");
+            //    procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
+            //    ChangeState<ProcedureChangeScene>(procedureOwner);
+            //}
+
+            if(m_GotoMenu == true)
             {
+                Debug.LogWarning("返回主菜单");
                 procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
+                procedureOwner.SetData<VarBoolean>("isBattleToMenu", true);
                 ChangeState<ProcedureChangeScene>(procedureOwner);
             }
 

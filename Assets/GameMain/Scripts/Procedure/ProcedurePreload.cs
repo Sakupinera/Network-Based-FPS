@@ -74,6 +74,7 @@ namespace NetworkBasedFPS
             }
 
             procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
+            procedureOwner.SetData<VarBoolean>("isBattleToMenu", false);
             ChangeState<ProcedureChangeScene>(procedureOwner);
         }
 

@@ -78,7 +78,7 @@ namespace NetworkBasedFPS
                 if (player.GetPlayerData.CtrlType == CtrlType.player)
                 {
                     images[player].rectTransform.anchoredPosition = new Vector2(x, y);
-                    images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
+                    images[player].rectTransform.eulerAngles = new Vector3(0, 0, 0/*-player.transform.eulerAngles.y*/);
 
                     float realX = (player.transform.position.x + terrain.GetComponent<Collider>().bounds.size.x / 2f) / terrain.GetComponent<Collider>().bounds.size.x;
                     float realY = (player.transform.position.z + terrain.GetComponent<Collider>().bounds.size.z / 2f) / terrain.GetComponent<Collider>().bounds.size.z;
@@ -91,7 +91,7 @@ namespace NetworkBasedFPS
                 }
 
                 //判断是否为相同阵营
-                if (teamGame.IsSameCamp(m_player.gameObject, player.gameObject))
+                if (teamGame.IsSameCamp(m_player.gameObject, player.gameObject) && player.GetPlayerData.CtrlType != CtrlType.player)
                 {
                     //字典中包含
                     if (images.ContainsKey(player))

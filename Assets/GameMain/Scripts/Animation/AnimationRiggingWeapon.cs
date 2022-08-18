@@ -10,7 +10,7 @@ namespace NetworkBasedFPS
     public class AnimationRiggingWeapon : MonoBehaviour
     {
         [SerializeField]
-        List<GameObject> m_weaponList;
+        List<GameObject?> m_weaponList;
 
         RigBuilder m_rigBuilder;
 
@@ -59,6 +59,19 @@ namespace NetworkBasedFPS
                 case KeyCode.Alpha2:
                     m_weaponList[2].SetActive(true);
                     m_rigBuilder.layers[2].active = true;
+                    break;
+                case KeyCode.Alpha3:
+                    for (int i = 1; i < m_rigBuilder.layers.Count; i++)
+                    {
+                        m_rigBuilder.layers[i].active = false;
+                        m_weaponList[i].SetActive(false);
+                    }
+                    break;
+                case KeyCode.Alpha0:
+                    for (int i = 0; i < m_rigBuilder.layers.Count; i++)
+                    {
+                        m_rigBuilder.layers[i].active = false;
+                    }
                     break;
             }
         }

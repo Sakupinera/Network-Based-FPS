@@ -22,6 +22,7 @@ namespace NetworkBasedFPS
         protected override void OnOpen(object userData)
         {
             base.OnOpen(userData);
+            Cursor.lockState = CursorLockMode.None;
             m_Winer = (int)userData;
             if (m_Winer == 1)
             {
@@ -36,8 +37,16 @@ namespace NetworkBasedFPS
 
         private void OnBackToRoomButtonClick()
         {
-            //(ProcedureBattle)GameEntry.Procedure.CurrentProcedure
             Close();
+        }
+
+        protected override void OnClose(bool isShutdown, object userData)
+        {
+            base.OnClose(isShutdown, userData);
+
+            Debug.LogWarning(GameEntry.Procedure.CurrentProcedure);
+            (GameEntry.Procedure.CurrentProcedure as ProcedureBattle).GotoMenu();
+            
         }
     }
 }
