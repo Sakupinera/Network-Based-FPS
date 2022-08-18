@@ -2,6 +2,6 @@
 #	Id		AssetName
 #	int		string
 #	音乐编号	策划备注	资源名称
-	1	菜单音乐	music_menu
+	1	菜单音乐	とんまくんのパパ - The Air Force Base (ステージ2 BGM) [餓流禍]
 	2	战斗音乐	music_background
 	3	关于音乐	music_about

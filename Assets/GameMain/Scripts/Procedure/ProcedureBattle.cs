@@ -75,6 +75,12 @@ namespace NetworkBasedFPS {
             if (m_CurrentGame != null && !m_CurrentGame.GameOver)
             {
                 m_CurrentGame.Update(elapseSeconds, realElapseSeconds);
+                if (Input.GetKeyDown(KeyCode.T))
+                {
+                    Log.Debug("Escape Pressed");
+                    GameEntry.UI.OpenUIForm(UIFormId.EscForm);
+                    Cursor.lockState = CursorLockMode.None;
+                }
                 return;
             }
 
@@ -90,6 +96,7 @@ namespace NetworkBasedFPS {
                 procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
                 ChangeState<ProcedureChangeScene>(procedureOwner);
             }
+
         }
     } 
 }

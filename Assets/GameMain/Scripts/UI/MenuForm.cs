@@ -17,6 +17,9 @@ namespace NetworkBasedFPS
         private Button m_StartButton = null;
 
         [SerializeField]
+        private Button m_SettingButton = null;
+
+        [SerializeField]
         private Button m_ConnButton = null;
 
         [SerializeField]
@@ -28,7 +31,11 @@ namespace NetworkBasedFPS
         [SerializeField]
         private InputField m_PlayerIDInputField = null;
 
-
+        public void OnSettingButtonClick()
+        {
+            print("设置");
+            GameEntry.UI.OpenUIForm(UIFormId.SettingForm);
+        }
 
         public void OnStartButtonClick()
         {
@@ -79,6 +86,7 @@ namespace NetworkBasedFPS
             base.OnInit(userData);
 
             m_StartButton.onClick.AddListener(OnStartButtonClick);
+            m_SettingButton.onClick.AddListener(OnSettingButtonClick);
             m_ConnButton.onClick.AddListener(OnConnButtonClick);
         }
 

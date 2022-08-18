@@ -32,7 +32,7 @@ namespace NetworkBasedFPS
             //GameEntry.Event.Subscribe(ShowEntityFailureEventArgs.EventId, OnShowEntityFailure);
 
             // 设置鼠标灵敏度
-            GameEntry.Setting.SetInt("MouseSensitivity", 100);
+            GameEntry.Setting.SetFloat("MouseSensitivity", 100f);
 
             GameOver = false;
             m_Player = null;

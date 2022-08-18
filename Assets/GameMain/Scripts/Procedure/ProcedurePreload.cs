@@ -18,6 +18,7 @@ namespace NetworkBasedFPS
             "Gun",
             "UIForm",
             "UISound",
+            "Music",
             "Sound",
             "Effect"
         };

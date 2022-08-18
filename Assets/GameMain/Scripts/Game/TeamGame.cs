@@ -30,8 +30,6 @@ namespace NetworkBasedFPS
             Debug.Log("开始团队模式");
         }
 
-
-
         public override void Update(float elapseSeconds, float realElapseSeconds)
         {
             base.Update(elapseSeconds, realElapseSeconds);

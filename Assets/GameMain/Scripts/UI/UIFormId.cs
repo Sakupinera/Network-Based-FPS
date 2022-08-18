@@ -53,6 +53,16 @@ namespace NetworkBasedFPS
         BattleForm = 150,
 
         /// <summary>
+        /// 战斗菜单
+        /// </summary>
+        EscForm = 151,
+
+        /// <summary>
+        /// 战斗菜单面板
+        /// </summary>
+        BattleMenuForm = 151,
+
+        /// <summary>
         /// 结算面板
         /// </summary>
         EndGameForm = 200,

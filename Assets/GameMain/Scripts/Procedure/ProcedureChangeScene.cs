@@ -33,6 +33,14 @@ namespace NetworkBasedFPS
             GameEntry.Event.Subscribe(LoadSceneUpdateEventArgs.EventId, OnLoadSceneUpdate);
             GameEntry.Event.Subscribe(LoadSceneDependencyAssetEventArgs.EventId, OnLoadSceneDependencyAsset);
 
+            // 停止所有声音
+            GameEntry.Sound.StopAllLoadingSounds();
+            GameEntry.Sound.StopAllLoadedSounds();
+
+            // 隐藏所有实体
+            GameEntry.Entity.HideAllLoadingEntities();
+            GameEntry.Entity.HideAllLoadedEntities();
+
             // 卸载所有场景
             string[] loadedSceneAssetNames = GameEntry.Scene.GetLoadedSceneAssetNames();
             for (int i = 0; i < loadedSceneAssetNames.Length; i++)
@@ -53,7 +61,7 @@ namespace NetworkBasedFPS
 
             // 切换场景
             GameEntry.Scene.LoadScene(AssetUtility.GetSceneAsset(drScene.AssetName), Constant.AssetPriority.SceneAsset, this);
-
+            m_BackgroundMusicId = drScene.BackgroundMusicId;
         }
 
         protected override void OnLeave(ProcedureOwner procedureOwner, bool isShutdown)
@@ -69,6 +77,11 @@ namespace NetworkBasedFPS
         protected override void OnUpdate(ProcedureOwner procedureOwner, float elapseSeconds, float realElapseSeconds)
         {
             base.OnUpdate(procedureOwner, elapseSeconds, realElapseSeconds);
+
+            if (m_BackgroundMusicId > 0)
+            {
+                GameEntry.Sound.PlayMusic(m_BackgroundMusicId);
+            }
 
             if (m_IsChangeSceneComplete)
             {

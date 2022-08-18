@@ -128,6 +128,8 @@ namespace NetworkBasedFPS
             }
             m_FirstPersonAnimator.SetTrigger("Fire");
 
+            GameEntry.Sound.PlaySound(m_GunData.BulletSoundId);
+
             //射线判定子弹目标点
             Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
             RaycastHit hit;

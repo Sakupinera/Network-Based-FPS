@@ -80,13 +80,12 @@ namespace NetworkBasedFPS
             base.OnInit(userData);
 
             //鼠标设定相关
-            Cursor.visible = true;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.SetCursor(tex, Vector2.zero, CursorMode.Auto);
 
             //获得自身控件
             m_Controller = GetComponent<CharacterController>();
-            mouseSensitivity = GameEntry.Setting.GetInt("MouseSensitivity");
+            mouseSensitivity = GameEntry.Setting.GetFloat("MouseSensitivity");
             groundCheck = transform.Find("GroundCheck");
             m_playerCamera = transform.Find("WorldCamera");
             groundMask = LayerMask.GetMask("Ground");

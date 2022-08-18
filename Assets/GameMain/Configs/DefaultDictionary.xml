@@ -24,12 +24,4 @@
     <String Key="CheckVersion.Tips" Value="正在檢查遊戲是否需要更新，請稍候……" />
     <String Key="UpdateResource.Tips" Value="{0}/{1}, {2}/{3}, {4:P0}, {5}/s" />
   </Dictionary>
-  <Dictionary Language="Korean">
-    <String Key="Language.English" Value="영어" />
-    <String Key="Language.ChineseSimplified" Value="중국어 간체" />
-    <String Key="Language.ChineseTraditional" Value="중국어 번체" />
-    <String Key="Language.Korean" Value="한국어" />
-    <String Key="CheckVersion.Tips" Value="게임 최신 버전 검색중..." />
-    <String Key="UpdateResource.Tips" Value="{0}/{1}, {2}/{3}, {4:P0}, {5}/s" />
-  </Dictionary>
 </Dictionaries>
