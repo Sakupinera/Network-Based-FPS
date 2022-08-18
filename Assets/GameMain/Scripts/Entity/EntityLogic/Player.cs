@@ -332,7 +332,6 @@ namespace NetworkBasedFPS
                 if (m_CurrentGun != null)
                 {
                     m_CurrentGun.Fire();
-                    GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(m_CurrentGun.currentMagBullets, m_CurrentGun.currentBulletNum, m_CurrentGun._GunData.TypeId));
                 }
                 //进行弹道偏移判断
                 if (m_CurrentGun.currentMagBullets > 0 && m_CurrentGun.reloadTimer >= m_CurrentGun.ReloadRate)
@@ -342,7 +341,7 @@ namespace NetworkBasedFPS
                     {
                         cFireTime = 0;
                         Vector3 vector = m_CurrentGun.excursion.Dequeue();
-                        Debug.Log(vector);
+                        //Debug.Log(vector);
                         xRotation += vector.x;
                         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 

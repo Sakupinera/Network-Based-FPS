@@ -13,7 +13,7 @@ public class WeaponOnBulletChangedEventArgs : GameEventArgs
     /// <summary>
     /// 加载全局配置成功事件编号
     /// </summary>
-    public static readonly int EventId = typeof(PlayerOnHPChangedEventArgs).GetHashCode();
+    public static readonly int EventId = typeof(WeaponOnBulletChangedEventArgs).GetHashCode();
 
     /// <summary>
     /// ID

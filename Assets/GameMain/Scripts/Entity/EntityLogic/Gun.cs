@@ -170,6 +170,8 @@ namespace NetworkBasedFPS
 
             //当前子弹减少
             currentMagBullets--;
+            print(currentMagBullets);
+            GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
 
             //重置开火计时器
             fireTimer = 0;
@@ -232,6 +234,8 @@ namespace NetworkBasedFPS
                     currentBulletNum = 0;
                 }
                 reloadTimer = 0;
+
+                GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
             }
             else
             {
