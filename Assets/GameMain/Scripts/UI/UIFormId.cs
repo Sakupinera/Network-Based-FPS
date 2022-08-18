@@ -53,18 +53,20 @@ namespace NetworkBasedFPS
         BattleForm = 150,
 
         /// <summary>
-        /// 结算面板
+        /// 游戏面板
         /// </summary>
-        EndGameForm = 200,
-
-        /// <summary>
-        /// 测试面板
-        /// </summary>
-        TestForm = 255,
+        GameForm = 151,
 
         /// <summary>
         /// 小地图面板
         /// </summary>
-        MiniMapForm = 150
+        MiniMapForm = 152,
+
+        /// <summary>
+        /// 结算面板
+        /// </summary>
+        EndGameForm = 200,
+
+
     }
 }

@@ -136,6 +136,8 @@ namespace NetworkBasedFPS
                 Position = swopTrans.position,
                 Camp = team,
             });
+
+
         }
 
         //列表处理
@@ -149,13 +151,13 @@ namespace NetworkBasedFPS
             //玩家处理
             if (id == GameEntry.Net.ID)
             {
-                list[id]._PlayerData.CtrlType = CtrlType.player;
+                list[id].GetPlayerData.CtrlType = CtrlType.player;
                 Debug.Log("玩家 " + id + " " + list[id].Name + " 为玩家操控");
             }
             else
             {
                 Debug.Log("玩家 " + id + " " + list[id].Name + " 为Net操控");
-                list[id]._PlayerData.CtrlType = CtrlType.net;
+                list[id].GetPlayerData.CtrlType = CtrlType.net;
                 list[id].InitNetCtrl();  //初始化网络同步
             }
         }
@@ -204,11 +206,11 @@ namespace NetworkBasedFPS
             });
 
             //  枪口特效
-            GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70000)
-            {
-                Position = new Vector3(bullet.posX, bullet.posY, bullet.posZ),
-                Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
-            });
+            //GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70000)
+            //{
+            //    Position = new Vector3(bullet.posX, bullet.posY, bullet.posZ),
+            //    Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
+            //});
 
         }
 
@@ -230,13 +232,24 @@ namespace NetworkBasedFPS
         {
             MsgEventArgs<DamageMsg> msgEventArgs = (MsgEventArgs<DamageMsg>)e;
             DamageMsg msg = msgEventArgs.Msg;
+            if (msg.isKilled == true)
+            {
+                GameEntry.Event.Fire(this, PlayerScoreChangedEventArgs.Create(list[msg.injured].GetPlayerData.Camp));
+            }
             if (msg.id == GameEntry.Net.ID)
             {
                 return;
             }
             Player player = list[msg.injured];
-            player._PlayerData.HP -= msg.damage;
-            Debug.Log("玩家：" + list[msg.id] + " 打中了 " + list[msg.injured] + "   造成" + msg.damage + " 点伤害");
+            player.GetPlayerData.HP -= msg.damage;
+
+            if (msg.injured == GameEntry.Net.ID)
+            {
+                GameEntry.Event.Fire(this, PlayerOnHPChangedEventArgs.Create(player.GetPlayerData.HP));
+            }
+
+
+            //Debug.Log("玩家：" + list[msg.id] + " 打中了 " + list[msg.injured] + "   造成" + msg.damage + " 点伤害");
         }
 
 

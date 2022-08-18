@@ -11,21 +11,17 @@ namespace NetworkBasedFPS
     public class TeamItem : UGuiForm
     {
         [SerializeField]
-        protected GameObject teamScoreA;
-        protected TextMeshPro tMPA;
+        private TMP_Text teamScoreA;
 
         [SerializeField]
-        protected GameObject teamScoreB;
-        protected TextMeshPro tMPB;
+        private TMP_Text teamScoreB;
 
-        protected int tAScore;
-        protected int tBScore;
+        private int tAScore = 0;
+        private int tBScore = 0;
 
         public void Init()
         {
-            //获取组件
-            tMPA = teamScoreA.GetComponent<TextMeshPro>();
-            tMPB = teamScoreB.GetComponent<TextMeshPro>();
+            UpdateScore();
 
             GameEntry.Event.Subscribe(PlayerScoreChangedEventArgs.EventId, ChangeScore);
         }
@@ -33,26 +29,27 @@ namespace NetworkBasedFPS
         /// <summary>
         /// 计算分数
         /// </summary>
-        protected void ChangeScore(object sender,GameEventArgs e)
+        protected void ChangeScore(object sender, GameEventArgs e)
         {
+            print("加分");
             PlayerScoreChangedEventArgs playerScoreChangedEventArgs = (PlayerScoreChangedEventArgs)e;
-            if(playerScoreChangedEventArgs.CampType == CampType.BlueCamp)
+            if (playerScoreChangedEventArgs.CampType == CampType.BlueCamp)
             {
                 tAScore++;
             }
-            if(playerScoreChangedEventArgs.CampType == CampType.RedCamp)
+            if (playerScoreChangedEventArgs.CampType == CampType.RedCamp)
             {
                 tBScore++;
             }
 
             UpdateScore();
         }
-        
+
 
         public void UpdateScore()
         {
-            tMPA.text = tAScore.ToString();
-            tMPB.text = tBScore.ToString();
+            teamScoreA.text = tAScore.ToString();
+            teamScoreB.text = tBScore.ToString();
         }
     }
 }

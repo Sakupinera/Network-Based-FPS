@@ -20,7 +20,7 @@ namespace NetworkBasedFPS
     /// </summary>
     public class Player : Entity
     {
-        
+
 
         public PlayerData GetPlayerData { get { return m_PlayerData; } }
 
@@ -40,6 +40,7 @@ namespace NetworkBasedFPS
         [SerializeField]
         private List<Thrown> m_Throwns = new List<Thrown>();
 
+        //public int killNum = 0;
 
         //重力
         public float gravity = -9.81f;
@@ -331,9 +332,10 @@ namespace NetworkBasedFPS
                 if (m_CurrentGun != null)
                 {
                     m_CurrentGun.Fire();
+                    GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(m_CurrentGun.currentMagBullets, m_CurrentGun.currentBulletNum, m_CurrentGun._GunData.TypeId));
                 }
                 //进行弹道偏移判断
-                if (m_CurrentGun.currentBullects > 0 && m_CurrentGun.reloadTimer >= m_CurrentGun.ReloadRate)
+                if (m_CurrentGun.currentMagBullets > 0 && m_CurrentGun.reloadTimer >= m_CurrentGun.ReloadRate)
                 {
                     cFireTime += Time.deltaTime;
                     if (cFireTime >= m_CurrentGun.AttackInterval)
@@ -522,7 +524,7 @@ namespace NetworkBasedFPS
         {
             //更新并发送状态消息
             playerStatus = E_PLAYER_STATUS.Die;
-            //ThridPersonAnimator.SetTrigger("Dying");
+            ThridPersonAnimator.SetTrigger("Die");
             SendStatusInfo();
             StartCoroutine(Revive());
         }
@@ -546,6 +548,10 @@ namespace NetworkBasedFPS
             //更新并发送状态消息
             playerStatus = E_PLAYER_STATUS.Normal;
             m_PlayerData.HP = 100;
+            if (m_PlayerData.CtrlType == CtrlType.player)
+            {
+                GameEntry.Event.Fire(this, PlayerOnHPChangedEventArgs.Create(100));
+            }
             SendStatusInfo();
             //更新位置
             transform.position = swopTrans.position;
@@ -557,13 +563,35 @@ namespace NetworkBasedFPS
         {
             foreach (var e in m_Guns)
             {
-                GameEntry.Entity.HideEntity(e.Id);
+                //    e.gameObject.SetActive(true);
+                //    GameEntry.Entity.HideEntity(e.Id);
+
+                e.ResetGunData();
             }
-            List<GunData> gunDatas = m_PlayerData.GetAllGunDatas();
-            for (int i = 0; i < gunDatas.Count; i++)
+            //List<GunData> gunDatas = m_PlayerData.GetAllGunDatas();
+            //foreach (var e in gunDatas)
+            //{
+            //    GameEntry.Entity.ShowGun(new GunData(GameEntry.Entity.GenerateSerialId(), e.TypeId, e.OwnerId, e.OwnerCamp));
+            //}
+        }
+
+        //小地图
+
+        int? id = 0;
+        public void CheckMap(KeyCode key)
+        {
+
+            if (Input.GetKeyDown(key))
             {
-                GameEntry.Entity.ShowGun(gunDatas[i]);
+                id = GameEntry.UI.OpenUIForm(UIFormId.MiniMapForm);
+
             }
+            if (Input.GetKeyUp(key))
+            {
+                GameEntry.UI.CloseUIForm((int)id);
+
+            }
+
         }
 
         #region CtrlNet
@@ -579,7 +607,7 @@ namespace NetworkBasedFPS
 
         E_PLAYER_STATUS lplayerStatus;
 
-        int lweaponID = -1;
+        //int lweaponID = -1;
 
         float speedMultiple = 1f;
 
@@ -596,24 +624,24 @@ namespace NetworkBasedFPS
                 return;
             }
             //切换武器
-            if (weaponID != lweaponID || lweaponID == -1)
+            //if (weaponID != lweaponID || lweaponID == -1)
+            //{
+            //    lweaponID = weaponID;
+            Debug.LogWarning("Net玩家" + m_PlayerData.Name + "  武器：" + weaponID);
+            if (weaponID == 0)
             {
-                lweaponID = weaponID;
-                Debug.LogWarning("Net玩家" + m_PlayerData.Name + "  武器：" + weaponID);
-                if (weaponID == 0)
-                {
-                    Debug.Log(m_PlayerData.Name + " " + Id + " " + "换枪 步枪");
-                    GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha1, Id));
-                    ThridPersonAnimator.CrossFade("Rifle Aim", 0.2f);
-                }
-                else if (weaponID == 1)
-                {
-                    Debug.Log(m_PlayerData.Name + " " + Id + " " + "换枪 手枪");
-                    GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha2, Id));
-                    ThridPersonAnimator.CrossFade("Pistol Aim", 0.2f);
-                }
-
+                Debug.Log(m_PlayerData.Name + " " + Id + " " + "换枪 步枪");
+                GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha1, Id));
+                ThridPersonAnimator.CrossFade("Rifle Aim", 0.2f);
             }
+            else if (weaponID == 1)
+            {
+                Debug.Log(m_PlayerData.Name + " " + Id + " " + "换枪 手枪");
+                GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha2, Id));
+                ThridPersonAnimator.CrossFade("Pistol Aim", 0.2f);
+            }
+
+            //}
         }
 
         //Net玩家切换状态
@@ -730,22 +758,6 @@ namespace NetworkBasedFPS
         }
 
 
-        int? id = 0;
-        public void CheckMap(KeyCode key)
-        {
-            
-            if (Input.GetKeyDown(key))
-            {
-                id = GameEntry.UI.OpenUIForm(UIFormId.MiniMapForm);
-
-            }
-            if (Input.GetKeyUp(key))
-            {
-                GameEntry.UI.CloseUIForm((int)id);
-
-            }
-           
-        }
         #endregion
 
     }

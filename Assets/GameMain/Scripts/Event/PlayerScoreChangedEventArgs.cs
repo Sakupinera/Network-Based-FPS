@@ -35,12 +35,12 @@ public class PlayerScoreChangedEventArgs : GameEventArgs
     public CampType CampType
     {
         get { return campType; }
-        set { campType = value; }
+        private set { campType = value; }
     }
 
     public static PlayerScoreChangedEventArgs Create(CampType campType)
     {
-        
+
         PlayerScoreChangedEventArgs playerScoreChangedEventArgs = new PlayerScoreChangedEventArgs();
         playerScoreChangedEventArgs.CampType = campType;
         return playerScoreChangedEventArgs;

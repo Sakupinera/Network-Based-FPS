@@ -5,7 +5,8 @@ using GameFramework;
 using UnityGameFramework.Runtime;
 using ProcedureOwner = GameFramework.Fsm.IFsm<GameFramework.Procedure.IProcedureManager>;
 
-namespace NetworkBasedFPS {
+namespace NetworkBasedFPS
+{
     public class ProcedureBattle : ProcedureBase
     {
         private const float GameOverDelayedSeconds = 2f;
@@ -28,7 +29,7 @@ namespace NetworkBasedFPS {
             get { return m_CurrentGame; }
         }
 
-       
+
 
         public void GotoMenu()
         {
@@ -39,7 +40,7 @@ namespace NetworkBasedFPS {
         {
             base.OnInit(procedureOwner);
 
-            //m_Games.Add(GameMode.Team, new TeamGame());
+            m_Games.Add(GameMode.Team, new TeamGame());
         }
 
         protected override void OnDestroy(ProcedureOwner procedureOwner)
@@ -58,7 +59,7 @@ namespace NetworkBasedFPS {
             m_CurrentGame = m_Games[gameMode];
             m_CurrentGame.Initialize();
 
-            GameEntry.UI.OpenUIForm(UIFormId.BattleForm);
+            GameEntry.UI.OpenUIForm(UIFormId.GameForm);
 
             Log.Debug("开始战斗！");
         }
@@ -97,5 +98,5 @@ namespace NetworkBasedFPS {
             //    ChangeState<ProcedureChangeScene>(procedureOwner);
             //}
         }
-    } 
+    }
 }

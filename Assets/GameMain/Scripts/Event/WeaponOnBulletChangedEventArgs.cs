@@ -44,7 +44,7 @@ public class WeaponOnBulletChangedEventArgs : GameEventArgs
         set { weaponTypeID = value; }
     }
 
-    public WeaponOnBulletChangedEventArgs Create(int currentBullet,int RestBullet,int weaponTypeId)
+    public static WeaponOnBulletChangedEventArgs Create(int currentBullet, int RestBullet, int weaponTypeId)
     {
         WeaponOnBulletChangedEventArgs weaponOnBulletChangedEventArgs = new WeaponOnBulletChangedEventArgs();
         weaponOnBulletChangedEventArgs.currentBullet = currentBullet;

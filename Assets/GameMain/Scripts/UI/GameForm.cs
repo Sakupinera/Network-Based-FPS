@@ -2,6 +2,7 @@ using GameFramework.Event;
 using GamePlayer;
 using GameServer;
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,10 @@ namespace NetworkBasedFPS
         [SerializeField]
         private GameObject m_weaponBox;
 
+        [SerializeField]
+        private TMP_Text KillNum;
+
+        private int m_killNum = 0;
 
         protected override void OnInit(object userData)
         {
@@ -34,8 +39,15 @@ namespace NetworkBasedFPS
             m_teamItem.GetComponent<TeamItem>().Init();
             m_hpBarItem.GetComponent<HPBarItem>().Init();
             m_weaponBox.GetComponent<WeaponItems>().Init();
+
+            GameEntry.Event.Subscribe(KillEvent.EventId, UpdateKillNum);
         }
 
+        private void UpdateKillNum(object sender, GameEventArgs e)
+        {
+            m_killNum++;
+            KillNum.text = m_killNum.ToString();
+        }
 
         protected override void OnUpdate(float elapseSeconds, float realElapseSeconds)
         {
@@ -43,5 +55,7 @@ namespace NetworkBasedFPS
 
             m_miniMap.GetComponent<MiniMap>().UpdatePlayer();
         }
+
+
     }
 }

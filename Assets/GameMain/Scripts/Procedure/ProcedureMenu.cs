@@ -34,7 +34,7 @@ namespace NetworkBasedFPS
             m_StartGame = false;
 
             // 加载主菜单UIForm
-            GameEntry.UI.OpenUIForm(UIFormId.TestForm);
+            GameEntry.UI.OpenUIForm(UIFormId.MenuForm);
 
         }
 
@@ -53,8 +53,8 @@ namespace NetworkBasedFPS
             if (m_StartGame == true)
             {
                 procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Battle"));
-                //procedureOwner.SetData<VarByte>("GameMode", (byte)GameMode.Team);
-                procedureOwner.SetData<VarByte>("GameMode", (byte)GameMode.Single);
+                procedureOwner.SetData<VarByte>("GameMode", (byte)GameMode.Team);
+                //procedureOwner.SetData<VarByte>("GameMode", (byte)GameMode.Single);
                 ChangeState<ProcedureChangeScene>(procedureOwner);
             }
         }

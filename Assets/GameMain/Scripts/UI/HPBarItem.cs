@@ -11,7 +11,11 @@ namespace NetworkBasedFPS
     public class HPBarItem : UGuiForm
     {
         [SerializeField]
-        protected GameObject HPBar;
+        private GameObject HPBar;
+
+        [SerializeField]
+        private TMP_Text HPBarText;
+
         private Slider HPBarSlider;
 
         public void Init()
@@ -26,11 +30,12 @@ namespace NetworkBasedFPS
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void ChangeHpValue(object sender,GameEventArgs e)
+        public void ChangeHpValue(object sender, GameEventArgs e)
         {
             PlayerOnHPChangedEventArgs playerOnHPChangedEventArgs = (PlayerOnHPChangedEventArgs)e;
 
-            HPBarSlider.value = playerOnHPChangedEventArgs.CurrentHp/100f;
+            HPBarSlider.value = playerOnHPChangedEventArgs.CurrentHp / 100f;
+            HPBarText.text = playerOnHPChangedEventArgs.CurrentHp.ToString();
         }
 
 

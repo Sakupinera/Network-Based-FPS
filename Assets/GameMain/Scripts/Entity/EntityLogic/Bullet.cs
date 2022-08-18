@@ -65,18 +65,22 @@ namespace NetworkBasedFPS
                         Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
                     });
                     Player injuredPlayer = hit.collider.GetComponent<Player>();
-                    injuredPlayer._PlayerData.HP -= m_BulletData.Attack;
-                    bool isKilled = false;
-                    if(injuredPlayer._PlayerData.HP <= 0)
+                    if (injuredPlayer.playerStatus != E_PLAYER_STATUS.Die)
                     {
-                        isKilled = true;
+                        injuredPlayer.GetPlayerData.HP -= m_BulletData.Attack;
+                        bool isKilled = false;
+                        if (injuredPlayer.GetPlayerData.HP <= 0)
+                        {
+                            isKilled = true;
+                            GameEntry.Event.Fire(this, KillEvent.Create());
+                        }
+
+                        Log.Debug("我打到{0}了，造成了{1}点巨额伤害，对手还剩{2}滴血", injuredPlayer.Id, m_BulletData.Attack, injuredPlayer.GetPlayerData.HP);
+
+                        SendHitMsg(injuredPlayer.Id, m_BulletData.Attack, isKilled);
                     }
-
-                    Log.Debug("我打到{0}了，造成了{1}点巨额伤害，对手还剩{2}滴血", injuredPlayer.Id, m_BulletData.Attack, injuredPlayer._PlayerData.HP);
-
-                    SendHitMsg(injuredPlayer.Id, m_BulletData.Attack, isKilled);
                 }
-                else if(hit.transform.tag != "Empty")
+                else if (hit.transform.tag != "Empty")
                 {
                     //  生成弹孔特效
                     GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)

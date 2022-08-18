@@ -33,9 +33,9 @@ public class PlayerOnHPChangedEventArgs : GameEventArgs
         set { currentHp = value; }
     }
 
-    public PlayerOnHPChangedEventArgs Create(int currentHp)
+    public static PlayerOnHPChangedEventArgs Create(int currentHp)
     {
-        
+
         PlayerOnHPChangedEventArgs playerOnHPChangedEventArgs = new PlayerOnHPChangedEventArgs();
         playerOnHPChangedEventArgs.CurrentHp = currentHp;
         return playerOnHPChangedEventArgs;
