@@ -239,8 +239,8 @@ namespace NetworkBasedFPS
             Player player = list[msg.injured];
             if (msg.id == GameEntry.Net.ID)
             {
-                if (msg.id == msg.injured)
-                    player.isSuicide = true;
+                //if (msg.id == msg.injured)
+                //    player.isSuicide = true;
                 return;
             }
             player.GetPlayerData.HP -= msg.damage;

@@ -32,12 +32,12 @@ namespace NetworkBasedFPS
         [SerializeField]
         private Player m_player;
         private Dictionary<Player, Image> images = new Dictionary<Player, Image>();
-
+        private RectTransform rect;
 
         public void Init()
         {
-            terrain = GameObject.Find("Dust");
-
+            terrain = GameObject.Find("对象006");
+            rect = miniMap.GetComponent<Image>().rectTransform;
             //获取当前的战斗流程
             procedureBattle = GameEntry.Procedure.CurrentProcedure as ProcedureBattle;
             if (procedureBattle.CurrentGame.GameMode == GameMode.Team)
@@ -70,22 +70,34 @@ namespace NetworkBasedFPS
 
 
 
-                //计算玩家在小地图上的位置
-                float x = (player.transform.position.x / (terrain.GetComponent<Collider>().bounds.size.x / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.width / 2);
-                float y = (player.transform.position.z / (terrain.GetComponent<Collider>().bounds.size.z / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.height / 2);
+                ////计算玩家在小地图上的位置
+                //float x = (player.transform.position.x / (terrain.GetComponent<Collider>().bounds.size.x / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.width / 2);
+                //float y = (player.transform.position.z / (terrain.GetComponent<Collider>().bounds.size.z / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.height / 2);
+
+                float realWidth = terrain.GetComponent<Collider>().bounds.size.x;
+                float realheigh = terrain.GetComponent<Collider>().bounds.size.z;
+                //Debug.Log(realWidth + "," + realheigh);
+                float realX = player.transform.position.x - terrain.GetComponent<Collider>().bounds.min.x;
+                float realY = player.transform.position.z - terrain.GetComponent<Collider>().bounds.min.z;
+
+                float pivotX = realX / realWidth;
+                float pivotY = realY / realheigh;
+
+                float itemX = pivotX * rect.rect.width - rect.rect.width / 2;
+                float itemY = pivotY * rect.rect.height - rect.rect.height / 2;
 
                 //找到本地玩家
                 if (player.GetPlayerData.CtrlType == CtrlType.player)
                 {
-                    images[player].rectTransform.anchoredPosition = new Vector2(x, y);
+                    images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
                     images[player].rectTransform.eulerAngles = new Vector3(0, 0, 0/*-player.transform.eulerAngles.y*/);
 
-                    float realX = (player.transform.position.x + terrain.GetComponent<Collider>().bounds.size.x / 2f) / terrain.GetComponent<Collider>().bounds.size.x;
-                    float realY = (player.transform.position.z + terrain.GetComponent<Collider>().bounds.size.z / 2f) / terrain.GetComponent<Collider>().bounds.size.z;
+                    //float realX = (player.transform.position.x + terrain.GetComponent<Collider>().bounds.size.x / 2f) / terrain.GetComponent<Collider>().bounds.size.x;
+                    //float realY = (player.transform.position.z + terrain.GetComponent<Collider>().bounds.size.z / 2f) / terrain.GetComponent<Collider>().bounds.size.z;
 
-                    miniMap.GetComponent<Image>().rectTransform.pivot = new Vector2(realX, realY);
-                    miniMap.GetComponent<Image>().rectTransform.localPosition = Vector2.zero;
-                    miniMap.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, player.transform.eulerAngles.y);
+                    rect.pivot = new Vector2(pivotX, pivotY);
+                    rect.localPosition = Vector2.zero;
+                    rect.eulerAngles = new Vector3(0, 0, player.transform.eulerAngles.y);
 
 
                 }
@@ -96,7 +108,7 @@ namespace NetworkBasedFPS
                     //字典中包含
                     if (images.ContainsKey(player))
                     {
-                        images[player].rectTransform.anchoredPosition = new Vector2(x, y);
+                        images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
                         images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
                     }
                     //字典中不包含
@@ -104,7 +116,7 @@ namespace NetworkBasedFPS
                     {
                         GameObject img = Instantiate(miniPlayer, miniMap.transform);
                         img.GetComponent<Image>().color = Color.white;
-                        img.GetComponent<Image>().rectTransform.anchoredPosition = new Vector2(x, y);
+                        img.GetComponent<Image>().rectTransform.anchoredPosition = new Vector2(itemX, itemY);
                         img.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
                         images.Add(player, img.GetComponent<Image>());
                     }
