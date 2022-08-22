@@ -167,6 +167,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   miniPlayer: {fileID: 1752811462413208006, guid: 7681043fda699b34f977fc264d22688b, type: 3}
-  terrain: {fileID: 0}
+  terrain: {fileID: 714042668145056995, guid: 2f39c18f546b1124c91b2303bcaa5204, type: 3}
   miniMap: {fileID: 2673587247315832413}
   m_player: {fileID: 0}

@@ -444,7 +444,7 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: -8493249192740119264, guid: aebc5757cb26e464e8a59137dbdc17c8, type: 3}
+    m_Motion: {fileID: 7400000, guid: 40ac6268f5185674e8efb76cb3242b46, type: 2}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -452,7 +452,7 @@ BlendTree:
     m_DirectBlendParameter: Fire Index
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: -903523177010379825, guid: aebc5757cb26e464e8a59137dbdc17c8, type: 3}
+    m_Motion: {fileID: 7400000, guid: b9bdb7571c978a549aed39a9bf5809cb, type: 2}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -864,7 +864,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 3008323970325347281, guid: aebc5757cb26e464e8a59137dbdc17c8, type: 3}
+  m_Motion: {fileID: 7400000, guid: 63aa47c646e95c7489628d5eef2a35e8, type: 2}
   m_Tag: 
   m_SpeedParameter: Reload Speed
   m_MirrorParameter: 
@@ -918,9 +918,6 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 1085218104016036556}
     m_Position: {x: 480, y: 430, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 7992997949375872792}
-    m_Position: {x: 515, y: 495, z: 0}
   m_ChildStateMachines:
   - serializedVersion: 1
     m_StateMachine: {fileID: 1107891949392902106}
@@ -1025,7 +1022,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -1281573231566933397, guid: aebc5757cb26e464e8a59137dbdc17c8, type: 3}
+  m_Motion: {fileID: 7400000, guid: 1cee0a70c42f89f44ba4b62f9490d37d, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1220,32 +1217,6 @@ AnimatorStateTransition:
   m_InterruptionSource: 2
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!1102 &7992997949375872792
-AnimatorState:
-  serializedVersion: 6
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: AKM_Aim
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: e36a6978ff0b37542ab6ec4a970db86a, type: 2}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!206 &8200456577342877415
 BlendTree:
   m_ObjectHideFlags: 1

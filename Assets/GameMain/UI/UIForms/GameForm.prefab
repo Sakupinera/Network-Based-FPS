@@ -1310,7 +1310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   miniPlayer: {fileID: 1752811462413208006, guid: 7681043fda699b34f977fc264d22688b, type: 3}
-  terrain: {fileID: 9090762415937700707, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
+  terrain: {fileID: 714042668145056995, guid: 2f39c18f546b1124c91b2303bcaa5204, type: 3}
   miniMap: {fileID: 8033215452105023963}
   m_player: {fileID: 0}
 --- !u!1 &5041881237263125926
@@ -2345,7 +2345,6 @@ GameObject:
   - component: {fileID: 9065404700721067788}
   - component: {fileID: 4709888942996453891}
   - component: {fileID: 3017109675886917027}
-  - component: {fileID: 7584303591848555303}
   m_Layer: 0
   m_Name: Image
   m_TagString: Untagged
@@ -2411,22 +2410,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7584303591848555303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8033215452105023963}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a57ee5661a1dd1a40872932fd869c1db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  miniPlayer: {fileID: 1752811462413208006, guid: 7681043fda699b34f977fc264d22688b, type: 3}
-  terrain: {fileID: 9090762415937700707, guid: f61b6eea9e252d947a2be118087b4c95, type: 3}
-  miniMap: {fileID: 8033215452105023963}
-  m_player: {fileID: 0}
 --- !u!1 &8509016855816299003
 GameObject:
   m_ObjectHideFlags: 0
@@ -2495,7 +2478,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8f02e452b0c9d404fbd689bc7aad5650, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9593ba04c74fbd345b30e20a439fea91, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
