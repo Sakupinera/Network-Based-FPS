@@ -55,7 +55,6 @@ namespace NetworkBasedFPS
             // 生成弹孔或者出血特效
             if (Physics.Raycast(CachedTransform.position, CachedTransform.forward, out hit, 10))
             {
-                //Debug.Log("碰撞对象：" + hit.collider.name);
                 if (hit.transform.tag == "Player")
                 {
                     //  生成出血特效
