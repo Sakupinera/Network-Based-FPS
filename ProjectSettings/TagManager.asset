@@ -4,25 +4,35 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Ground
-  - Empty
+  - Wall
+  - Metal
+  - Blood
+  - Dirt
+  - Concrete
+  - ExplosiveBarrel
+  - Target
+  - GasTank
+  - Metal (Static)
+  - Wood (Static)
+  - Dirt (Static)
+  - Wood
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Ground
+  - 
   - Water
   - UI
-  - FirstPerson
-  - ThridPerson_MySelf
-  - ThridPerson_Other
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Wall
+  - First Person View
+  - Character
+  - Post Processing
+  - Post Processing Weapon
+  - Post Processing Scope
+  - Invisible Wall
+  - Projectile
   - 
   - 
   - 
