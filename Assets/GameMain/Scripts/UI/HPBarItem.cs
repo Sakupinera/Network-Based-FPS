@@ -38,6 +38,10 @@ namespace NetworkBasedFPS
             HPBarText.text = playerOnHPChangedEventArgs.CurrentHp.ToString();
         }
 
+        public void OnClose()
+        {
+            GameEntry.Event.Unsubscribe(PlayerOnHPChangedEventArgs.EventId, ChangeHpValue);
 
+        }
     }
 }

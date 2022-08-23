@@ -12,7 +12,7 @@ namespace NetworkBasedFPS
     /// </summary>
     public class Gun : Entity
     {
-        private const string AttachPoint = "WorldCamera/WeaponPoint";
+        private const string AttachPoint = "WorldCamera/Arms_FirstPerson/SK_FP_CH_Default_Root/Armature/root/ik_hand_root/ik_hand_gun/WeaponPoint";
 
         [SerializeField]
         private GunData m_GunData = null;
@@ -39,7 +39,7 @@ namespace NetworkBasedFPS
         public Vector3 shootDirection;
 
         //武器动画
-        private Animator m_FirstPersonAnimator;
+        private Animator m_GunAnimator;
 
         private Transform m_aimTarget;
 
@@ -54,16 +54,16 @@ namespace NetworkBasedFPS
 
         public float AttackInterval => m_GunData.AttackInterval;
 
-        public Animator FirstPersonAnimator
+        public Animator GunAnimator
         {
-            get => m_FirstPersonAnimator;
+            get => m_GunAnimator;
         }
 
         protected override void OnInit(object userData)
         {
             base.OnInit(userData);
 
-            m_shootPoint = transform.Find("Armature/Weapon/ShootPoint");
+            m_shootPoint = transform.Find("ShootPoint");
         }
 
         protected override void OnShow(object userData)
@@ -85,8 +85,8 @@ namespace NetworkBasedFPS
             }
             ReloadRate = m_GunData.ReloadTime;
 
-            m_FirstPersonAnimator = GetComponent<Animator>();
-            GetComponent<EquipmentAnimation>().AssignAnimations(m_FirstPersonAnimator);
+            m_GunAnimator = GetComponent<Animator>();
+            //GetComponent<EquipmentAnimation>().AssignAnimations(m_FirstPersonAnimator);
 
             // 挂载自身到父物体身上
             GameEntry.Entity.AttachEntity(Entity, m_GunData.OwnerId, AttachPoint);
@@ -115,6 +115,7 @@ namespace NetworkBasedFPS
 
             Name = Utility.Text.Format("Weapon of {0}", parentEntity.Name);
             CachedTransform.localPosition = m_GunData.AttachLocalPosition;
+            CachedTransform.localRotation = Quaternion.Euler(Vector3.zero);
 
             gameObject.SetActive(false);
         }
@@ -131,7 +132,7 @@ namespace NetworkBasedFPS
             {
                 return;
             }
-            m_FirstPersonAnimator.SetTrigger("Fire");
+            m_GunAnimator.Play("Fire",0,0);
 
             GameEntry.Sound.PlaySound(m_GunData.BulletSoundId);
 
@@ -172,7 +173,7 @@ namespace NetworkBasedFPS
 
             //当前子弹减少
             currentMagBullets--;
-            print(currentMagBullets);
+            //print(currentMagBullets);
             GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
 
             //重置开火计时器
@@ -206,20 +207,22 @@ namespace NetworkBasedFPS
         {
             if (currentMagBullets < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
             {
-
+                Player p = (Player)GameEntry.Entity.GetParentEntity(Id).Logic;
                 (GameEntry.Entity.GetParentEntity(Id).Logic as Player).SendWeaponInfo(-1, true);
                 // 播放换弹动画
                 if (currentMagBullets > 0)
                 {
-                    m_FirstPersonAnimator.SetTrigger("Reload");
+                    m_GunAnimator.Play("Reload",0,0);
+                    p.FirstPersonAnimator.CrossFade("Reload", 0f);
                     ReloadRate = m_GunData.ReloadTime;
                 }
                 else
                 {
-                    m_FirstPersonAnimator.SetTrigger("Empty Reload");
+                    m_GunAnimator.Play("Empty Reload",0,0);
+                    p.FirstPersonAnimator.CrossFade("Empty Reload", 0f);
                     ReloadRate = m_GunData.EmptyReloadTime;
                 }
-                Player p = (Player)GameEntry.Entity.GetParentEntity(Id).Logic;
+
                 p.ThridPersonAnimator.SetTrigger("Reload");
 
                 //计算出当前子弹数补满一个弹夹需要的的剩余子弹

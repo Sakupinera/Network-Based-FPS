@@ -44,13 +44,6 @@ namespace NetworkBasedFPS
             {
                 teamGame = (procedureBattle.CurrentGame as TeamGame);
             }
-
-            //miniMap = this.transform.Find("img_miniMap").gameObject;
-            //for (int i = 0; i < teamGame.list.Count; i++)
-            //foreach (Player player in teamGame.list.Values)
-            //{
-
-            //}
         }
 
 
@@ -58,6 +51,7 @@ namespace NetworkBasedFPS
         {
             foreach (Player player in teamGame.list.Values)
             {
+
                 //找到本地玩家
                 if (player.GetPlayerData.CtrlType == CtrlType.player && m_player == null)
                 {
@@ -66,17 +60,42 @@ namespace NetworkBasedFPS
                     GameObject img = Instantiate(miniPlayer, miniMap.transform);
                     img.GetComponent<Image>().color = Color.red;
                     images.Add(player, img.GetComponent<Image>());
+
+                }
+                else if (m_player != null)
+                {
+                    break;
                 }
 
+                Debug.Log(player.GetPlayerData.Name);
+            }
 
+            foreach (Player player in teamGame.list.Values)
+            {
+                //找到本地玩家
+                //if (player.GetPlayerData.CtrlType == CtrlType.player && m_player == null)
+                //{
+                //    m_player = player;
+                //    将本地玩家设置 的图标设置为红色
+                //    GameObject img = Instantiate(miniPlayer, miniMap.transform);
+                //    img.GetComponent<Image>().color = Color.red;
+                //    images.Add(player, img.GetComponent<Image>());
+                //}
 
-                ////计算玩家在小地图上的位置
-                //float x = (player.transform.position.x / (terrain.GetComponent<Collider>().bounds.size.x / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.width / 2);
-                //float y = (player.transform.position.z / (terrain.GetComponent<Collider>().bounds.size.z / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.height / 2);
+                ////找到本地玩家
+                //if (player.GetPlayerData.CtrlType == CtrlType.player && m_player == null)
+                //{
+                //    m_player = player;
+                //    //将本地玩家设置 的图标设置为红色
+                //    GameObject img = Instantiate(miniPlayer, miniMap.transform);
+                //    img.GetComponent<Image>().color = Color.red;
+                //    images.Add(player, img.GetComponent<Image>());
+                //    Debug.Log(m_player + " 为 " + player.GetPlayerData.Name);
+                //}
+                //Debug.Log(player.GetPlayerData.Name);
 
                 float realWidth = terrain.GetComponent<Collider>().bounds.size.x;
                 float realheigh = terrain.GetComponent<Collider>().bounds.size.z;
-                //Debug.Log(realWidth + "," + realheigh);
                 float realX = player.transform.position.x - terrain.GetComponent<Collider>().bounds.min.x;
                 float realY = player.transform.position.z - terrain.GetComponent<Collider>().bounds.min.z;
 
@@ -99,28 +118,33 @@ namespace NetworkBasedFPS
                     rect.localPosition = Vector2.zero;
                     rect.eulerAngles = new Vector3(0, 0, player.transform.eulerAngles.y);
 
-
                 }
 
-                //判断是否为相同阵营
-                if (teamGame.IsSameCamp(m_player.gameObject, player.gameObject) && player.GetPlayerData.CtrlType != CtrlType.player)
-                {
-                    //字典中包含
-                    if (images.ContainsKey(player))
-                    {
-                        images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
-                        images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
-                    }
-                    //字典中不包含
-                    else
-                    {
-                        GameObject img = Instantiate(miniPlayer, miniMap.transform);
-                        img.GetComponent<Image>().color = Color.white;
-                        img.GetComponent<Image>().rectTransform.anchoredPosition = new Vector2(itemX, itemY);
-                        img.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
-                        images.Add(player, img.GetComponent<Image>());
-                    }
+                //Debug.LogWarning(teamGame == null);
+                //Debug.Log(m_player == null);
 
+                if (m_player != null)
+                {
+                    //判断是否为相同阵营
+                    if (teamGame.IsSameCamp(m_player.gameObject, player.gameObject) && player.GetPlayerData.CtrlType != CtrlType.player)
+                    {
+                        //字典中包含
+                        if (images.ContainsKey(player))
+                        {
+                            images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
+                            images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
+                        }
+                        //字典中不包含
+                        else
+                        {
+                            GameObject img = Instantiate(miniPlayer, miniMap.transform);
+                            img.GetComponent<Image>().color = Color.white;
+                            img.GetComponent<Image>().rectTransform.anchoredPosition = new Vector2(itemX, itemY);
+                            img.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
+                            images.Add(player, img.GetComponent<Image>());
+                        }
+
+                    }
                 }
 
             }

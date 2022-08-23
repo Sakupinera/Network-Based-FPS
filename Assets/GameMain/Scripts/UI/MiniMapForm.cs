@@ -91,6 +91,14 @@ namespace NetworkBasedFPS
                     img.GetComponent<Image>().color = Color.red;
                     images.Add(player, img.GetComponent<Image>());
                 }
+                else if (m_player != null)
+                {
+                    break;
+                }
+            }
+            foreach (Player player in teamGame.list.Values)
+            {
+
 
                 ////计算玩家在小地图上的位置
                 //float x = (player.transform.position.x / (terrain.GetComponent<Collider>().bounds.size.x / 2f)) * (miniMap.GetComponent<Image>().rectTransform.rect.width / 2);
@@ -114,35 +122,31 @@ namespace NetworkBasedFPS
                     images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
                     images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
 
-                    //float realX = (player.transform.position.x + terrain.GetComponent<Collider>().bounds.size.x / 2f) / terrain.GetComponent<Collider>().bounds.size.x;
-                    //float realY = (player.transform.position.z + terrain.GetComponent<Collider>().bounds.size.z / 2f) / terrain.GetComponent<Collider>().bounds.size.z;
-
-                    ////miniMap.GetComponent<Image>().rectTransform.pivot = new Vector2(realX, realY);
-                    ////miniMap.GetComponent<Image>().rectTransform.localPosition = Vector2.zero;
-                    ////miniMap.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, player.transform.eulerAngles.y);
-
-
                 }
 
                 //判断是否为相同阵营
-                if (teamGame.IsSameCamp(m_player.gameObject, player.gameObject))
+                if (m_player != null)
                 {
-                    //字典中包含
-                    if (images.ContainsKey(player))
+                    //判断是否为相同阵营
+                    if (teamGame.IsSameCamp(m_player.gameObject, player.gameObject) && player.GetPlayerData.CtrlType != CtrlType.player)
                     {
-                        images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
-                        images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
-                    }
-                    //字典中不包含
-                    else
-                    {
-                        GameObject img = Instantiate(miniPlayer, miniMap.transform);
-                        img.GetComponent<Image>().color = Color.white;
-                        img.GetComponent<Image>().rectTransform.anchoredPosition = new Vector2(itemX, itemY);
-                        img.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
-                        images.Add(player, img.GetComponent<Image>());
-                    }
+                        //字典中包含
+                        if (images.ContainsKey(player))
+                        {
+                            images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
+                            images[player].rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
+                        }
+                        //字典中不包含
+                        else
+                        {
+                            GameObject img = Instantiate(miniPlayer, miniMap.transform);
+                            img.GetComponent<Image>().color = Color.white;
+                            img.GetComponent<Image>().rectTransform.anchoredPosition = new Vector2(itemX, itemY);
+                            img.GetComponent<Image>().rectTransform.eulerAngles = new Vector3(0, 0, -player.transform.eulerAngles.y);
+                            images.Add(player, img.GetComponent<Image>());
+                        }
 
+                    }
                 }
 
             }

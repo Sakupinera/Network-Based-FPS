@@ -21,12 +21,10 @@ namespace NetworkBasedFPS
     public class Player : Entity
     {
 
-
         public PlayerData GetPlayerData { get { return m_PlayerData; } }
 
         [SerializeField]
         private PlayerData m_PlayerData = null;
-
 
         [SerializeField]
         private List<Gun> m_Guns = new List<Gun>();
@@ -72,6 +70,7 @@ namespace NetworkBasedFPS
 
         private CharacterController m_Controller;
 
+        public Animator FirstPersonAnimator;
         public Animator ThridPersonAnimator;
 
         private Transform m_AimTarget;
@@ -94,7 +93,9 @@ namespace NetworkBasedFPS
             m_playerCamera = transform.Find("WorldCamera");
             groundMask = LayerMask.GetMask("Ground");
 
+            FirstPersonAnimator = transform.Find("WorldCamera/Arms_FirstPerson/SK_FP_CH_Default_Root").GetComponent<Animator>();
             ThridPersonAnimator = GetComponentInChildren<Animator>();
+
             m_AimTarget = transform.Find("AimTarget");
         }
 
@@ -377,7 +378,7 @@ namespace NetworkBasedFPS
                 m_CurrentGun = null;
                 m_AimTarget.SetParent(transform);
                 m_AimTarget.position = transform.forward * 2;
-                m_CurrentGun.FirstPersonAnimator.SetTrigger("Unwield");
+                FirstPersonAnimator.SetBool("Holstered", true);
                 StartCoroutine(RealRetractWeapon());
             }
             else
@@ -389,11 +390,11 @@ namespace NetworkBasedFPS
         private IEnumerator RealRetractWeapon()
         {
             yield return null;
-            AnimatorStateInfo stateinfo = m_CurrentGun.FirstPersonAnimator.GetCurrentAnimatorStateInfo(0);
-            if (stateinfo.IsName("Unwield") && (stateinfo.normalizedTime >= 1.0f))
+            AnimatorStateInfo stateinfo = m_CurrentGun.GunAnimator.GetCurrentAnimatorStateInfo(0);
+            if (/*stateinfo.IsName("Unwield") && */(stateinfo.normalizedTime >= 1.0f))
             {
                 ThridPersonAnimator.CrossFade("Unarmed Locomotion", 0.2f);
-                foreach(var e in m_Guns)
+                foreach (var e in m_Guns)
                 {
                     e.gameObject.SetActive(false);
                 }
@@ -402,7 +403,7 @@ namespace NetworkBasedFPS
             {
                 StartCoroutine(RealRetractWeapon());
             }
-        } 
+        }
 
         /// <summary>
         /// 玩家切枪逻辑
@@ -412,12 +413,14 @@ namespace NetworkBasedFPS
             if (m_CurrentGun != null)
             {
                 m_AimTarget.SetParent(transform);
-                m_CurrentGun.FirstPersonAnimator.SetTrigger("Unwield");
+                //m_CurrentGun.GunAnimator.SetTrigger("Unwield");
+                FirstPersonAnimator.SetBool("Holstered", true);
                 StartCoroutine(RealWeaponSwap(index));
             }
             else
             {
                 m_Guns[index].gameObject.SetActive(true);
+                FirstPersonAnimator.runtimeAnimatorController = m_Guns[index].GetComponent<FirstPersonAnimationController>().AnimatorController;
                 m_CurrentGun = m_Guns[index];
 
                 m_AimTarget.SetParent(m_CurrentGun.ShootPoint);
@@ -436,13 +439,17 @@ namespace NetworkBasedFPS
         private IEnumerator RealWeaponSwap(int index)
         {
             yield return null;
-            AnimatorStateInfo stateinfo = m_CurrentGun.FirstPersonAnimator.GetCurrentAnimatorStateInfo(0);
-            if (stateinfo.IsName("Unwield") && (stateinfo.normalizedTime >= 1.0f))
+            AnimatorStateInfo stateinfo = FirstPersonAnimator.GetCurrentAnimatorStateInfo(0);
+            Debug.LogWarning(stateinfo.normalizedTime);
+            if (/*stateinfo.IsName("Holster") &&*/(stateinfo.normalizedTime >= 1.0f))
             {
                 // 第一人称的换枪
+                Debug.LogWarning("WLKJFDLSKJFLKSDJFLSDKF:JSDLKFJDSLKFJSLDKFJSDLFK");
                 m_CurrentGun.gameObject.SetActive(false);
                 m_Guns[index].gameObject.SetActive(true);
+                FirstPersonAnimator.runtimeAnimatorController = m_Guns[index].GetComponent<FirstPersonAnimationController>().AnimatorController;
                 m_CurrentGun = m_Guns[index];
+                FirstPersonAnimator.SetBool("Holstered", false);
 
                 // 第三人称Animation Rigging的瞄准目标
                 m_AimTarget.SetParent(m_CurrentGun.ShootPoint);
@@ -581,6 +588,16 @@ namespace NetworkBasedFPS
                 StartCoroutine(Revive());
             else
                 HideMyself();
+        }
+
+
+        protected override void OnDetached(EntityLogic childEntity, object userData)
+        {
+            base.OnDetached(childEntity, userData);
+
+            m_Guns.Clear();
+            m_CurrentGun = null;
+
         }
 
         public void HideMyself()
@@ -734,7 +751,11 @@ namespace NetworkBasedFPS
             //m_playerCamera.gameObject.SetActive(false);
 
             m_playerCamera.GetComponent<Camera>().enabled = false;
-            m_playerCamera.Find("FirstPersonCamera").GetComponent<Camera>().enabled = false;
+            //m_playerCamera.Find("FirstPersonCamera").GetComponent<Camera>().enabled = false;
+            foreach(var e in m_playerCamera.GetComponentsInChildren<Camera>())
+            {
+                e.enabled = false;
+            }
             UnityUtility.ChangeLayer(transform, "ThridPerson_Other");
 
             lPos = transform.position;

@@ -49,7 +49,7 @@ namespace NetworkBasedFPS
 
             m_Games.Clear();
         }
-
+        int? gameFormID;
         protected override void OnEnter(ProcedureOwner procedureOwner)
         {
             base.OnEnter(procedureOwner);
@@ -59,7 +59,7 @@ namespace NetworkBasedFPS
             m_CurrentGame = m_Games[gameMode];
             m_CurrentGame.Initialize();
 
-            GameEntry.UI.OpenUIForm(UIFormId.GameForm);
+            gameFormID = GameEntry.UI.OpenUIForm(UIFormId.GameForm);
 
             Log.Debug("开始战斗！");
         }
@@ -71,7 +71,7 @@ namespace NetworkBasedFPS
                 m_CurrentGame.Shutdown();
                 m_CurrentGame = null;
             }
-
+            GameEntry.UI.CloseUIForm((int)gameFormID);
             base.OnLeave(procedureOwner, isShutdown);
         }
 
@@ -108,8 +108,14 @@ namespace NetworkBasedFPS
             //    ChangeState<ProcedureChangeScene>(procedureOwner);
             //}
 
-            if(m_GotoMenu == true)
+
+            if (m_GotoMenu == true)
             {
+                GameMode gameMode = (GameMode)procedureOwner.GetData<VarByte>("GameMode").Value;
+                if (gameMode == GameMode.Team)
+                {
+                    (m_CurrentGame as TeamGame).ClearBattle();
+                }
                 Debug.LogWarning("返回主菜单");
                 procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
                 procedureOwner.SetData<VarBoolean>("isBattleToMenu", true);

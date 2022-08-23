@@ -64,7 +64,8 @@ namespace NetworkBasedFPS
                         Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
                     });
                     Player injuredPlayer = hit.collider.GetComponent<Player>();
-                    if (injuredPlayer.playerStatus != E_PLAYER_STATUS.Die)
+                    //玩家没有阵亡并阵容不同
+                    if (injuredPlayer.playerStatus != E_PLAYER_STATUS.Die && m_BulletData.OwnerCamp != injuredPlayer.GetPlayerData.Camp)
                     {
                         injuredPlayer.GetPlayerData.HP -= m_BulletData.Attack;
                         bool isKilled = false;
