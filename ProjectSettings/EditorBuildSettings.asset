@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/FPS Launcher.unity
     guid: b8fae5e02908a1b489d4d2157f9df68b
   - enabled: 1
-    path: Assets/GameMain/Scenes/MainMenu.unity
+    path: Assets/GameMain/Scenes/Menu.unity
     guid: 128222957f60fad4e9101b038fc1ec56
   - enabled: 1
     path: Assets/GameMain/Scenes/Battle.unity

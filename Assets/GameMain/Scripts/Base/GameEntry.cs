@@ -9,6 +9,7 @@ namespace NetworkBasedFPS
     {
         private void Start()
         {
+            Application.runInBackground = true;
             InitBuiltinComponents();
             InitCustomComponents();
         }

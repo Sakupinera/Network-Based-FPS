@@ -9,7 +9,9 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/
-/[Aa]ssets/tmp/HQ FPS Weapons/
+/[Aa]ssets/tmp/
+/[Aa]ssets/GameMain/Temp
+/[Aa]ssets/StreamingAssets
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta

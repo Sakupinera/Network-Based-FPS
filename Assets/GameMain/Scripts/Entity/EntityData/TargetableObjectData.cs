@@ -24,6 +24,7 @@ namespace NetworkBasedFPS
         /// </summary>
         public CampType Camp
         {
+            set { m_Camp = value; }
             get
             {
                 return m_Camp;

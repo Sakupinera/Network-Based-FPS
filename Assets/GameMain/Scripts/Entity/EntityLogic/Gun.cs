@@ -1,4 +1,5 @@
 ﻿using GameFramework;
+using GamePlayer;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,18 +12,23 @@ namespace NetworkBasedFPS
     /// </summary>
     public class Gun : Entity
     {
-        private const string AttachPoint = "WorldCamera/WeaponPoint";
+        private const string AttachPoint = "View/Arms_FirstPerson/SK_FP_CH_Default_Root/Armature/root/ik_hand_root/ik_hand_gun/WeaponPoint";
 
         [SerializeField]
         private GunData m_GunData = null;
 
         public GunData _GunData => m_GunData;
 
-        //当前子弹数量
-        public int currentBullects;
+        //  当前弹夹子弹数量
+        public int currentMagBullets;
+
+        //  当前子弹总量
+        public int currentBulletNum;
 
         //子弹出生位置
-        public Transform shootPoint;
+        private Transform m_shootPoint;
+
+        public Transform ShootPoint => m_shootPoint;
 
         //开火计时器
         public float fireTimer = 0;
@@ -33,28 +39,31 @@ namespace NetworkBasedFPS
         public Vector3 shootDirection;
 
         //武器动画
-        private Animator m_FirstPersonAnimator;
+        private Animator m_GunAnimator;
+
+        private Transform m_aimTarget;
 
         //弹道偏移队列
         public Queue<Vector3> excursion = new Queue<Vector3>();
 
-        public float ReloadRate {
+        public float ReloadRate
+        {
             get;
             private set;
         }
 
         public float AttackInterval => m_GunData.AttackInterval;
 
-        public Animator FirstPersonAnimator
+        public Animator GunAnimator
         {
-            get => m_FirstPersonAnimator;
+            get => m_GunAnimator;
         }
 
         protected override void OnInit(object userData)
         {
             base.OnInit(userData);
 
-            shootPoint = transform.Find("Armature/Weapon/ShootPoint");
+            m_shootPoint = transform.Find("ShootPoint");
         }
 
         protected override void OnShow(object userData)
@@ -67,16 +76,19 @@ namespace NetworkBasedFPS
                 Log.Error("Weapon data is invalid.");
                 return;
             }
-            currentBullects = m_GunData.MagazineSize;
+            currentMagBullets = m_GunData.MagazineSize;
+            currentBulletNum = m_GunData.BulletNum;
+
             for (int i = 0; i < m_GunData.Trajectory.Count; i++)
             {
                 excursion.Enqueue(m_GunData.Trajectory[i]);
             }
             ReloadRate = m_GunData.ReloadTime;
 
-            m_FirstPersonAnimator = GetComponent<Animator>();
-            GetComponent<EquipmentAnimation>().AssignAnimations(m_FirstPersonAnimator);
+            m_GunAnimator = GetComponent<Animator>();
+            //GetComponent<EquipmentAnimation>().AssignAnimations(m_FirstPersonAnimator);
 
+            // 挂载自身到父物体身上
             GameEntry.Entity.AttachEntity(Entity, m_GunData.OwnerId, AttachPoint);
         }
 
@@ -103,13 +115,14 @@ namespace NetworkBasedFPS
 
             Name = Utility.Text.Format("Weapon of {0}", parentEntity.Name);
             CachedTransform.localPosition = m_GunData.AttachLocalPosition;
+            CachedTransform.localRotation = Quaternion.Euler(Vector3.zero);
 
             gameObject.SetActive(false);
         }
 
         public void Fire()
         {
-            if (currentBullects <= 0)
+            if (currentMagBullets <= 0)
             {
                 ReloadBullet();
                 return;
@@ -119,43 +132,75 @@ namespace NetworkBasedFPS
             {
                 return;
             }
-            m_FirstPersonAnimator.SetTrigger("Fire");
 
-            //射线判定生成弹孔特效
+            m_GunAnimator.Play("Fire",0,0);
+
+            Player p = (Player)GameEntry.Entity.GetParentEntity(Id).Logic;
+            p.FirstPersonAnimator.Play("Fire", 2, 0);
+
+            GameEntry.Sound.PlaySound(m_GunData.BulletSoundId);
+
+            //射线判定子弹目标点
+            Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
             RaycastHit hit;
-            shootDirection = shootPoint.forward + shootPoint.right * Random.Range(0, 0.05f) + shootPoint.up * Random.Range(0, 0.05f);
-            if (Physics.Raycast(shootPoint.position, shootDirection, out hit, m_GunData.AttackRange))
+            Vector3 target;
+            if (Physics.Raycast(ray, out hit))
             {
-                GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
-                {
-                    Position = hit.point,
-                    Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
-                });
+                target = hit.point; //  记录碰撞的目标点
             }
+            else
+            {
+                target = Camera.main.transform.forward * 800;
+            }
+            m_shootPoint.LookAt(target);
+            shootDirection = m_shootPoint.forward + m_shootPoint.right * Random.Range(-0.01f, 0.01f) + m_shootPoint.up * Random.Range(-0.01f, 0.01f);
+            m_shootPoint.transform.forward = shootDirection;
 
             //依据发射方向创建子弹预设体
             GameEntry.Entity.ShowBullet(new BulletData(GameEntry.Entity.GenerateSerialId(), m_GunData.BulletId, m_GunData.OwnerId, m_GunData.OwnerCamp, m_GunData.Attack, m_GunData.BulletSpeed)
             {
-                Position = shootPoint.position,
-                Rotation = shootPoint.rotation
+                Position = m_shootPoint.position,
+                Rotation = m_shootPoint.rotation
             });
+
+            SendBulletMsg(m_shootPoint.position, m_shootPoint.rotation);
 
             //创建并且播放枪口特效
             GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), m_GunData.MuzzleSparkId)
             {
-                Position = shootPoint.position,
-                Rotation = shootPoint.rotation
+                Position = m_shootPoint.position,
+                Rotation = m_shootPoint.rotation
             });
 
             //播放射击音效
             //fireAudioSource.Play();
 
             //当前子弹减少
-            currentBullects--;
+            currentMagBullets--;
+            //print(currentMagBullets);
+            GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
 
             //重置开火计时器
             fireTimer = 0;
 
+        }
+
+        //发射子弹协议
+        public void SendBulletMsg(Vector3 p, Quaternion r)
+        {
+            ShootMsg msg = new ShootMsg();
+            msg.id = GameEntry.Net.ID;
+            GamePlayer.Bullet bullet = new GamePlayer.Bullet();
+            bullet.posX = p.x;
+            bullet.posY = p.y;
+            bullet.posZ = p.z;
+            bullet.rotX = r.x;
+            bullet.rotY = r.y;
+            bullet.rotZ = r.z;
+            bullet.rotW = r.w;
+
+            msg.bullet = bullet;
+            GameEntry.Net.Send(msg);
         }
 
         /// <summary>
@@ -164,39 +209,61 @@ namespace NetworkBasedFPS
         /// <param name="key"></param>
         public void ReloadBullet()
         {
-            if (currentBullects < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
+            if (currentMagBullets < m_GunData.MagazineSize && m_GunData.BulletNum > 0)
             {
+                Player p = (Player)GameEntry.Entity.GetParentEntity(Id).Logic;
+                (GameEntry.Entity.GetParentEntity(Id).Logic as Player).SendWeaponInfo(-1, true);
                 // 播放换弹动画
-                if(currentBullects > 0)
+                if (currentMagBullets > 0)
                 {
-                    m_FirstPersonAnimator.SetTrigger("Reload");
+                    m_GunAnimator.Play("Reload",0,0);
+                    p.FirstPersonAnimator.CrossFade("Reload", 0f);
                     ReloadRate = m_GunData.ReloadTime;
                 }
                 else
                 {
-                    m_FirstPersonAnimator.SetTrigger("Empty Reload");
+                    m_GunAnimator.Play("Empty Reload",0,0);
+                    p.FirstPersonAnimator.CrossFade("Empty Reload", 0f);
                     ReloadRate = m_GunData.EmptyReloadTime;
                 }
 
+                p.ThridPersonAnimator.SetTrigger("Reload");
+
                 //计算出当前子弹数补满一个弹夹需要的的剩余子弹
-                int bulletNeed = m_GunData.MagazineSize - currentBullects;
+                int bulletNeed = m_GunData.MagazineSize - currentMagBullets;
 
                 if (m_GunData.BulletNum >= bulletNeed)
                 {
-                    m_GunData.BulletNum -= bulletNeed;
-                    currentBullects += bulletNeed;
+                    currentBulletNum -= bulletNeed;
+                    currentMagBullets += bulletNeed;
                 }
                 else if (m_GunData.BulletNum < bulletNeed)
                 {
-                    currentBullects += m_GunData.BulletNum;
-                    m_GunData.BulletNum = 0;
+                    currentMagBullets += currentBulletNum;
+                    currentBulletNum = 0;
                 }
                 reloadTimer = 0;
+
+                GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
             }
             else
             {
                 return;
             }
+        }
+
+        //  重置武器的状态
+        public void ResetGunData()
+        {
+            currentMagBullets = m_GunData.MagazineSize;
+            currentBulletNum = m_GunData.BulletNum;
+
+            excursion.Clear();
+            for (int i = 0; i < m_GunData.Trajectory.Count; i++)
+            {
+                excursion.Enqueue(m_GunData.Trajectory[i]);
+            }
+            ReloadRate = m_GunData.ReloadTime;
         }
     }
 }

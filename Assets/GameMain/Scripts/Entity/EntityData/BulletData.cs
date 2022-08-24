@@ -18,10 +18,10 @@ namespace NetworkBasedFPS
         [SerializeField]
         private float m_Speed = 0f;
 
-        public BulletData(int entityId, int typeId, int ownerId, CampType ownerCamp, int attack, float speed)
+        public BulletData(int entityId, int typeId, int OwnerId, CampType ownerCamp, int attack, float speed)
             : base(entityId, typeId)
         {
-            m_OwnerId = ownerId;
+            m_OwnerId = OwnerId;
             m_OwnerCamp = ownerCamp;
             m_Attack = attack;
             m_Speed = speed;

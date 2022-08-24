@@ -19,10 +19,13 @@ namespace NetworkBasedFPS
         /// </summary>
         DialogForm = 1,
 
+
+        PopForm = 99,
+
         /// <summary>
         /// 主菜单。
         /// </summary>
-        MainMenuForm = 100,
+        MenuForm = 100,
 
         /// <summary>
         /// 设置。
@@ -33,5 +36,47 @@ namespace NetworkBasedFPS
         /// 关于。
         /// </summary>
         AboutForm = 102,
+
+        /// <summary>
+        /// 房间列表
+        /// </summary>
+        RoomListForm = 103,
+
+        /// <summary>
+        /// 房间面板
+        /// </summary>
+        RoomForm = 104,
+
+        /// <summary>
+        /// 加载面板
+        /// </summary>
+        LoadingForm = 105,
+
+        /// <summary>
+        /// 战斗面板（准星）
+        /// </summary>
+        BattleForm = 150,
+
+        /// <summary>
+        /// 战斗UI（血条，枪械，击杀）
+        /// </summary>
+        GameForm = 151,
+
+        /// <summary>
+        /// 小地图面板
+        /// </summary>
+        MiniMapForm = 152,
+
+        /// <summary>
+        /// 战斗菜单
+        /// </summary>
+        EscForm = 180,
+
+        /// <summary>
+        /// 结算面板
+        /// </summary>
+        EndGameForm = 200,
+
+
     }
 }

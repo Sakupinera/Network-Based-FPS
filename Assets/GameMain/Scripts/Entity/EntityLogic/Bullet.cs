@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityGameFramework.Runtime;
+using GamePlayer;
 
 namespace NetworkBasedFPS
 {
@@ -11,8 +12,6 @@ namespace NetworkBasedFPS
 
         [SerializeField]
         private BulletData m_BulletData = null;
-
-        private float m_ElapseSeconds = 0f;
 
         public ImpactData GetImpactData()
         {
@@ -40,6 +39,7 @@ namespace NetworkBasedFPS
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
 
+            DoHitscan();
             CachedTransform.Translate(Vector3.forward * m_BulletData.Speed * elapseSeconds, Space.Self);
         }
 
@@ -47,41 +47,59 @@ namespace NetworkBasedFPS
         /// 碰撞判定
         /// </summary>
         /// <param name="other"></param>
-        private void OnTriggerEnter(Collider other)
+        private void DoHitscan()
         {
-            if (other.CompareTag("Ground"))
+            RaycastHit hit;
+            // 生成弹孔或者出血特效
+            if (Physics.Raycast(CachedTransform.position, CachedTransform.forward, out hit, 10))
             {
-                //当子弹销毁时，可以创建一个火花特效
-                GameEntry.Entity.HideEntity(this);
-            }
-            if (other.CompareTag("Player"))
-            {
-                //当子弹击中玩家时，可以创建一个出血特效
+                if (hit.transform.tag == "Player")
+                {
+                    //  生成出血特效
+                    GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70002)
+                    {
+                        Position = hit.point,
+                        Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
+                    });
+                    Player injuredPlayer = hit.collider.GetComponent<Player>();
+                    //玩家没有阵亡并阵容不同
+                    if (injuredPlayer.playerStatus != E_PLAYER_STATUS.Die && m_BulletData.OwnerCamp != injuredPlayer.GetPlayerData.Camp)
+                    {
+                        injuredPlayer.GetPlayerData.HP -= m_BulletData.Attack;
+                        bool isKilled = false;
+                        if (injuredPlayer.GetPlayerData.HP <= 0)
+                        {
+                            isKilled = true;
+                            GameEntry.Event.Fire(this, KillEvent.Create());
+                        }
 
+                        Log.Debug("我打到{0}了，造成了{1}点巨额伤害，对手还剩{2}滴血", injuredPlayer.Id, m_BulletData.Attack, injuredPlayer.GetPlayerData.HP);
+
+                        SendHitMsg(injuredPlayer.Id, m_BulletData.Attack, isKilled);
+                    }
+                }
+                else if (hit.transform.tag != "Empty")
+                {
+                    //  生成弹孔特效
+                    GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
+                    {
+                        Position = hit.point,
+                        Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)
+                    });
+                }
                 GameEntry.Entity.HideEntity(this);
             }
         }
-        //private void DoHitscan(Camera camera)
-        //{
-        //    RaycastHit hitInfo;
 
-        //    Ray ray = camera.ViewportPointToRay(Vector2.one * 0.5f);
-
-        //    if(Physics.Raycast(ray, out hitInfo, 50, LayerMask.NameToLayer("Ground"))){
-        //        if(hitInfo.collider.gameObject.tag == "Player")
-        //        {
-        //            return;
-        //        }
-        //        //当子弹销毁时，可以创建一个弹孔特效
-        //        GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
-        //        {
-        //            Position = CachedTransform.position,
-        //            Rotation = CachedTransform.rotation
-        //        });
-        //        GameEntry.Entity.HideEntity(this);
-        //    }
-        //}
-
+        public void SendHitMsg(int hitEntityId, int damage, bool isKilled)
+        {
+            DamageMsg msg = new DamageMsg();
+            msg.id = GameEntry.Net.ID;
+            msg.damage = damage;
+            msg.injured = hitEntityId;
+            msg.isKilled = isKilled;
+            GameEntry.Net.Send(msg);
+        }
 
         protected override void OnHide(bool isShutdown, object userData)
         {

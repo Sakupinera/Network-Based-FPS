@@ -2,7 +2,16 @@
 #	Id		AssetName	UIGroupName	AllowMultiInstance	PauseCoveredUIForm
 #	int		string	string	bool	bool
 #	界面编号	策划备注	资源名称	界面组名称	是否允许多个界面实例	是否暂停被其覆盖的界面
-	1	弹出框	DialogForm	Default	TRUE	TRUE
-	100	主菜单	MainMenuForm	Default	FALSE	TRUE
+	1	弹出框	DialogForm	Pop	TRUE	TRUE
+	99	消息栏	PopForm	Pop	TRUE	TRUE
+	100	主菜单	MenuForm	Default	FALSE	TRUE
 	101	设置	SettingForm	Default	FALSE	TRUE
 	102	关于	AboutForm	Default	FALSE	TRUE
+	103	房间列表	RoomListForm	Default	FALSE	TRUE
+	104	房间面板	RoomForm	Default	FALSE	TRUE
+	105	加载面板	LoadingForm	Default	FALSE	TRUE
+	150	战斗面板(准星)	BattleForm	Default	FALSE	TRUE
+	151	游戏UI	GameForm	Default	FALSE	TRUE
+	152	小地图	MiniMapForm	Default	FALSE	FALSE
+	180	战斗菜单	EscForm	Default	FALSE	TRUE
+	200	结束面板	EndGameForm	Pop	FALSE	TRUE

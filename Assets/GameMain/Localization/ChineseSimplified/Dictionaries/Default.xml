@@ -10,6 +10,16 @@
     <String Key="Menu.SettingButton" Value="设置" />
     <String Key="Menu.AboutButton" Value="关于" />
     <String Key="Menu.QuitButton" Value="退出" />
+    <String Key="Menu.IP" Value="IP" />
+    <String Key="Menu.Port" Value="端口" />
+    <String Key="Menu.PlayerID" Value="玩家ID" />
+    <String Key="Menu.Conn" Value="连接" />
+    <String Key="Esc.Return" Value="返回游戏" />
+    <String Key="Esc.Setting" Value="游戏设置" />
+    <String Key="Esc.Exit" Value="退出游戏" />
+    <String Key="Room.Camp_East" Value="所属阵营：东部联盟" />
+    <String Key="Room.Camp_West" Value="所属阵营：西部联盟" />
+    <String Key="Room.PlayersList" Value="玩家列表" />
     <String Key="Dialog.ConfirmButton" Value="确定" />
     <String Key="Dialog.CancelButton" Value="取消" />
     <String Key="Dialog.OtherButton" Value="" />
@@ -20,9 +30,9 @@
     <String Key="AskQuitGame.Title" Value="确认退出" />
     <String Key="AskQuitGame.Message" Value="是否确认退出游戏？" />
     <String Key="Setting.Title" Value="设置" />
-    <String Key="Setting.Music" Value="音乐" />
-    <String Key="Setting.Sound" Value="音效" />
-    <String Key="Setting.UISound" Value="界面音效" />
+    <String Key="Setting.Music" Value="背景音乐" />
+    <String Key="Setting.Sound" Value="游戏音效" />
+    <String Key="Setting.MouseSensitivity" Value="鼠标灵敏度" />
     <String Key="Setting.Language" Value="语言" />
     <String Key="Setting.LanguageTips" Value="更改语言需要重启游戏" />
   </Dictionary>

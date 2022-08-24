@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Empty
   layers:
   - Default
   - TransparentFX
@@ -13,9 +14,9 @@ TagManager:
   - Water
   - UI
   - FirstPerson
-  - ThridPerson_MySelf
+  - ThridPerson_Myself
   - ThridPerson_Other
-  - 
+  - CantSee
   - 
   - 
   - 
