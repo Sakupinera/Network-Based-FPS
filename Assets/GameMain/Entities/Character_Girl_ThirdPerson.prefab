@@ -752,7 +752,7 @@ GameObject:
   - component: {fileID: 7709323359162680416}
   - component: {fileID: 6325147673593619212}
   m_Layer: 7
-  m_Name: WorldCamera
+  m_Name: View
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

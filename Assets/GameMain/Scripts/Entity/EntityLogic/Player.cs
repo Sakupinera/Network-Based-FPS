@@ -1,9 +1,10 @@
 using GameFramework;
+using GameFramework.Event;
 using GamePlayer;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations.Rigging;
 
 using UnityGameFramework.Runtime;
 
@@ -75,6 +76,12 @@ namespace NetworkBasedFPS
 
         private Transform m_AimTarget;
 
+        private static readonly int HashAimingAlpha = Animator.StringToHash("Aiming");
+
+        private static readonly int HashMovement = Animator.StringToHash("Movement");
+
+        private bool aiming;
+
         //按下开火键的累计时间
         public float cFireTime = 0;
 
@@ -90,13 +97,15 @@ namespace NetworkBasedFPS
             m_Controller = GetComponent<CharacterController>();
             mouseSensitivity = GameEntry.Setting.GetFloat("MouseSensitivity");
             groundCheck = transform.Find("GroundCheck");
-            m_playerCamera = transform.Find("WorldCamera");
+            m_playerCamera = transform.Find("View");
             groundMask = LayerMask.GetMask("Ground");
 
-            FirstPersonAnimator = transform.Find("WorldCamera/Arms_FirstPerson/SK_FP_CH_Default_Root").GetComponent<Animator>();
+            FirstPersonAnimator = transform.Find("View/Arms_FirstPerson/SK_FP_CH_Default_Root").GetComponent<Animator>();
             ThridPersonAnimator = GetComponentInChildren<Animator>();
 
             m_AimTarget = transform.Find("AimTarget");
+
+            GameEntry.Event.Subscribe(ChangeMouseSensitivityEnventArgs.EventId, OnMouseSensitivityChanged);
         }
 
         protected override void OnShow(object userData)
@@ -171,6 +180,12 @@ namespace NetworkBasedFPS
             }
 
             PlayerCtrl();
+        }
+
+        public void OnMouseSensitivityChanged(object sender, GameEventArgs e)
+        {
+            ChangeMouseSensitivityEnventArgs ne = (ChangeMouseSensitivityEnventArgs)e;
+            mouseSensitivity = ne.MouseSensitivity;
         }
 
         private float lastSendInfoTime = float.MinValue;
@@ -270,16 +285,29 @@ namespace NetworkBasedFPS
                     Shoot();
                     break;
                 case 1:
-                    Aim();
+                    Aim(i);
                     break;
             }
         }
 
+        [SerializeField]
+        private float dampTimeAiming = 0.3f;
+
         /// <summary>
         /// 开镜逻辑
         /// </summary>
-        public void Aim()
+        public void Aim(int i)
         {
+            if (Input.GetMouseButtonDown(i))
+            {
+                aiming = true;
+            }
+            if (Input.GetMouseButtonUp(i))
+            {
+                aiming = false;
+            }
+            
+            FirstPersonAnimator.SetFloat(HashAimingAlpha, Convert.ToSingle(aiming), 0.25f / 1.0f * dampTimeAiming, Time.deltaTime);
 
         }
 
@@ -440,11 +468,10 @@ namespace NetworkBasedFPS
         {
             yield return null;
             AnimatorStateInfo stateinfo = FirstPersonAnimator.GetCurrentAnimatorStateInfo(0);
-            Debug.LogWarning(stateinfo.normalizedTime);
+            //Debug.LogWarning(stateinfo.normalizedTime);
             if (/*stateinfo.IsName("Holster") &&*/(stateinfo.normalizedTime >= 1.0f))
             {
                 // 第一人称的换枪
-                Debug.LogWarning("WLKJFDLSKJFLKSDJFLSDKF:JSDLKFJDSLKFJSLDKFJSDLFK");
                 m_CurrentGun.gameObject.SetActive(false);
                 m_Guns[index].gameObject.SetActive(true);
                 FirstPersonAnimator.runtimeAnimatorController = m_Guns[index].GetComponent<FirstPersonAnimationController>().AnimatorController;
@@ -465,6 +492,9 @@ namespace NetworkBasedFPS
 
         }
 
+        [SerializeField]
+        private float dampTimeLocomotion = 0.15f;
+
         /// <summary>
         /// 玩家的移动水平逻辑
         /// </summary>
@@ -483,6 +513,8 @@ namespace NetworkBasedFPS
             m_Controller.Move(move * m_PlayerData.Speed * Time.deltaTime);
             ThridPersonAnimator.SetFloat("VelocityX", x);
             ThridPersonAnimator.SetFloat("VelocityZ", z);
+
+            FirstPersonAnimator.SetFloat(HashMovement, Mathf.Clamp01(Mathf.Abs(x) + Mathf.Abs(z)), dampTimeLocomotion, Time.deltaTime);
 
         }
 
@@ -750,13 +782,14 @@ namespace NetworkBasedFPS
         {
             //m_playerCamera.gameObject.SetActive(false);
 
-            m_playerCamera.GetComponent<Camera>().enabled = false;
+            //m_playerCamera.GetComponent<Camera>().enabled = false;
             //m_playerCamera.Find("FirstPersonCamera").GetComponent<Camera>().enabled = false;
             foreach(var e in m_playerCamera.GetComponentsInChildren<Camera>())
             {
                 e.enabled = false;
             }
             UnityUtility.ChangeLayer(transform, "ThridPerson_Other");
+            UnityUtility.ChangeLayer(transform.Find("View/Arms_FirstPerson"), "CantSee");
 
             lPos = transform.position;
             lRot = transform.eulerAngles;

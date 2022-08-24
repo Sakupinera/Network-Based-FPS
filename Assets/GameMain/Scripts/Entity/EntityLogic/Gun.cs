@@ -12,7 +12,7 @@ namespace NetworkBasedFPS
     /// </summary>
     public class Gun : Entity
     {
-        private const string AttachPoint = "WorldCamera/Arms_FirstPerson/SK_FP_CH_Default_Root/Armature/root/ik_hand_root/ik_hand_gun/WeaponPoint";
+        private const string AttachPoint = "View/Arms_FirstPerson/SK_FP_CH_Default_Root/Armature/root/ik_hand_root/ik_hand_gun/WeaponPoint";
 
         [SerializeField]
         private GunData m_GunData = null;
@@ -132,7 +132,11 @@ namespace NetworkBasedFPS
             {
                 return;
             }
+
             m_GunAnimator.Play("Fire",0,0);
+
+            Player p = (Player)GameEntry.Entity.GetParentEntity(Id).Logic;
+            p.FirstPersonAnimator.Play("Fire", 2, 0);
 
             GameEntry.Sound.PlaySound(m_GunData.BulletSoundId);
 

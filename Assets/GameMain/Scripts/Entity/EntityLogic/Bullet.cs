@@ -13,8 +13,6 @@ namespace NetworkBasedFPS
         [SerializeField]
         private BulletData m_BulletData = null;
 
-        private float m_ElapseSeconds = 0f;
-
         public ImpactData GetImpactData()
         {
             return new ImpactData(m_BulletData.OwnerCamp, 0, m_BulletData.Attack, 0);
@@ -58,7 +56,7 @@ namespace NetworkBasedFPS
                 if (hit.transform.tag == "Player")
                 {
                     //  生成出血特效
-                    GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70001)
+                    GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70002)
                     {
                         Position = hit.point,
                         Rotation = Quaternion.FromToRotation(Vector3.forward, hit.normal)

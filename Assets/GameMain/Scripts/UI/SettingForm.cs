@@ -43,26 +43,12 @@ namespace NetworkBasedFPS
         public void OnMouseSensitivityChanged(float volume)
         {
             GameEntry.Setting.SetFloat("MouseSensitivity", volume);
+            GameEntry.Event.Fire(this, ChangeMouseSensitivityEnventArgs.Create(volume));
         }
 
         public void OnReturnButtonClick()
         {
             Close();
-        }
-
-        public void OnSubmitButtonClick()
-        {
-            //if (m_SelectedLanguage == GameEntry.Localization.Language)
-            //{
-            //    Close();
-            //    return;
-            //}
-
-            //GameEntry.Setting.SetString(Constant.Setting.Language, m_SelectedLanguage.ToString());
-            //GameEntry.Setting.Save();
-
-            //GameEntry.Sound.StopMusic();
-            //UnityGameFramework.Runtime.GameEntry.Shutdown(ShutdownType.Restart);
         }
 
         protected override void OnInit(object userData)
@@ -88,5 +74,6 @@ namespace NetworkBasedFPS
         {
             base.OnUpdate(elapseSeconds, realElapseSeconds);
         }
+
     }
 }
