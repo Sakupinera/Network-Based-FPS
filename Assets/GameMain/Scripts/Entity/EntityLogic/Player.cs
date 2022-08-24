@@ -126,6 +126,9 @@ namespace NetworkBasedFPS
                 GameEntry.Entity.ShowGun(gunDatas[i]);
             }
 
+            //GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha3, Id));
+            //ThridPersonAnimator.CrossFade("Unarmed Locomotion", 0.2f);
+
             GameEntry.Event.Fire(this, PlayerOnShowEventArgs.Create(this.m_PlayerData.Id));
 
             transform.position = m_PlayerData.Position;
