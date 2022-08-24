@@ -15,7 +15,11 @@ namespace NetworkBasedFPS
         public override GameMode GameMode => GameMode.Team;
 
         //战场中所有玩家
+        //玩家实体ID 对应 玩家实体
         public Dictionary<int, Player> list = new Dictionary<int, Player>();
+        //NetID 对应 玩家实体ID
+        public Dictionary<int, int> Netlist = new Dictionary<int, int>();
+
 
         public override void Initialize()
         {
@@ -31,9 +35,36 @@ namespace NetworkBasedFPS
             Debug.Log("开始团队模式");
         }
 
+        public override void Shutdown()
+        {
+            base.Shutdown();
+            GameEntry.Event.Unsubscribe(PlayerOnShowEventArgs.EventId, SetPlayerList);
+            GameEntry.Event.Unsubscribe(MsgEventArgs<GetListMsg>.EventId, StartBattle);
+            GameEntry.Event.Unsubscribe(MsgEventArgs<MoveMsg>.EventId, UpdatePlayerMoveInfo);
+            GameEntry.Event.Unsubscribe(MsgEventArgs<StatusMsg>.EventId, UpdatePlayerStatusInfo);
+            GameEntry.Event.Unsubscribe(MsgEventArgs<ShootMsg>.EventId, UpdateShootInfo);
+            GameEntry.Event.Unsubscribe(MsgEventArgs<WeaponMsg>.EventId, UpdateWeapon);
+            GameEntry.Event.Unsubscribe(MsgEventArgs<DamageMsg>.EventId, UpdateDamage);
+            GameEntry.Event.Unsubscribe(MsgEventArgs<EndFightMsg>.EventId, EndFight);
+        }
+
         public override void Update(float elapseSeconds, float realElapseSeconds)
         {
             base.Update(elapseSeconds, realElapseSeconds);
+
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                Debug.Log("输出list");
+                foreach (int i in Netlist.Keys)
+                {
+                    Debug.Log(i + " " + Netlist[i]);
+                }
+
+                foreach (int i in list.Keys)
+                {
+                    Debug.Log(i + " " + list[i].GetPlayerData.Id);
+                }
+            }
         }
 
         //获取阵营
@@ -59,11 +90,10 @@ namespace NetworkBasedFPS
             //GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
             //for (int i = 0; i < players.Length; i++)
             //{
-            //    players[i].GetComponent<Player>().HideMyself();
+            //    players[i].GetComponent<Player>().ReleaseMyself();
             //}
-            foreach (Player player in list.Values)
-                player.HideMyself();
             list.Clear();
+            Netlist.Clear();
         }
 
         //开始战斗
@@ -75,8 +105,6 @@ namespace NetworkBasedFPS
             //玩家数量
             int num = msg.list.Count;
             Debug.Log("一共有玩家 " + num + " 个");
-            //清理场景
-            ClearBattle();
             int swopID_A = 0;
             int swopID_B = 0;
             //每一个玩家
@@ -103,7 +131,7 @@ namespace NetworkBasedFPS
         }
 
         //生成玩家
-        public void GeneratePlayer(int id, string name, CampType team, int swopID, int modelId = 11000)
+        public void GeneratePlayer(int netId, string name, CampType team, int swopID, int modelId = 11000)
         {
             if (team == CampType.BlueCamp)
                 modelId = 11000;
@@ -128,16 +156,19 @@ namespace NetworkBasedFPS
                 Debug.LogError("出生点错误！");
                 return;
             }
+            int entityID = GameEntry.Entity.GenerateSerialId();
+            //绑定NetID 和 实体ID
+            Netlist.Add(netId, entityID);
+            Debug.Log("NetID: " + netId + " 实体ID:" + entityID);
+
+
             //产生玩家
-            //Debug.LogWarning(swopTrans.position);
-            GameEntry.Entity.ShowPlayer(new PlayerData(id, modelId)
+            GameEntry.Entity.ShowPlayer(new PlayerData(entityID, modelId)
             {
                 Name = name,
                 Position = swopTrans.position,
                 Camp = team,
             });
-
-
         }
 
         //列表处理
@@ -147,9 +178,12 @@ namespace NetworkBasedFPS
             int id = args.PlayerEntryID;
             Player player = GameEntry.Entity.GetEntity(id).Logic as Player;
             Debug.Log(player.name);
+
             list.Add(id, player);
+            Debug.Log("实体ID：" + id + " 实体ID：" + player.GetPlayerData.Id);
+
             //玩家处理
-            if (id == GameEntry.Net.ID)
+            if (id == Netlist[GameEntry.Net.ID])
             {
                 list[id].GetPlayerData.CtrlType = CtrlType.player;
                 Debug.Log("玩家 " + id + " " + list[id].Name + " 为玩家操控");
@@ -171,9 +205,10 @@ namespace NetworkBasedFPS
             {
                 return;
             }
-            Player player = list[pos.id];
+            Player player = list[Netlist[pos.id]];
             player.NetForecastInfo(new Vector3(pos.posX, pos.posY, pos.posZ), new Vector3(pos.rotX, pos.rotY, pos.rotZ), new Vector3(pos.tPosX, pos.tPosY, pos.tPosZ));
         }
+
 
         //更新玩家状态
         private void UpdatePlayerStatusInfo(object sender, GameEventArgs e)
@@ -184,7 +219,7 @@ namespace NetworkBasedFPS
             {
                 return;
             }
-            Player player = list[msg.playerStatus.id];
+            Player player = list[Netlist[msg.playerStatus.id]];
             player.playerStatus = msg.playerStatus.playerStatus;
         }
 
@@ -204,14 +239,6 @@ namespace NetworkBasedFPS
                 Position = new Vector3(bullet.posX, bullet.posY, bullet.posZ),
                 Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
             });
-
-            //  枪口特效
-            //GameEntry.Entity.ShowEffect(new EffectData(GameEntry.Entity.GenerateSerialId(), 70000)
-            //{
-            //    Position = new Vector3(bullet.posX, bullet.posY, bullet.posZ),
-            //    Rotation = new Quaternion(bullet.rotX, bullet.rotY, bullet.rotZ, bullet.rotW)
-            //});
-
         }
 
         //更新武器
@@ -223,7 +250,7 @@ namespace NetworkBasedFPS
             {
                 return;
             }
-            Player player = list[msg.id];
+            Player player = list[Netlist[msg.id]];
             player.NetWeapon(msg.weaponID, msg.isReload);
         }
 
@@ -239,19 +266,19 @@ namespace NetworkBasedFPS
             Player player = list[msg.injured];
             if (msg.id == GameEntry.Net.ID)
             {
-                //if (msg.id == msg.injured)
-                //    player.isSuicide = true;
+                if (list[msg.injured].GetPlayerData.CtrlType == CtrlType.player && msg.damage != 0)
+                {
+                    Debug.LogError("自杀");
+                    player.isSuicide = true;
+                }
                 return;
             }
             player.GetPlayerData.HP -= msg.damage;
 
-            if (msg.injured == GameEntry.Net.ID)
+            if (msg.injured == Netlist[GameEntry.Net.ID])
             {
                 GameEntry.Event.Fire(this, PlayerOnHPChangedEventArgs.Create(player.GetPlayerData.HP));
             }
-
-
-            //Debug.Log("玩家：" + list[msg.id] + " 打中了 " + list[msg.injured] + "   造成" + msg.damage + " 点伤害");
         }
 
 

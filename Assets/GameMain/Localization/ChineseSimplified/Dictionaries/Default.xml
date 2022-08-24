@@ -17,6 +17,9 @@
     <String Key="Esc.Return" Value="返回游戏" />
     <String Key="Esc.Setting" Value="游戏设置" />
     <String Key="Esc.Exit" Value="退出游戏" />
+    <String Key="Room.Camp_East" Value="所属阵营：东部联盟" />
+    <String Key="Room.Camp_West" Value="所属阵营：西部联盟" />
+    <String Key="Room.PlayersList" Value="玩家列表" />
     <String Key="Dialog.ConfirmButton" Value="确定" />
     <String Key="Dialog.CancelButton" Value="取消" />
     <String Key="Dialog.OtherButton" Value="" />

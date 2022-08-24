@@ -15,6 +15,9 @@ namespace NetworkBasedFPS
         private Button m_LeaveButton = null;
 
         [SerializeField]
+        private Button m_SettingButton = null;
+
+        [SerializeField]
         private Button m_ReadyButton = null;
 
         [SerializeField]
@@ -51,7 +54,7 @@ namespace NetworkBasedFPS
             RoomInfoMsg msg = msgEventArgs.Msg;
             print("刷新玩家列表");
             content.BroadcastMessage("DestroyMySelf", SendMessageOptions.DontRequireReceiver);
-            
+
             //是否为房主
             if (msg.Oner == GameEntry.Net.ID)
                 isOner = true;
@@ -128,6 +131,11 @@ namespace NetworkBasedFPS
             GameEntry.Net.Send(msg);
         }
 
+        public void OnSettingButtonClick()
+        {
+            GameEntry.UI.OpenUIForm(UIFormId.SettingForm);
+        }
+
         protected override void OnInit(object userData)
         {
             base.OnInit(userData);
@@ -135,6 +143,7 @@ namespace NetworkBasedFPS
             m_CampButton_l.onClick.AddListener(ChangeCamp);
             m_CampButton_r.onClick.AddListener(ChangeCamp);
             m_ReadyButton.onClick.AddListener(StartGame);
+            m_SettingButton.onClick.AddListener(OnSettingButtonClick);
         }
 
         protected override void OnOpen(object userData)

@@ -37,12 +37,26 @@ namespace NetworkBasedFPS
         {
             base.OnInit(userData);
 
+        }
+
+        protected override void OnOpen(object userData)
+        {
+            base.OnOpen(userData);
             m_miniMap.GetComponent<MiniMap>().Init();
             m_teamItem.GetComponent<TeamItem>().Init();
             m_hpBarItem.GetComponent<HPBarItem>().Init();
             m_weaponBox.GetComponent<WeaponItems>().Init();
-
             GameEntry.Event.Subscribe(KillEvent.EventId, UpdateKillNum);
+        }
+
+        protected override void OnClose(bool isShutdown, object userData)
+        {
+            base.OnClose(isShutdown, userData);
+            GameEntry.Event.Unsubscribe(KillEvent.EventId, UpdateKillNum);
+            m_teamItem.GetComponent<TeamItem>().OnClose();
+            m_hpBarItem.GetComponent<HPBarItem>().OnClose();
+            m_weaponBox.GetComponent<WeaponItems>().OnClose();
+
         }
 
         private void UpdateKillNum(object sender, GameEventArgs e)

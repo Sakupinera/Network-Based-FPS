@@ -14,6 +14,8 @@ namespace NetworkBasedFPS
         private bool m_IsChangeSceneComplete = false;
         private int m_BackgroundMusicId = 0;
 
+        private int? m_Loading;
+
         public override bool UseNativeDialog
         {
             get
@@ -62,6 +64,9 @@ namespace NetworkBasedFPS
             // 切换场景
             GameEntry.Scene.LoadScene(AssetUtility.GetSceneAsset(drScene.AssetName), Constant.AssetPriority.SceneAsset, this);
             m_BackgroundMusicId = drScene.BackgroundMusicId;
+
+            //显示加载画面
+            m_Loading = GameEntry.UI.OpenUIForm(UIFormId.LoadingForm);
         }
 
         protected override void OnLeave(ProcedureOwner procedureOwner, bool isShutdown)
@@ -105,6 +110,10 @@ namespace NetworkBasedFPS
             }
 
             Log.Info("Load scene '{0}' OK.", ne.SceneAssetName);
+
+            //关闭加载面板
+            GameEntry.UI.CloseUIForm((int)m_Loading);
+
             m_IsChangeSceneComplete = true;
             if (ne.SceneAssetName == AssetUtility.GetSceneAsset("Battle"))
             {
@@ -134,6 +143,8 @@ namespace NetworkBasedFPS
             }
 
             Log.Info("Load scene '{0}' update, progress '{1}'.", ne.SceneAssetName, ne.Progress.ToString("P2"));
+            //加载画面进度条
+            (GameEntry.UI.GetUIForm((int)m_Loading).Logic as LoadingForm).BarValue = ne.Progress;
         }
 
         private void OnLoadSceneDependencyAsset(object sender, GameEventArgs e)

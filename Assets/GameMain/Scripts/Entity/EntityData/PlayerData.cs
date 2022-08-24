@@ -56,6 +56,7 @@ namespace NetworkBasedFPS
             m_Speed = drCharacter.MoveSpeed;
             m_FootStepSoundId = drCharacter.FootStepSoundId;
             HP = m_MaxHP;
+
             AttachWeaponData(new GunData(GameEntry.Entity.GenerateSerialId(), 30000, Id, Camp));
             AttachWeaponData(new GunData(GameEntry.Entity.GenerateSerialId(), 30001, Id, Camp));
         }

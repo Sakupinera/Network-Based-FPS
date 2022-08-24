@@ -23,6 +23,8 @@ namespace NetworkBasedFPS
         [SerializeField]
         private GameObject m_Content;
 
+        //每五秒刷新房间
+        private int REFRESH_TIME = 5;
 
         public void OnBackButtonClick()
         {
@@ -61,6 +63,10 @@ namespace NetworkBasedFPS
             GameEntry.UI.OpenUIForm(UIFormId.RoomForm);
             Close(true);
         }
+        public void OnSettingButtonClick()
+        {
+            GameEntry.UI.OpenUIForm(UIFormId.SettingForm);
+        }
 
         protected override void OnInit(object userData)
         {
@@ -69,6 +75,7 @@ namespace NetworkBasedFPS
             m_ButtonBack.onClick.AddListener(OnBackButtonClick);
             m_ButtonCreate.onClick.AddListener(OnCreateButtonClick);
             m_ButtonRefresh.onClick.AddListener(OnRefreshButtonClick);
+            m_ButtonSetting.onClick.AddListener(OnSettingButtonClick);
         }
 
 
@@ -77,6 +84,7 @@ namespace NetworkBasedFPS
             base.OnOpen(userData);
 
             GameEntry.Event.Subscribe(MsgEventArgs<RoomListMsg>.EventId, RefreshRoomList);
+            InvokeRepeating("OnRefreshButtonClick", 0, REFRESH_TIME);
         }
 
 

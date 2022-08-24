@@ -116,6 +116,9 @@ namespace NetworkBasedFPS
                 GameEntry.Entity.ShowGun(gunDatas[i]);
             }
 
+            //GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha3, Id));
+            //ThridPersonAnimator.CrossFade("Unarmed Locomotion", 0.2f);
+
             GameEntry.Event.Fire(this, PlayerOnShowEventArgs.Create(this.m_PlayerData.Id));
 
             transform.position = m_PlayerData.Position;
@@ -393,7 +396,7 @@ namespace NetworkBasedFPS
             if (stateinfo.IsName("Unwield") && (stateinfo.normalizedTime >= 1.0f))
             {
                 ThridPersonAnimator.CrossFade("Unarmed Locomotion", 0.2f);
-                foreach(var e in m_Guns)
+                foreach (var e in m_Guns)
                 {
                     e.gameObject.SetActive(false);
                 }
@@ -402,7 +405,7 @@ namespace NetworkBasedFPS
             {
                 StartCoroutine(RealRetractWeapon());
             }
-        } 
+        }
 
         /// <summary>
         /// 玩家切枪逻辑
@@ -581,6 +584,16 @@ namespace NetworkBasedFPS
                 StartCoroutine(Revive());
             else
                 HideMyself();
+        }
+
+
+        protected override void OnDetached(EntityLogic childEntity, object userData)
+        {
+            base.OnDetached(childEntity, userData);
+
+            m_Guns.Clear();
+            m_CurrentGun = null;
+
         }
 
         public void HideMyself()

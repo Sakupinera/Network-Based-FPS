@@ -33,7 +33,7 @@ namespace NetworkBasedFPS
         public void OnExitButtonClick()
         {
             //  TODO: 退出游戏
-
+            Application.Quit();
         }
 
         protected override void OnInit(object userData)
@@ -50,7 +50,7 @@ namespace NetworkBasedFPS
             base.OnOpen(userData);
 
             m_ProcedureBattle = (ProcedureBattle)userData;
-            if(m_ProcedureBattle == null)
+            if (m_ProcedureBattle == null)
             {
                 Log.Warning("ProcedureBattle is invalid when open EscForm.");
                 return;

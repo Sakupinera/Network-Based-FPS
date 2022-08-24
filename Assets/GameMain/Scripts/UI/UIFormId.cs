@@ -48,6 +48,11 @@ namespace NetworkBasedFPS
         RoomForm = 104,
 
         /// <summary>
+        /// 加载面板
+        /// </summary>
+        LoadingForm = 105,
+
+        /// <summary>
         /// 战斗面板（准星）
         /// </summary>
         BattleForm = 150,

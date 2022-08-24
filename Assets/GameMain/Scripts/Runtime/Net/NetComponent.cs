@@ -86,7 +86,9 @@ namespace NetworkBasedFPS
                 }
                 else
                 {
-                    //GameEntry.Event.FireNow(this, ConnEventArgs.Create("连接出错"));
+                    ConnIDMsg connIDMsg = new ConnIDMsg();
+                    connIDMsg.id = 0;
+                    GameEntry.Event.Fire(this, MsgEventArgs<ConnIDMsg>.Create(connIDMsg));
                     print("连接出错" + args.SocketError);
                 }
             };

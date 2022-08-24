@@ -51,5 +51,11 @@ namespace NetworkBasedFPS
             teamScoreA.text = tAScore.ToString();
             teamScoreB.text = tBScore.ToString();
         }
+
+        public void OnClose()
+        {
+            GameEntry.Event.Unsubscribe(PlayerScoreChangedEventArgs.EventId, ChangeScore);
+
+        }
     }
 }

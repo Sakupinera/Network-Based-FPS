@@ -28,6 +28,11 @@ namespace NetworkBasedFPS
 
         }
 
+        public void OnClose()
+        {
+            GameEntry.Event.Unsubscribe(WeaponOnBulletChangedEventArgs.EventId, ChangeBullet);
+
+        }
 
 
         public void ChangeBullet(object sender, GameEventArgs e)

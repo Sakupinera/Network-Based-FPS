@@ -23,6 +23,9 @@ namespace NetworkBasedFPS
         private Button m_ConnButton = null;
 
         [SerializeField]
+        private Button m_QuitButton = null;
+
+        [SerializeField]
         private InputField m_IPInputField = null;
 
         [SerializeField]
@@ -68,6 +71,11 @@ namespace NetworkBasedFPS
             }
         }
 
+        public void OnQuitButtonClick()
+        {
+            Application.Quit();
+        }
+
 
 
         public void Login()
@@ -88,6 +96,7 @@ namespace NetworkBasedFPS
             m_StartButton.onClick.AddListener(OnStartButtonClick);
             m_SettingButton.onClick.AddListener(OnSettingButtonClick);
             m_ConnButton.onClick.AddListener(OnConnButtonClick);
+            m_QuitButton.onClick.AddListener(OnQuitButtonClick);
         }
 
         protected override void OnOpen(object userData)
@@ -101,7 +110,13 @@ namespace NetworkBasedFPS
 
         private void ShowPop(object sender, GameEventArgs e)
         {
-            GameEntry.UI.OpenUIForm("Assets/GameMain/UI/UIForms/PopForm.prefab", "Pop", "连接成功");
+            MsgEventArgs<ConnIDMsg> msgEventArgs = (MsgEventArgs<ConnIDMsg>)e;
+            ConnIDMsg msg = msgEventArgs.Msg;
+            if (msg.id != 0)
+                GameEntry.UI.OpenUIForm("Assets/GameMain/UI/UIForms/PopForm.prefab", "Pop", "连接成功");
+            else
+                GameEntry.UI.OpenUIForm("Assets/GameMain/UI/UIForms/PopForm.prefab", "Pop", "连接出错");
+
         }
 
         protected override void OnClose(bool isShutdown, object userData)

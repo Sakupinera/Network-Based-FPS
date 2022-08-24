@@ -115,6 +115,7 @@ namespace NetworkBasedFPS
 
             Name = Utility.Text.Format("Weapon of {0}", parentEntity.Name);
             CachedTransform.localPosition = m_GunData.AttachLocalPosition;
+            CachedTransform.localRotation = Quaternion.Euler(Vector3.zero);
 
             gameObject.SetActive(false);
         }
@@ -172,7 +173,7 @@ namespace NetworkBasedFPS
 
             //当前子弹减少
             currentMagBullets--;
-            print(currentMagBullets);
+            //print(currentMagBullets);
             GameEntry.Event.Fire(this, WeaponOnBulletChangedEventArgs.Create(currentMagBullets, currentBulletNum, _GunData.TypeId));
 
             //重置开火计时器
