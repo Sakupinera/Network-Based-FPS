@@ -96,6 +96,7 @@ namespace NetworkBasedFPS
                 }
                 else
                 {
+                    procedureOwner.SetData<VarInt32>("LoadingFormID", m_Loading);
                     ChangeState<ProcedureBattle>(procedureOwner);
                 }
             }
@@ -111,10 +112,13 @@ namespace NetworkBasedFPS
 
             Log.Info("Load scene '{0}' OK.", ne.SceneAssetName);
 
-            //关闭加载面板
-            GameEntry.UI.CloseUIForm((int)m_Loading);
-
             m_IsChangeSceneComplete = true;
+
+            if (ne.SceneAssetName == AssetUtility.GetSceneAsset("Meun"))
+            {
+                GameEntry.UI.CloseUIForm((int)m_Loading);
+            }
+
             if (ne.SceneAssetName == AssetUtility.GetSceneAsset("Battle"))
             {
                 LoadedSceneMsg msg = new LoadedSceneMsg();

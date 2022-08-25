@@ -105,6 +105,7 @@
       <Asset Guid="22f86d578631a5e43b2f10a7b943e9e3" ResourceName="DataTables" />
       <Asset Guid="236433a27ce40a7429b87d14d8fa3035" ResourceName="UI" />
       <Asset Guid="24293e055dd05d648af9d3d9ec5f9535" ResourceName="UI" />
+      <Asset Guid="245a8f3a4df2d7e4ab06b19094c4f2e0" ResourceName="Entities" />
       <Asset Guid="24ca310f92a6796408f1db7647ec4e55" ResourceName="UI" />
       <Asset Guid="25342ba54e5374d4cbd586fedc88c44f" ResourceName="UI" />
       <Asset Guid="26ce86e7f4d6e82438811bd217defb85" ResourceName="UI" />
@@ -123,6 +124,7 @@
       <Asset Guid="32176b1b942a52b449aeb90e7044ee67" ResourceName="UI" />
       <Asset Guid="326c7dd9789e2e247b53cb659cbbf7d0" ResourceName="DataTables" />
       <Asset Guid="3512aa45c41551247901846e974366c0" ResourceName="UI" />
+      <Asset Guid="35e0b72d000a9ee4bb308218ac30cc60" ResourceName="Entities" />
       <Asset Guid="36acbb839b98e5044b1d212310cf818e" ResourceName="Temp" />
       <Asset Guid="3735ed3a20c01874f9804d7e18416659" ResourceName="Temp" />
       <Asset Guid="381dcb09d5029d14897e55f98031fca5" ResourceName="UI" />
@@ -200,6 +202,7 @@
       <Asset Guid="5a7529d00e1918e4dab1dc05b50a16da" ResourceName="Temp" />
       <Asset Guid="5b17ead3adfb80a489bfcc2d28a02e9e" ResourceName="Temp" />
       <Asset Guid="5ca4c580b3888314581688fa46fb142d" ResourceName="Temp" />
+      <Asset Guid="5ce0d54c57002b442b4076d8495f992f" ResourceName="Entities" />
       <Asset Guid="5cf8ae092ca54931b443bec5148f3c59" ResourceName="UI" />
       <Asset Guid="5d77b37ca29c5864ba45daeed6068a0d" ResourceName="Temp" />
       <Asset Guid="5dd2894d1d62dcb418a4426f5617ac10" ResourceName="DataTables" />
@@ -230,6 +233,7 @@
       <Asset Guid="6b1c54977415439449ebd74949bcc3ed" ResourceName="Temp" />
       <Asset Guid="6b6572196fcfb934ea34f30f65bfc16a" ResourceName="Temp" />
       <Asset Guid="6b87beec2fb28f446bc5e7ea1e0ca051" ResourceName="Temp" />
+      <Asset Guid="6c06554cb2f834042ab4f929c0748bc0" ResourceName="UI" />
       <Asset Guid="6c757b205a471d44a8647dcef49d4b26" ResourceName="UI" />
       <Asset Guid="6cbc2c323b77f804fb958fa4eca33998" ResourceName="UI" />
       <Asset Guid="6e11964de6308af4880abefff28f356c" ResourceName="UI" />
@@ -377,6 +381,7 @@
       <Asset Guid="b44bfac45a6cb7f448eb320ecc030a9c" ResourceName="Configs" />
       <Asset Guid="b4865497793dac941aa99425578f8371" ResourceName="UI" />
       <Asset Guid="b493e9a4650e7ec4cb70cf682d680f1e" ResourceName="UI" />
+      <Asset Guid="b4f141644b267ab439a43538b25b699b" ResourceName="UI" />
       <Asset Guid="b522a29e3cd81e748ae212b27e8ffadf" ResourceName="Temp" />
       <Asset Guid="b5779efdbb741404fa1fb20eacefb2d7" ResourceName="Animation" />
       <Asset Guid="b7b496609dfcf7d4089ca1e508b14f22" ResourceName="Temp" />
@@ -467,6 +472,7 @@
       <Asset Guid="e064e42f48df96d4ebc5db52e71f873b" ResourceName="Entities" />
       <Asset Guid="e0691f9ae355a8747a2a3f1a35b0deb0" ResourceName="Animation" />
       <Asset Guid="e12ee397888b39b488434f0129732842" ResourceName="Temp" />
+      <Asset Guid="e1d2144eb4c39734a94495c683d052bc" ResourceName="UI" />
       <Asset Guid="e27a3e2f84809914fa5bf3a7ac14ce9f" ResourceName="Temp" />
       <Asset Guid="e27d088c98e62994688fae12fc26f3d0" ResourceName="UI" />
       <Asset Guid="e3265ab4bf004d28a9537516768c1c75" ResourceName="UI" />
@@ -474,6 +480,7 @@
       <Asset Guid="e39a12c214895a74e8ed37fdff056f06" ResourceName="Animation" />
       <Asset Guid="e449f740779e9404180504cf97444aa9" ResourceName="UI" />
       <Asset Guid="e45099a2878b7ce408eaa66606710b01" ResourceName="Animation" />
+      <Asset Guid="e483dc8ae755cb74384e92fac9e1a98a" ResourceName="UI" />
       <Asset Guid="e4dfb32d6f819a34ab02257709523bf8" ResourceName="Animation" />
       <Asset Guid="e4fa8d5cbc85f214297ce7de14b56d3f" ResourceName="UI" />
       <Asset Guid="e5ca26c53b6ab8a46b52817008d7c7fa" ResourceName="UI" />
@@ -525,6 +532,7 @@
       <Asset Guid="fa35d75604d172d48b7a6b62a07c7dbf" ResourceName="Temp" />
       <Asset Guid="fa47780081c45cc49b5f0868df22c26b" ResourceName="UI" />
       <Asset Guid="fade42e8bc714b018fac513c043d323b" ResourceName="UI" />
+      <Asset Guid="fb1684491e61aa146b1f1585525f065f" ResourceName="Entities" />
       <Asset Guid="fbe6de29a0d79604a818f5a9e0865b09" ResourceName="UI" />
       <Asset Guid="fbef3c704dce48f08a44612d6c856c8d" ResourceName="UI" />
       <Asset Guid="fc3fd3dbb18312548812119275d698d7" ResourceName="UI" />

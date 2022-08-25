@@ -89,9 +89,6 @@ namespace NetworkBasedFPS
         {
             base.OnInit(userData);
 
-            //鼠标设定相关
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.SetCursor(tex, Vector2.zero, CursorMode.Auto);
 
             //获得自身控件
             m_Controller = GetComponent<CharacterController>();
@@ -112,6 +109,11 @@ namespace NetworkBasedFPS
         {
             base.OnShow(userData);
 
+
+            //鼠标设定相关
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.SetCursor(tex, Vector2.zero, CursorMode.Auto);
+
             m_PlayerData = userData as PlayerData;
             if (m_PlayerData == null)
             {
@@ -126,12 +128,20 @@ namespace NetworkBasedFPS
                 GameEntry.Entity.ShowGun(gunDatas[i]);
             }
 
-            //GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha3, Id));
-            //ThridPersonAnimator.CrossFade("Unarmed Locomotion", 0.2f);
-
             GameEntry.Event.Fire(this, PlayerOnShowEventArgs.Create(this.m_PlayerData.Id));
 
             transform.position = m_PlayerData.Position;
+        }
+
+        public void InitPLayerCtrl()
+        {
+            UnityUtility.ChangeLayer(transform.Find("View/Arms_FirstPerson"), "FirstPerson");
+            m_CurrentGun = null;
+            m_AimTarget.SetParent(transform);
+            m_AimTarget.position = transform.forward * 2;
+            FirstPersonAnimator.SetBool("Holstered", true);
+            StartCoroutine(RealRetractWeapon());
+            GameEntry.UI.CloseUIForm((GameEntry.Procedure.CurrentProcedure as ProcedureBattle).loadingFormID);
         }
 
         protected override void OnAttached(EntityLogic childEntity, Transform parentTransform, object userData)
@@ -165,7 +175,6 @@ namespace NetworkBasedFPS
                 Debug.LogWarning("AWSL");
                 RetractWeapon();
                 GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha3, Id));
-                //GameEntry.Event.Fire(this, SwapWeaponSuccessEventArgs.Create(KeyCode.Alpha0, Id));
                 Dead();
             }
 
@@ -265,7 +274,6 @@ namespace NetworkBasedFPS
         {
             WeaponMsg msg = new WeaponMsg();
             msg.id = GameEntry.Net.ID;
-            //Debug.LogWarning(m_PlayerData.Name + " &&& " + msg.id + " &&& " + weaponID);
             msg.weaponID = weaponID;
             msg.isReload = isReload;
             GameEntry.Net.Send(msg);
@@ -309,7 +317,7 @@ namespace NetworkBasedFPS
             {
                 aiming = false;
             }
-            
+
             FirstPersonAnimator.SetFloat(HashAimingAlpha, Convert.ToSingle(aiming), 0.25f / 1.0f * dampTimeAiming, Time.deltaTime);
 
         }
@@ -382,7 +390,6 @@ namespace NetworkBasedFPS
                     {
                         cFireTime = 0;
                         Vector3 vector = m_CurrentGun.excursion.Dequeue();
-                        //Debug.Log(vector);
                         xRotation += vector.x;
                         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
@@ -422,7 +429,7 @@ namespace NetworkBasedFPS
         {
             yield return null;
             AnimatorStateInfo stateinfo = m_CurrentGun.GunAnimator.GetCurrentAnimatorStateInfo(0);
-            if (/*stateinfo.IsName("Unwield") && */(stateinfo.normalizedTime >= 1.0f))
+            if ((stateinfo.normalizedTime >= 1.0f))
             {
                 ThridPersonAnimator.CrossFade("Unarmed Locomotion", 0.2f);
                 foreach (var e in m_Guns)
@@ -593,7 +600,6 @@ namespace NetworkBasedFPS
                 {
                     playerStatus = E_PLAYER_STATUS.Crouch;
                     SendStatusInfo();
-                    //print("蹲下");
                 }
             }
             if (Input.GetKeyUp(key))
@@ -674,16 +680,8 @@ namespace NetworkBasedFPS
         {
             foreach (var e in m_Guns)
             {
-                //    e.gameObject.SetActive(true);
-                //    GameEntry.Entity.HideEntity(e.Id);
-
                 e.ResetGunData();
             }
-            //List<GunData> gunDatas = m_PlayerData.GetAllGunDatas();
-            //foreach (var e in gunDatas)
-            //{
-            //    GameEntry.Entity.ShowGun(new GunData(GameEntry.Entity.GenerateSerialId(), e.TypeId, e.OwnerId, e.OwnerCamp));
-            //}
         }
 
         #region CtrlNet
@@ -715,10 +713,6 @@ namespace NetworkBasedFPS
                 ThridPersonAnimator.SetTrigger("Reload");
                 return;
             }
-            //切换武器
-            //if (weaponID != lweaponID || lweaponID == -1)
-            //{
-            //    lweaponID = weaponID;
             Debug.LogWarning("Net玩家" + m_PlayerData.Name + "  武器：" + weaponID);
             if (weaponID == 0)
             {
@@ -783,11 +777,7 @@ namespace NetworkBasedFPS
         //初始化位置预测数据
         public void InitNetCtrl()
         {
-            //m_playerCamera.gameObject.SetActive(false);
-
-            //m_playerCamera.GetComponent<Camera>().enabled = false;
-            //m_playerCamera.Find("FirstPersonCamera").GetComponent<Camera>().enabled = false;
-            foreach(var e in m_playerCamera.GetComponentsInChildren<Camera>())
+            foreach (var e in m_playerCamera.GetComponentsInChildren<Camera>())
             {
                 e.enabled = false;
             }
@@ -844,13 +834,9 @@ namespace NetworkBasedFPS
 
             //跳跃
             isGrounded = Physics.CheckSphere(groundCheck.position, groundDistence, groundMask);
-            //if (isGrounded)
-            //    isJumping = false;
-            if (!isGrounded/* && isJumping == false*/)
+            if (!isGrounded)
             {
-                //print(m_PlayerData.Name + " 起跳");
                 ThridPersonAnimator.SetTrigger("Jump");
-                //isJumping = true;
             }
         }
 

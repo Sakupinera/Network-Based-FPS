@@ -72,27 +72,6 @@ namespace NetworkBasedFPS
 
             foreach (Player player in teamGame.list.Values)
             {
-                //找到本地玩家
-                //if (player.GetPlayerData.CtrlType == CtrlType.player && m_player == null)
-                //{
-                //    m_player = player;
-                //    将本地玩家设置 的图标设置为红色
-                //    GameObject img = Instantiate(miniPlayer, miniMap.transform);
-                //    img.GetComponent<Image>().color = Color.red;
-                //    images.Add(player, img.GetComponent<Image>());
-                //}
-
-                ////找到本地玩家
-                //if (player.GetPlayerData.CtrlType == CtrlType.player && m_player == null)
-                //{
-                //    m_player = player;
-                //    //将本地玩家设置 的图标设置为红色
-                //    GameObject img = Instantiate(miniPlayer, miniMap.transform);
-                //    img.GetComponent<Image>().color = Color.red;
-                //    images.Add(player, img.GetComponent<Image>());
-                //    Debug.Log(m_player + " 为 " + player.GetPlayerData.Name);
-                //}
-                //Debug.Log(player.GetPlayerData.Name);
 
                 float realWidth = terrain.GetComponent<Collider>().bounds.size.x;
                 float realheigh = terrain.GetComponent<Collider>().bounds.size.z;
@@ -109,19 +88,13 @@ namespace NetworkBasedFPS
                 if (player.GetPlayerData.CtrlType == CtrlType.player)
                 {
                     images[player].rectTransform.anchoredPosition = new Vector2(itemX, itemY);
-                    images[player].rectTransform.eulerAngles = new Vector3(0, 0, 0/*-player.transform.eulerAngles.y*/);
-
-                    //float realX = (player.transform.position.x + terrain.GetComponent<Collider>().bounds.size.x / 2f) / terrain.GetComponent<Collider>().bounds.size.x;
-                    //float realY = (player.transform.position.z + terrain.GetComponent<Collider>().bounds.size.z / 2f) / terrain.GetComponent<Collider>().bounds.size.z;
+                    images[player].rectTransform.eulerAngles = new Vector3(0, 0, 0);
 
                     rect.pivot = new Vector2(pivotX, pivotY);
                     rect.localPosition = Vector2.zero;
                     rect.eulerAngles = new Vector3(0, 0, player.transform.eulerAngles.y);
 
                 }
-
-                //Debug.LogWarning(teamGame == null);
-                //Debug.Log(m_player == null);
 
                 if (m_player != null)
                 {

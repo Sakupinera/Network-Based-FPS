@@ -16,6 +16,8 @@ namespace NetworkBasedFPS
         private bool m_GotoMenu = false;
         private float m_GotoMenuDelaySeconds = 0f;
 
+        public int loadingFormID;
+
         public override bool UseNativeDialog
         {
             get
@@ -56,6 +58,7 @@ namespace NetworkBasedFPS
 
             m_GotoMenu = false;
             GameMode gameMode = (GameMode)procedureOwner.GetData<VarByte>("GameMode").Value;
+            loadingFormID = procedureOwner.GetData<VarInt32>("LoadingFormID").Value;
             m_CurrentGame = m_Games[gameMode];
             m_CurrentGame.Initialize();
 
@@ -91,23 +94,6 @@ namespace NetworkBasedFPS
                 }
                 return;
             }
-
-            //  自动结束游戏返回主菜单
-            //if (!m_GotoMenu)
-            //{
-            //    m_GotoMenu = true;
-            //    m_GotoMenuDelaySeconds = 0;
-            //}
-
-            //  经过xx秒返回主菜单
-            //m_GotoMenuDelaySeconds += elapseSeconds;
-            //if (m_GotoMenuDelaySeconds >= GameOverDelayedSeconds)
-            //{
-            //    Debug.LogWarning("返回主菜单");
-            //    procedureOwner.SetData<VarInt32>("NextSceneId", GameEntry.Config.GetInt("Scene.Menu"));
-            //    ChangeState<ProcedureChangeScene>(procedureOwner);
-            //}
-
 
             if (m_GotoMenu == true)
             {

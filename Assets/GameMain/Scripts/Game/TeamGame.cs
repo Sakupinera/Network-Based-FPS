@@ -87,11 +87,6 @@ namespace NetworkBasedFPS
         //清理场景
         public void ClearBattle()
         {
-            //GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-            //for (int i = 0; i < players.Length; i++)
-            //{
-            //    players[i].GetComponent<Player>().ReleaseMyself();
-            //}
             list.Clear();
             Netlist.Clear();
         }
@@ -111,22 +106,23 @@ namespace NetworkBasedFPS
             for (int i = 0; i < num; i++)
             {
                 CampType camp;
+                int swopID = 0;
                 if (msg.list[i].playerCamp == E_PLAYER_CAMP.A)
                 {
                     camp = CampType.BlueCamp;
-                    swopID_A++;
+                    swopID = ++swopID_A;
                 }
                 else if (msg.list[i].playerCamp == E_PLAYER_CAMP.B)
                 {
                     camp = CampType.RedCamp;
-                    swopID_B++;
+                    swopID = ++swopID_B;
                 }
                 else
                 {
                     Debug.Log("阵容有误");
                     return;
                 }
-                GeneratePlayer(msg.list[i].id, msg.list[i].name, camp, swopID_A);
+                GeneratePlayer(msg.list[i].id, msg.list[i].name, camp, swopID);
             }
         }
 
@@ -185,8 +181,9 @@ namespace NetworkBasedFPS
             //玩家处理
             if (id == Netlist[GameEntry.Net.ID])
             {
-                list[id].GetPlayerData.CtrlType = CtrlType.player;
                 Debug.Log("玩家 " + id + " " + list[id].Name + " 为玩家操控");
+                list[id].GetPlayerData.CtrlType = CtrlType.player;
+                list[id].InitPLayerCtrl();
             }
             else
             {

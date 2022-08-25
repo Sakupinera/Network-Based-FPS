@@ -42,7 +42,7 @@ namespace NetworkBasedFPS
         protected override void OnOpen(object userData)
         {
             base.OnOpen(userData);
-            m_miniMap.GetComponent<MiniMap>().Init();
+            //m_miniMap.GetComponent<MiniMap>().Init();
             m_teamItem.GetComponent<TeamItem>().Init();
             m_hpBarItem.GetComponent<HPBarItem>().Init();
             m_weaponBox.GetComponent<WeaponItems>().Init();
